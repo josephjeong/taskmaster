@@ -1,0 +1,12 @@
+Week 1. 
+
+This week we wrote user stories together in a group meeting. 
+I researched other competitors to our application.
+I got 10 people to fill our a survey so that we could find customer needs related to task management.
+
+Week 2.
+This week I created a JIRA board for the team and created the GitHub repo.
+I also wrote the start and end dates for the sprints and added them to the JIRA board.
+
+Week 3. 
+This week I did the Systems Architecture diagram and wrote the backend and data base text for the proposal.
