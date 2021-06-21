@@ -50,7 +50,7 @@ const LoginPage: React.FC = () => {
         />
         <div className={classes.footer}>
           <NextLink href="/signup" passHref>
-            <Link>Already have an account? Go to Sign Up</Link>
+            <Link>Don&apos;t have an account? Go to Sign Up</Link>
           </NextLink>
           <Button
             size="large"
