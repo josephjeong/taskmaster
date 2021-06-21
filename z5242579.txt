@@ -1,0 +1,14 @@
+Week 1. 
+We wrote user stories together in a group meeting.
+I got 6 people to fill out a survey so that we could find customer needs related to task management.
+I set up a team email and AWS accounts for all of us.
+I set up a JIRA board and GitHub repo that ended up unused in place of the official versions we would later create.
+
+Week 2.
+We discussed problems we were trying to solve and novel functionality in a group meeting.
+I wrote the User Stories section of our proposal with Soorria.
+
+Week 3.
+I wrote the Existing Solutions section of our proposal with Soorria and Joseph.
+I created the storyboards for the Kanban and Calendar views.
+I wrote up the frontend System Architecture stack with Soorria, as well as discussed the rest of the architecture with the team.
