@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { makeStyles, Paper, Typography } from '@material-ui/core'
 
 interface AuthWrapperProps {
@@ -27,6 +28,7 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ title, children }) => {
   const classes = useStyles()
   return (
     <div className={classes.root}>
+      <Head>{title}</Head>
       <Paper className={classes.container}>
         <Typography className={classes.heading} variant="h2" component="h1">
           {title}
