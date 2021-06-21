@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import LoginPage from './login'
 
-export default function Home() {
-  return <div>Home Page</div>
-}
+export default LoginPage
