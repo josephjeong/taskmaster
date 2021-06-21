@@ -1,0 +1,14 @@
+# Week 1
+We formed the group and decided roles for each member, I would be a developer focussing on backend
+We decided to have group meetings at around Monday 1pm and during Thursday lab
+We started writing user stories in a group meeting for Task Master
+I got 1 person to fill out a survey to find customer preferences for task management software
+
+# Week 2
+As a group, started writing the proposal on Google Docs
+I added and edited user stories
+I drafted initial ideas for novel functionality compared to existing systems
+
+# Week 3
+I helped create wireframes for storyboards
+We plan to submit the proposal on Week 4 Monday and start the first sprint
