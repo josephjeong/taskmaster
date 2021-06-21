@@ -27,6 +27,8 @@ const LoginPage: React.FC = () => {
     event.preventDefault()
 
     // do login stuff
+
+    // redirect to main app
   }
 
   return (
@@ -39,6 +41,7 @@ const LoginPage: React.FC = () => {
           type="email"
           required
           label="Email"
+          autoComplete="email"
         />
         <TextField
           className={classes.field}
@@ -47,6 +50,7 @@ const LoginPage: React.FC = () => {
           type="password"
           required
           label="Password"
+          autoComplete="current-password"
         />
         <div className={classes.footer}>
           <NextLink href="/signup" passHref>
