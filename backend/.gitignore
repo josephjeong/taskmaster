@@ -6,3 +6,4 @@ tmp/
 temp/
 node_modules/**/*
 dist/**/*
+.env
