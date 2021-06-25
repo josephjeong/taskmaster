@@ -36,12 +36,21 @@ const SignUpPage: React.FC = () => {
       <form className={classes.form} onSubmit={handleSubmit}>
         <TextField
           className={classes.field}
-          id="name"
-          name="name"
+          id="first-name"
+          name="first-name"
           type="text"
           required
-          label="Name"
-          autoComplete="name"
+          label="First Name"
+          autoComplete="given-name"
+        />
+        <TextField
+          className={classes.field}
+          id="last-name"
+          name="last-name"
+          type="text"
+          required
+          label="Last Name"
+          autoComplete="family-name"
         />
         <TextField
           className={classes.field}
