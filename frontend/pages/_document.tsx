@@ -13,7 +13,7 @@ class MyDocument extends NextDocument {
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
         </Head>
-        <body className="h-full min-h-screen text-drac-fg bg-drac-bg">
+        <body>
           <Main />
           <NextScript />
         </body>
