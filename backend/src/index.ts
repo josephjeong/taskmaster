@@ -1,4 +1,6 @@
 import "reflect-metadata";
+import "dotenv/config"
+import {v4 as uuidv4} from "uuid";
 import {createConnection} from "typeorm";
 import {User} from "./entity/User";
 
@@ -6,9 +8,12 @@ createConnection().then(async connection => {
 
     console.log("Inserting a new user into the database...");
     const user = new User();
-    user.firstName = "Timber";
-    user.lastName = "Saw";
-    user.age = 25;
+    user.id = uuidv4();
+    user.first_name = "next d2142134ude";
+    user.last_name = "Saw";
+    user.email = "email lah"
+    user.avatar_url = "banger"
+    user.bio = "greatjob"
     await connection.manager.save(user);
     console.log("Saved a new user with id: " + user.id);
 
@@ -20,6 +25,7 @@ createConnection().then(async connection => {
 
 }).catch(error => console.log(error));
 
+/*
 import express from 'express';
 
 const PORT = 8080;
@@ -38,3 +44,4 @@ app.listen(PORT, () =>
   // tslint:disable-next-line:no-console
   console.log(`App listening on port ${PORT}!`),
 );
+*/

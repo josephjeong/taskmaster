@@ -1,18 +1,23 @@
-import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {Entity, PrimaryColumn, Column} from "typeorm";
 
-@Entity()
+@Entity('User')
 export class User {
-
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
-    firstName: string;
+    // uuid needs to be handled outside of primary column
+    @PrimaryColumn()
+    id: string;
 
     @Column()
-    lastName: string;
+    email: string;
 
     @Column()
-    age: number;
+    first_name: string;
 
+    @Column()
+    last_name: string;
+
+    @Column()
+    avatar_url: string;
+
+    @Column()
+    bio: string;
 }
