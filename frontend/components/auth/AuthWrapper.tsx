@@ -1,5 +1,5 @@
-import Head from 'next/head'
 import { makeStyles, Paper, Typography } from '@material-ui/core'
+import Title from '../shared/Title'
 
 interface AuthWrapperProps {
   title: string
@@ -28,7 +28,7 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ title, children }) => {
   const classes = useStyles()
   return (
     <div className={classes.root}>
-      <Head>{title}</Head>
+      <Title>{title}</Title>
       <Paper className={classes.container}>
         <Typography className={classes.heading} variant="h2" component="h1">
           {title}

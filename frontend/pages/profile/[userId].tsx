@@ -1,9 +1,17 @@
 import { GetServerSideProps } from 'next'
 import { useState } from 'react'
-import { Container, makeStyles, Avatar, Typography } from '@material-ui/core'
+import {
+  Container,
+  makeStyles,
+  Avatar,
+  Typography,
+  Button,
+} from '@material-ui/core'
 
 import { ConnectionStatus, User } from '../../types'
 import ConnectionButton from '../../components/profile/ConnectionButton'
+import UpdateProfileModal from '../../components/profile/UpdateProfileModal'
+import Title from '../../components/shared/Title'
 
 const EXAMPLE_USER: User = {
   id: 'b59aa143-5e1c-46af-b05c-85908324e097',
@@ -43,6 +51,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   const [connectionStatus, setConnectionStatus] = useState(
     ConnectionStatus.UNCONNECTED
   )
+  const [showUpdateModal, setShowUpdateModal] = useState(false)
 
   const userName = `${user.firstName} ${user.lastName}`
 
@@ -61,6 +70,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
 
   return (
     <Container>
+      <Title>{`${userName}'s Profile`}</Title>
       <div className={classes.userDetailsWrapper}>
         <div>
           <Avatar
@@ -81,6 +91,17 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
             onClick={handleConnectionButtonClick}
           />
         </div>
+      </div>
+
+      <div>
+        <Button onClick={() => setShowUpdateModal(p => !p)}>
+          Toggle Modal
+        </Button>
+        <UpdateProfileModal
+          open={showUpdateModal}
+          currentProfile={user}
+          onClose={() => setShowUpdateModal(false)}
+        />
       </div>
     </Container>
   )
