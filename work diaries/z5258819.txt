@@ -1,0 +1,15 @@
+# Week 0
+
+I made a forum post in the tutorial chat and formed a group with people that emailed me. We discussed what stack we would like to use over a messenger chat. Generally, we all preferred TypeScript and thought about databases. We decided that we might want to use dynamodb if scaling was part of the marking criteria, and postgres if not. Front-end would use react but I'm not very comfortable with frontend frameworks.
+
+# Week 1
+
+We decided to do the TaskMaster project through a vote. We also decided on a group name: AsMuchTypeScriptAsPossible. We also decided Jocelyn would be SCRUM master. I would be working on the backend for the project. 
+
+# Week 2
+
+Through user interviews, we decided on google calendar integration, both as surveys revealed task managers weren't well-used, and as Sooria and I organised our lfie through it and had direct experience. We also started on the proposal
+
+# Week 3
+
+This week was very productive. I helped with the user stories, framing everything in terms of helping the end user. I also specified them to their objectives, worked on reformatting and redoing the novel features, existing solutions, and background section, as well as doing the Google Calendar Integration Flowchat. Next week should start the first sprint
