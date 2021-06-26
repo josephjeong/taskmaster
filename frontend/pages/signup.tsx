@@ -10,9 +10,6 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(3),
     },
   },
-  field: {
-    width: '100%',
-  },
   footer: {
     display: 'flex',
     alignItems: 'center',
@@ -35,7 +32,6 @@ const SignUpPage: React.FC = () => {
     <AuthWrapper title="Sign Up to Tasker">
       <form className={classes.form} onSubmit={handleSubmit}>
         <TextField
-          className={classes.field}
           id="first-name"
           name="first-name"
           type="text"
@@ -44,7 +40,6 @@ const SignUpPage: React.FC = () => {
           autoComplete="given-name"
         />
         <TextField
-          className={classes.field}
           id="last-name"
           name="last-name"
           type="text"
@@ -53,7 +48,6 @@ const SignUpPage: React.FC = () => {
           autoComplete="family-name"
         />
         <TextField
-          className={classes.field}
           id="email"
           name="email"
           type="email"
@@ -62,7 +56,6 @@ const SignUpPage: React.FC = () => {
           autoComplete="email"
         />
         <TextField
-          className={classes.field}
           id="password"
           name="password"
           type="password"
@@ -71,7 +64,6 @@ const SignUpPage: React.FC = () => {
           autoComplete="new-password"
         />
         <TextField
-          className={classes.field}
           id="confirm-password"
           name="confirm-password"
           type="password"

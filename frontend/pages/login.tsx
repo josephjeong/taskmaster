@@ -10,9 +10,6 @@ const useStyles = makeStyles(theme => ({
       marginTop: theme.spacing(3),
     },
   },
-  field: {
-    width: '100%',
-  },
   footer: {
     display: 'flex',
     alignItems: 'center',
@@ -35,7 +32,6 @@ const LoginPage: React.FC = () => {
     <AuthWrapper title="Login">
       <form className={classes.form} onSubmit={handleSubmit}>
         <TextField
-          className={classes.field}
           id="email"
           name="email"
           type="email"
@@ -44,7 +40,6 @@ const LoginPage: React.FC = () => {
           autoComplete="email"
         />
         <TextField
-          className={classes.field}
           id="password"
           name="password"
           type="password"
