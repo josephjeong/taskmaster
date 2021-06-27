@@ -9,21 +9,22 @@ import { updateUser } from "../../src/users/users-update";
 import { User } from "../../src/entity/User";
 import { clearEntity } from "../test-helpers/clear";
 import { createUser } from "../../src/users/users-create";
-
+import { decodeJWTPayload, hashMatch } from "../../src/users/users-helpers";
+import { InputUpdateUser } from "../../src/users/users-interface";
 
 beforeAll(async () => {
     await createConnection();
-})
+});
 
 beforeEach(async () => {
     await clearEntity(User);
-})
+});
 
 /** clear out database after all tests run */
 afterAll(async () => {
     await clearEntity(User);
     return await getConnection().close()
-})
+});
 
 // throw error if trying to update to invalid email address
 test('invalid email to update', async () => {
@@ -46,10 +47,9 @@ test('email already assigned to another user', async () => {
     expect.assertions(valid_emails.length);
     await Promise.all(valid_emails.map(async (email) => await expect(
         updateUser(uuidv4(), {email: email}))
-        .rejects.toEqual("This email already has an account! You can't make this your email")
+        .rejects.toEqual("This email already has an account! Please log in.")
     ));
-})
-
+});
 
 // 1. no such user exists update
 test('no such user exists for update', async () => {
@@ -64,7 +64,65 @@ test('no such user exists for update', async () => {
 });
 
 // 2. throw error if unknown attributes passed
+test('unknown property error', async () => {
+    let nonexistent_attributes = 
+    [{id: '3d45abc1-f475-475d-896a-32018a032ce8', changes: {hello: "helloshbam@gmail.com"}}, 
+    {id: 'c5b930f3-eed3-4f07-9dbd-a0466a763b49', changes: {wabam: "2helloshbam@gmail.com"}}];
+    expect.assertions(nonexistent_attributes.length);
+    await Promise.all(nonexistent_attributes.map(async (user) => await expect(
+        //@ts-ignore: intentionally deviating from standard to test
+        updateUser(user.id, user.changes))
+        .rejects.toEqual("Cannot Modify Nonexistent Properties of User")
+    ));
+});
 
 // 3. check password hashed correctly
+test('password hashed correctly', async () => {
+    const password = 'this_will_be_hashed';
+
+    // create a user
+    const token = await createUser('email@email.com', 'password', 'first_name', 'last_name', 'bio');
+
+    // decode their id from token payload
+    const session = await decodeJWTPayload(token);
+
+    // update password with uid
+    await updateUser(session.id, {password : password});
+
+    // find user with id
+    const user = await getConnection().getRepository(User).find({where : {id : session.id}});
+
+    expect(hashMatch(password, user[0].password_hash)).toBe(true);
+})
 
 // 4. check other user properties correctly modified
+test('users correctly updated', async () => {
+    // create a dummy user
+    const token = await createUser('email@email.com', 'password', 'first_name', 'last_name', 'bio');
+
+    // decode their id from token payload
+    const session = await decodeJWTPayload(token);
+
+    const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
+    const user_first_name = 'dude';
+    const user_last_name = 'bro';
+    const user_avatar_url = 'fakeurl.com'
+    const user_bio = 'an awesome person';
+    const changes : InputUpdateUser = {
+        email: user_email,
+        password: user_password,
+        first_name: user_first_name,
+        last_name: user_last_name,
+        avatar_url: user_avatar_url,
+        bio: user_bio
+    }
+    await updateUser(session.id, changes);
+    const user = await getConnection().getRepository(User).find({where : {email : user_email}});
+    expect(user.length).toBe(1);
+    expect(user[0].first_name).toBe(user_first_name);
+    expect(user[0].last_name).toBe(user_last_name);
+    expect(user[0].avatar_url).toBe(user_avatar_url);
+    expect(user[0].bio).toBe(user_bio);
+    expect(hashMatch(user_password, user[0].password_hash)).toBe(true);
+});

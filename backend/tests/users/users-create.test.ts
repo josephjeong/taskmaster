@@ -11,17 +11,17 @@ import { hashMatch } from "../../src/users/users-helpers";
 
 beforeAll(async () => {
     await createConnection();
-})
+});
 
 beforeEach(async () => {
     await clearEntity(User);
-})
+});
 
 /** clear out database after all tests run */
 afterAll(async () => {
     await clearEntity(User);
     return await getConnection().close()
-})
+});
 
 // 1. test email regex check
 test('incorrect email regex error', async () => {

@@ -11,9 +11,14 @@ import {User} from "../entity/User";
 import {createSession, passwordHash} from "./users-helpers"
 
 /** checks if email matches valid email regex */
-export function regexEmailCheck(email : string) : boolean {
+export function regexEmailCheck(email : string){
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+    if(!re.test(String(email).toLowerCase())) {throw "Please Provide a Valid Email";}
+}
+
+export async function existingEmailCheck(email : string) {
+    const existing_users = await getConnection().getRepository(User).find({ where: {email: email} });
+    if(existing_users.length) {throw "This email already has an account! Please log in."};
 }
 
 /** function to create and store user in database with bcrypt password */
@@ -26,11 +31,10 @@ export async function createUser(
 ) : Promise<string> {
 
     // check if email is valid
-    if (!regexEmailCheck(email)) {throw "Please Provide a Valid Email";}
+    regexEmailCheck(email);
 
     // check if email is already in use
-    const existing_users = await getConnection().getRepository(User).find({ where: {email: email} });
-    if(existing_users.length) {throw "This email already has an account! Please log in."};
+    await existingEmailCheck(email);
 
     // create new user
     const user = new User();
