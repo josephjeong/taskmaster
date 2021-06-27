@@ -6,4 +6,7 @@ tmp/
 temp/
 node_modules/**/*
 dist/**/*
+coverage
+
+# used to store secrets
 .env
