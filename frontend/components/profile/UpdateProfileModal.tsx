@@ -55,19 +55,19 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
         <DialogContent className={classes.spacing}>
           <TextField
             id="first-name"
-            name="firstName"
+            name="first_name"
             type="text"
             label="First Name"
             autoComplete="given-name"
-            defaultValue={currentProfile.firstName}
+            defaultValue={currentProfile.first_name}
           />
           <TextField
             id="last-name"
-            name="lastName"
+            name="last_name"
             type="text"
             label="Last Name"
             autoComplete="family-name"
-            defaultValue={currentProfile.lastName}
+            defaultValue={currentProfile.last_name}
           />
           <TextField
             id="email"
@@ -79,11 +79,11 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
           />
           <TextField
             id="avatar-url"
-            name="avatarUrl"
+            name="avatar_url"
             type="url"
             label="Avatar Url"
             autoComplete="url"
-            defaultValue={currentProfile.avatarUrl}
+            defaultValue={currentProfile.avatar_url}
           />
           <TextField
             id="bio"

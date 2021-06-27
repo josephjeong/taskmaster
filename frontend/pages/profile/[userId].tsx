@@ -16,9 +16,9 @@ import Title from '../../components/shared/Title'
 const EXAMPLE_USER: User = {
   id: 'b59aa143-5e1c-46af-b05c-85908324e097',
   email: 'soorria.ss@gmail.com',
-  firstName: 'Soorria',
-  lastName: 'Saruva',
-  avatarUrl: 'https://mooth.tech/logo.svg',
+  first_name: 'Soorria',
+  last_name: 'Saruva',
+  avatar_url: 'https://mooth.tech/logo.svg',
 }
 
 interface ProfilePageProps {
@@ -53,7 +53,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
   )
   const [showUpdateModal, setShowUpdateModal] = useState(false)
 
-  const userName = `${user.firstName} ${user.lastName}`
+  const userName = `${user.first_name} ${user.last_name}`
 
   const handleConnectionButtonClick = () => {
     setConnectionStatus(prev => {
@@ -75,7 +75,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
         <div>
           <Avatar
             alt={userName}
-            src={user.avatarUrl}
+            src={user.avatar_url}
             className={classes.avatar}
           />
         </div>

@@ -3,9 +3,9 @@ import { FC } from 'react'
 export type User = {
   id: string
   email: string
-  firstName: string
-  lastName: string
-  avatarUrl?: string
+  first_name: string
+  last_name: string
+  avatar_url?: string
   bio?: string
 }
 
