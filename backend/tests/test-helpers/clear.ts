@@ -2,7 +2,7 @@
     Helper file to clear out databases between test runs
 */
 
-import { createConnection, getConnection} from "typeorm";
+import { getConnection} from "typeorm";
 
 import { User } from "../../src/entity/User";
 

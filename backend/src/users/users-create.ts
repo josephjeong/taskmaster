@@ -5,16 +5,12 @@ Written by Joseph Jeong 26 JUN 2021
 */
 
 import {v4 as uuidv4} from "uuid";
-import { createConnection, getConnection } from "typeorm";
+import { getConnection } from "typeorm";
 
 import {User} from "../entity/User";
-import {createSession, passwordHash} from "./users-helpers"
+import {createSession, existingEmailCheck, passwordHash, regexEmailCheck} from "./users-helpers"
 
-/** checks if email matches valid email regex */
-function regexEmailCheck(email : string) : boolean {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-}
+
 
 /** function to create and store user in database with bcrypt password */
 export async function createUser(
@@ -26,11 +22,10 @@ export async function createUser(
 ) : Promise<string> {
 
     // check if email is valid
-    if (!regexEmailCheck(email)) {throw "Please Provide a Valid Email";}
+    regexEmailCheck(email);
 
     // check if email is already in use
-    const existing_users = await getConnection().getRepository(User).find({ where: {email: email} });
-    if(existing_users.length) {throw "This email already has an account! Please log in."};
+    await existingEmailCheck(email);
 
     // create new user
     const user = new User();

@@ -2,27 +2,26 @@
     test file to test users-create.ts file
 */
 
+import { createConnection, getConnection } from "typeorm";
+
 import { User } from "../../src/entity/User";
 import { clearEntity } from "../test-helpers/clear";
 import { createUser } from "../../src/users/users-create"
-import { createConnection, getConnection } from "typeorm";
 import { hashMatch } from "../../src/users/users-helpers";
 
-beforeEach(async () => {
+beforeAll(async () => {
     await createConnection();
-    await clearEntity(User);
-})
+});
 
-afterEach(async () => {
-    return await getConnection().close();
-})
+beforeEach(async () => {
+    await clearEntity(User);
+});
 
 /** clear out database after all tests run */
 afterAll(async () => {
-    const connection = await createConnection();
     await clearEntity(User);
-    return await connection.close()
-})
+    return await getConnection().close()
+});
 
 // 1. test email regex check
 test('incorrect email regex error', async () => {
