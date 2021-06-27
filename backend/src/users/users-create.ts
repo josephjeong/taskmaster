@@ -29,9 +29,7 @@ export async function createUser(
     if (!regexEmailCheck(email)) {throw "Please Provide a Valid Email";}
 
     // check if email is already in use
-    console.log(email);
     const existing_users = await getConnection().getRepository(User).find({ where: {email: email} });
-    console.log(existing_users);
     if(existing_users.length) {throw "This email already has an account! Please log in."};
 
     // create new user
