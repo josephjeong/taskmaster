@@ -23,6 +23,11 @@ export async function passwordHash(password : string) : Promise<string> {
     return await bcrypt.hash(password, rounds);
 }
 
+/** simple function to match hash */
+export function hashMatch(password : string, hash : string) : boolean {
+    return bcrypt.compareSync(password, hash);
+}
+
 /** helper function to create JWT sessions */
 export function createSession(id : string) : EncodeResult {
 

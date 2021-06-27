@@ -6,6 +6,7 @@ import { User } from "../../src/entity/User";
 import { clearEntity } from "../test-helpers/clear";
 import { createUser } from "../../src/users/users-create"
 import { createConnection, getConnection } from "typeorm";
+import { hashMatch } from "../../src/users/users-helpers";
 
 beforeEach(async () => {
     await createConnection();
@@ -57,12 +58,13 @@ test('existing email conflict error', async () => {
 // 3. check users are created
 test('users correctly created', async () => {
     const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
     const user_first_name = 'dude';
     const user_last_name = 'bro';
     const user_bio = 'an awesome person';
     await createUser(
         user_email,
-        'strong password',
+        user_password,
         user_first_name,
         user_last_name,
         user_bio
@@ -72,4 +74,5 @@ test('users correctly created', async () => {
     expect(user[0].first_name).toBe(user_first_name);
     expect(user[0].last_name).toBe(user_last_name);
     expect(user[0].bio).toBe(user_bio);
+    expect(hashMatch(user_password, user[0].password_hash)).toBe(true);
 });
