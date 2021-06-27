@@ -10,4 +10,3 @@ coverage
 
 # used to store secrets
 .env
-src/users/JWT_SECRET.txt
