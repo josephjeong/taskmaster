@@ -8,18 +8,9 @@ import {v4 as uuidv4} from "uuid";
 import { getConnection } from "typeorm";
 
 import {User} from "../entity/User";
-import {createSession, passwordHash} from "./users-helpers"
+import {createSession, existingEmailCheck, passwordHash, regexEmailCheck} from "./users-helpers"
 
-/** checks if email matches valid email regex */
-export function regexEmailCheck(email : string){
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if(!re.test(String(email).toLowerCase())) {throw "Please Provide a Valid Email";}
-}
 
-export async function existingEmailCheck(email : string) {
-    const existing_users = await getConnection().getRepository(User).find({ where: {email: email} });
-    if(existing_users.length) {throw "This email already has an account! Please log in."};
-}
 
 /** function to create and store user in database with bcrypt password */
 export async function createUser(

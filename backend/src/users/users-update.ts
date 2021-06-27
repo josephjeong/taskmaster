@@ -6,7 +6,7 @@ import { User } from "../entity/User";
 import { getConnection } from "typeorm";
 import { InputUpdateUser, UpdateUser } from "./users-interface";
 import { passwordHash } from "./users-helpers";
-import { existingEmailCheck, regexEmailCheck } from "./users-create";
+import { existingEmailCheck, regexEmailCheck } from "./users-helpers";
 
 /** update user details from InputUpdateUser object and id */
 export async function updateUser(id : string, input_changes : InputUpdateUser) : Promise<void> {
