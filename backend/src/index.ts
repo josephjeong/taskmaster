@@ -2,8 +2,10 @@ import "reflect-metadata";
 import "dotenv/config"
 
 import { createUser } from "./users/users-create";
+import { createConnection } from "typeorm";
 
 async function whatever() {
+    await createConnection();
     const result = await createUser('ab@gmail.com', 'a', 'a', 'a', 'a', );
     console.log(result);
 };

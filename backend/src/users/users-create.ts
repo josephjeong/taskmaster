@@ -5,7 +5,7 @@ Written by Joseph Jeong 26 JUN 2021
 */
 
 import {v4 as uuidv4} from "uuid";
-import { createConnection } from "typeorm";
+import { createConnection, getConnection } from "typeorm";
 
 import {User} from "../entity/User";
 import {createSession, passwordHash} from "./users-helpers"
@@ -26,11 +26,10 @@ export async function createUser(
 ) : Promise<string> {
 
     // check if email is valid
-    if (!regexEmailCheck(email)) {throw "Please Provide and Valid Email";}
+    if (!regexEmailCheck(email)) {throw "Please Provide a Valid Email";}
 
     // check if email is already in use
-    const connection = await createConnection();
-    const existing_users = await connection.getRepository(User).find({ where: {email: email} });
+    const existing_users = await getConnection().getRepository(User).find({ where: {email: email} });
     if(existing_users.length) {throw "This email already has an account! Please log in."};
 
     // create new user
@@ -47,7 +46,7 @@ export async function createUser(
     user.password_hash = await passwordHash(password);
 
     // save the user
-    await connection.manager.save(user) 
+    await getConnection().manager.save(user) 
 
     // create a JWT token for session
     const token = createSession(user.id);
