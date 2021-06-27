@@ -61,7 +61,7 @@ test('incorrect password login', async () => {
     // expect an incorrect password
     expect.assertions(1);
     await expect(loginUser(user_email, 'incorrect password'))
-    .rejects.toEqual("This is the incorrect password.");
+    .rejects.toEqual("This is an incorrect password.");
 });
 
 // test password correct

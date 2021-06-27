@@ -16,7 +16,7 @@ export async function loginUser(email: string, password: string) : Promise<strin
     if (user.length != 1) {throw "An account with this email does not exist.";}
 
     // check if password is correct
-    if (!hashMatch(password, user[0].password_hash)) {throw "This is the incorrect password.";}
+    if (!hashMatch(password, user[0].password_hash)) {throw "This is an incorrect password.";}
 
     // return session token
     const session = createSession(user[0].id);
