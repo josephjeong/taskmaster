@@ -33,7 +33,7 @@ const SignUpPage: React.FC = () => {
       <form className={classes.form} onSubmit={handleSubmit}>
         <TextField
           id="first-name"
-          name="first-name"
+          name="first_name"
           type="text"
           required
           label="First Name"
@@ -41,7 +41,7 @@ const SignUpPage: React.FC = () => {
         />
         <TextField
           id="last-name"
-          name="last-name"
+          name="last_name"
           type="text"
           required
           label="Last Name"
