@@ -1,7 +1,9 @@
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
-import CssBaseline from '@material-ui/core/CssBaseline'
 import { useEffect } from 'react'
+import { ThemeProvider, CssBaseline } from '@material-ui/core'
+
+import theme from '../theme'
 
 function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -20,8 +22,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
-      <CssBaseline />
-      <Component {...pageProps} />
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Component {...pageProps} />
+      </ThemeProvider>
     </>
   )
 }
