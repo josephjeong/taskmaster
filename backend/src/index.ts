@@ -1,34 +1,27 @@
 import "reflect-metadata";
 import "dotenv/config"
 
-import { createUser } from "./users/users-create";
-import { createConnection } from "typeorm";
-
-async function whatever() {
-    await createConnection();
-    const result = await createUser('ab@gmail.com', 'a', 'a', 'a', 'a', );
-    console.log(result);
-};
-
-whatever();
-
-/*
 import express from 'express';
+import { createConnection } from "typeorm";
 
 const PORT = 8080;
 
-const app = express();
+// create typeorm connection
+createConnection(). then(connection => {
 
-app.post('/login', (req, res) => {
-  return res.send('Received a POST /login HTTP method');
+    // start express server 
+    const app = express();
+
+    app.post('/login', (req, res) => {
+        return res.send('Received a POST /login HTTP method');
+      });
+      
+      app.post('/signup', (req, res) => {
+        return res.send('Received a POST /signup HTTP method');
+      });
+      
+      app.listen(PORT, () =>
+        // tslint:disable-next-line:no-console
+        console.log(`App listening on port ${PORT}!`),
+      );
 });
-
-app.post('/signup', (req, res) => {
-  return res.send('Received a POST /signup HTTP method');
-});
-
-app.listen(PORT, () =>
-  // tslint:disable-next-line:no-console
-  console.log(`App listening on port ${PORT}!`),
-);
-*/
