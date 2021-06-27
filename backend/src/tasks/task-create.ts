@@ -13,13 +13,16 @@ export async function createTask(
     // jwt : string,
     description? : string,
     estimated_days? : number
-) : Promise<boolean> {
+) : Promise<void> {
 
     // todo: authenticate jwt?
 
-    // maybe check for duplicate task title or overlap? 
+    // maybe check for duplicate task title or overlap?
     
-    // return false if above checks fail
+    // check values are not empty strings, null/undefined etc.
+    if (!(project && creator && title && deadline && status)) { // && jwt
+        throw "error creating task with given params, ensure they are all defined";
+    }
 
     // new task
     const task = new Task();
@@ -37,5 +40,5 @@ export async function createTask(
     // save task
     await getConnection().manager.save(task);
 
-    return true;
+    return;
 }

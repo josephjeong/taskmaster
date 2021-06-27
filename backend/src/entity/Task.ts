@@ -1,10 +1,10 @@
 import {Entity, PrimaryColumn, Column} from "typeorm";
 
 export enum Status {
-    NOT_STARTED = "Not Started",
-    IN_PROGRESS = "In Progress",
-    BLOCKED = "Blocked",
-    COMPLETED = "Completed"
+    NOT_STARTED = "TO_DO",
+    IN_PROGRESS = "IN_PROGRESS",
+    BLOCKED = "BLOCKED",
+    COMPLETED = "DONE"
 }
 
 @Entity('Task')
