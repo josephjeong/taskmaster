@@ -12,15 +12,12 @@ export async function fetchUserDetails(id : string) : Promise<UserDetails> {
 
     let details : UserDetails =
      {
+        avatar_url: user[0].avatar_url,
         email: user[0].email,
         first_name: user[0].first_name,
         last_name: user[0].last_name,
         bio: user[0].bio
     };
-
-    if ('avatar_url' in user[0]) {
-        details.avatar_url = user[0].avatar_url;
-    }
     
     return details;
 }
