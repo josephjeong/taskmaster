@@ -4,7 +4,7 @@ import "dotenv/config"
 import { createUser } from "./users/users-create";
 
 async function whatever() {
-    const result = await createUser('a', 'a', 'a', 'a', 'a', );
+    const result = await createUser('ab@gmail.com', 'a', 'a', 'a', 'a', );
     console.log(result);
 };
 
