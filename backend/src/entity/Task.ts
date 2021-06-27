@@ -36,6 +36,6 @@ export class Task {
     })
     status: Status;
     
-    @Column("float")
+    @Column("real")
     estimated_days: number;
 }
