@@ -7,6 +7,6 @@ temp/
 node_modules/**/*
 dist/**/*
 
-
+# used to store secrets
 .env
 src/users/JWT_SECRET.txt

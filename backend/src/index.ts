@@ -1,10 +1,6 @@
 import "reflect-metadata";
 import "dotenv/config"
 
-/*
-    IMPORTANT - start me from root directory with $ ts-node src/index.ts 
-*/
-
 import { createUser } from "./users/users-create";
 
 async function whatever() {

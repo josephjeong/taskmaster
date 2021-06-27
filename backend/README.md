@@ -2,6 +2,6 @@
 
 Steps to run this project:
 
-1. Run `npm i` command
-2. Setup database settings inside `ormconfig.json` file
-3. Run `npm start` command
+1. run 'yarn install' command
+2. modify .env.example by removing example and adding details
+3. run 'yarn start' from root backend directory
