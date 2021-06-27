@@ -5,9 +5,9 @@ helper functions for users files
 import "dotenv/config"
 
 import bcrypt from "bcrypt";
-import { encode, TAlgorithm } from "jwt-simple";
+import { decode, encode, TAlgorithm } from "jwt-simple";
 
-import {Session, EncodeResult } from "./session-interface"
+import {Session, EncodeResult } from "./users-interface"
 
 // JWT variables
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -46,4 +46,8 @@ export function createSession(id : string) : EncodeResult {
         iat: iat,
         exp: exp
     };
+}
+
+export function decodeJWTPayload(token : string) : Promise<Session> {
+    return decode(token, JWT_SECRET, true, JWT_ALG);
 }

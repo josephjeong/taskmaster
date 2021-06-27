@@ -5,13 +5,13 @@ Written by Joseph Jeong 26 JUN 2021
 */
 
 import {v4 as uuidv4} from "uuid";
-import { createConnection, getConnection } from "typeorm";
+import { getConnection } from "typeorm";
 
 import {User} from "../entity/User";
 import {createSession, passwordHash} from "./users-helpers"
 
 /** checks if email matches valid email regex */
-function regexEmailCheck(email : string) : boolean {
+export function regexEmailCheck(email : string) : boolean {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
 }
@@ -29,7 +29,9 @@ export async function createUser(
     if (!regexEmailCheck(email)) {throw "Please Provide a Valid Email";}
 
     // check if email is already in use
+    console.log(email);
     const existing_users = await getConnection().getRepository(User).find({ where: {email: email} });
+    console.log(existing_users);
     if(existing_users.length) {throw "This email already has an account! Please log in."};
 
     // create new user

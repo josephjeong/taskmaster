@@ -2,10 +2,11 @@
     test file to test users-create.ts file
 */
 
+import { createConnection, getConnection } from "typeorm";
+
 import { User } from "../../src/entity/User";
 import { clearEntity } from "../test-helpers/clear";
 import { createUser } from "../../src/users/users-create"
-import { createConnection, getConnection } from "typeorm";
 import { hashMatch } from "../../src/users/users-helpers";
 
 beforeEach(async () => {
