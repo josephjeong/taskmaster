@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "yarn prettier --check ."
   },
   "dependencies": {
     "@material-ui/core": "^4.11.4",
