@@ -28,22 +28,35 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-type CreateTaskModalProps = {
+type TaskModalProps = {
+  mode?: string,
   open: boolean,
   taskInit: Task,
   onClose: () => void,
   onSubmit: (task: Task) => any
 };
 
-const CreateTaskModal = ({
+const TaskModal = ({
+  mode='view',
   open,
   taskInit,
   onClose,
   onSubmit
-}: CreateTaskModalProps) => {
+}: TaskModalProps) => {
   const [task, setTask] = React.useState(taskInit);
 
   const classes = useStyles();
+
+  const getTitle = () => {
+    switch (mode) {
+      case 'view':
+        return 'View Task';
+      case 'create':
+        return 'Create Task';
+      case 'edit':
+        return 'Edit Task';
+    }
+  };
 
   const submit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
@@ -55,12 +68,13 @@ const CreateTaskModal = ({
       open={open}
       onClose={() => onClose()}
     >
-      <DialogTitle>Create Task</DialogTitle>
+      <DialogTitle>{getTitle()}</DialogTitle>
       <form onSubmit={(event) => submit(event)}>
         <DialogContent>
           <TextField
             className={classes.fullWidthInput}
             required
+            disabled={mode === 'view'}
             label='Title'
             value={task.title}
             onChange={(event) => {
@@ -72,6 +86,7 @@ const CreateTaskModal = ({
           <TextField
             className={classes.fullWidthInput}
             required
+            disabled={mode === 'view'}
             multiline
             rows={10}
             label='Description'
@@ -86,6 +101,7 @@ const CreateTaskModal = ({
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <KeyboardDatePicker
                 className={classes.rowInputLeft}
+                disabled={mode === 'view'}
                 disableToolbar
                 variant='inline'
                 format='DD/MM/yyyy'
@@ -100,6 +116,7 @@ const CreateTaskModal = ({
               />
               <KeyboardTimePicker
                 className={classes.rowInputRight}
+                disabled={mode === 'view'}
                 margin='normal'
                 label='Due time'
                 value={task.deadline}
@@ -116,6 +133,7 @@ const CreateTaskModal = ({
               <InputLabel id='task-status-label'>Status</InputLabel>
               <Select
                 labelId='task-status-label'
+                disabled={mode === 'view'}
                 value={task.status}
                 onChange={(event) => {
                   const task_ = { ...task };
@@ -131,6 +149,7 @@ const CreateTaskModal = ({
             </FormControl>
             <div className={classes.rowInputRight}>
               <NumericInput
+              disabled={mode === 'view'}
                 variant='outlined'
                 precision='2'
                 decimalSeparator='.'
@@ -159,7 +178,7 @@ const CreateTaskModal = ({
             variant='contained'
             type='submit'
           >
-            Create
+            Save
           </Button>
         </DialogActions>
       </form>
@@ -167,4 +186,4 @@ const CreateTaskModal = ({
   )
 }
 
-export default CreateTaskModal;
+export default TaskModal;
