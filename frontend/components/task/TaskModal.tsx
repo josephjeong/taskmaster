@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Button, FormControl, InputLabel } from '@material-ui/core';
+import { makeStyles, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Button, FormControl } from '@material-ui/core';
 import NumericInput from 'material-ui-numeric-input';
 import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
@@ -130,9 +130,7 @@ const TaskModal = ({
           </div>
           <div className={classes.row}>
             <FormControl variant='outlined' className={classes.rowInputLeft}>
-              <InputLabel id='task-status-label'>Status</InputLabel>
               <Select
-                labelId='task-status-label'
                 disabled={mode === 'view'}
                 value={task.status}
                 onChange={(event) => {
