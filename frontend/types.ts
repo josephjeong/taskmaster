@@ -32,7 +32,7 @@ export enum TaskStatus {
   DONE = 'done'
 }
 
-export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0]
+export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0];
 
 export type ApiError = {
   code: string;
