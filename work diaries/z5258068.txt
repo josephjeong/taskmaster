@@ -1,0 +1,69 @@
+Week 01
+
+- Formed group, started user stories & discussed some techologies to use.
+- Decided on TypeScript as the programming language for both frontend &
+  backend, and a React frontend.
+
+---
+
+Week 02
+
+- Researched existing solutions & wrote initial version in Proposal
+- Added missing user stories for project objectives & added initial user
+  stories to Jira
+- Decided on Google Calendar syncing as novel functionality
+
+---
+
+Week 03
+
+- Decided on a social-network focues direction for the project
+- Created the wireframes to be used in the storyboards.
+- Created storyboard for login, signup, task list view, task creation &
+  updating, profile updating and connections.
+- Decided on specifics for frontend technologies & decided on
+  express.js for backend and Postgres for data layer.
+
+---
+
+Week 04
+
+- Created Login, Signup & Profile pages in frontend
+- Created UpdateProfileModal
+
+---
+
+Week 05
+
+
+
+---
+
+Week 06
+
+
+
+---
+
+Week 07
+
+
+
+---
+
+Week 08
+
+
+
+---
+
+Week 09
+
+
+
+---
+
+Week 10
+
+
+
