@@ -21,7 +21,15 @@ export type Task = {
   title: string,
   description: string,
   deadline: moment.Moment,
+  status: TaskStatus,
   estimatedDays: number
 };
+
+export enum TaskStatus {
+  TO_DO = 'to do',
+  IN_PROGRESS = 'in progress',
+  BLOCKED = 'blocked',
+  DONE = 'done'
+}
 
 export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0]
