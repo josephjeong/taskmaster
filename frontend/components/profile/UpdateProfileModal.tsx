@@ -6,25 +6,25 @@ import {
   DialogActions,
   TextField,
   makeStyles,
-} from '@material-ui/core'
-import { FormEventHandler } from 'react'
+} from "@material-ui/core";
+import { FormEventHandler } from "react";
 
-import { User } from '../../types'
+import { User } from "../../types";
 
 interface UpdateProfileModalProps {
-  open: boolean
-  currentProfile: User
-  onClose: () => void
-  onSave?: (updatedUser: Partial<User>) => any
+  open: boolean;
+  currentProfile: User;
+  onClose: () => void;
+  onSave?: (updatedUser: Partial<User>) => any;
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   spacing: {
-    '& > * + *': {
+    "& > * + *": {
       marginTop: theme.spacing(3),
     },
   },
-}))
+}));
 
 const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   open,
@@ -32,17 +32,17 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   currentProfile,
   onSave,
 }) => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
-    event.preventDefault()
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
 
     const possiblyUpdatedProfile = Object.fromEntries(
       new FormData(event.target as HTMLFormElement)
-    ) as Partial<User>
+    ) as Partial<User>;
 
-    onSave?.(possiblyUpdatedProfile)
-  }
+    onSave?.(possiblyUpdatedProfile);
+  };
 
   return (
     <Dialog
@@ -104,7 +104,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
         </DialogActions>
       </form>
     </Dialog>
-  )
-}
+  );
+};
 
-export default UpdateProfileModal
+export default UpdateProfileModal;

@@ -1,72 +1,72 @@
-import { GetServerSideProps } from 'next'
-import { useState } from 'react'
+import { GetServerSideProps } from "next";
+import { useState } from "react";
 import {
   Container,
   makeStyles,
   Avatar,
   Typography,
   Button,
-} from '@material-ui/core'
+} from "@material-ui/core";
 
-import { ConnectionStatus, User } from '../../types'
-import ConnectionButton from '../../components/profile/ConnectionButton'
-import UpdateProfileModal from '../../components/profile/UpdateProfileModal'
-import Title from '../../components/shared/Title'
+import { ConnectionStatus, User } from "../../types";
+import ConnectionButton from "../../components/profile/ConnectionButton";
+import UpdateProfileModal from "../../components/profile/UpdateProfileModal";
+import Title from "../../components/shared/Title";
 
 const EXAMPLE_USER: User = {
-  id: 'b59aa143-5e1c-46af-b05c-85908324e097',
-  email: 'soorria.ss@gmail.com',
-  first_name: 'Soorria',
-  last_name: 'Saruva',
-  avatar_url: 'https://mooth.tech/logo.svg',
-}
+  id: "b59aa143-5e1c-46af-b05c-85908324e097",
+  email: "soorria.ss@gmail.com",
+  first_name: "Soorria",
+  last_name: "Saruva",
+  avatar_url: "https://mooth.tech/logo.svg",
+};
 
 interface ProfilePageProps {
-  user: User
+  user: User;
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   userDetailsWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    '& > * + *': {
+    display: "flex",
+    alignItems: "center",
+    "& > * + *": {
       marginLeft: theme.spacing(3),
     },
   },
   name: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBotton: theme.spacing(1),
   },
   userDetails: {
-    flex: '1 0',
+    flex: "1 0",
   },
   avatar: {
     width: 100,
     height: 100,
   },
-}))
+}));
 
 const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
-  const classes = useStyles()
+  const classes = useStyles();
   const [connectionStatus, setConnectionStatus] = useState(
     ConnectionStatus.UNCONNECTED
-  )
-  const [showUpdateModal, setShowUpdateModal] = useState(false)
+  );
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
-  const userName = `${user.first_name} ${user.last_name}`
+  const userName = `${user.first_name} ${user.last_name}`;
 
   const handleConnectionButtonClick = () => {
-    setConnectionStatus(prev => {
+    setConnectionStatus((prev) => {
       switch (prev) {
         case ConnectionStatus.CONNECTED:
-          return ConnectionStatus.UNCONNECTED
+          return ConnectionStatus.UNCONNECTED;
         case ConnectionStatus.UNCONNECTED:
-          return ConnectionStatus.REQUESTED
+          return ConnectionStatus.REQUESTED;
         case ConnectionStatus.REQUESTED:
-          return ConnectionStatus.CONNECTED
+          return ConnectionStatus.CONNECTED;
       }
-    })
-  }
+    });
+  };
 
   return (
     <Container>
@@ -94,7 +94,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
       </div>
 
       <div>
-        <Button onClick={() => setShowUpdateModal(p => !p)}>
+        <Button onClick={() => setShowUpdateModal((p) => !p)}>
           Toggle Modal
         </Button>
         <UpdateProfileModal
@@ -104,14 +104,14 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
         />
       </div>
     </Container>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;
 
 export const getServerSideProps: GetServerSideProps<ProfilePageProps> =
   async () => {
     return {
       props: { user: EXAMPLE_USER },
-    }
-  }
+    };
+  };
