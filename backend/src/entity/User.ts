@@ -18,7 +18,7 @@ export class User {
     @Column()
     last_name: string;
 
-    @Column()
+    @Column({nullable : true})
     avatar_url: string;
 
     @Column()

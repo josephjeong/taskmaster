@@ -31,3 +31,11 @@ export interface Session {
     avatar_url?: string;
     bio?: string;
  }
+
+ export interface UserDetails {
+     email: string;
+     first_name: string;
+     last_name: string;
+     avatar_url?: string;
+     bio: string;
+ }
