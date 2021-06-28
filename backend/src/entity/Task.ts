@@ -14,7 +14,7 @@ export class Task {
     id: string;
 
     @Column()
-    project: string;
+    project: string | null;
 
     @Column()
     creator: string;
