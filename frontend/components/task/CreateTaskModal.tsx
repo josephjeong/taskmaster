@@ -1,19 +1,13 @@
 import React from 'react';
-import { makeStyles, TextField, Select, MenuItem, Button, FormControl, InputLabel } from '@material-ui/core';
+import { makeStyles, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Button, FormControl, InputLabel } from '@material-ui/core';
 import NumericInput from 'material-ui-numeric-input';
 import moment from 'moment';
 import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
 
-import PageWrapper from '../components/shared/PageWrapper';
+import { Task } from '../../types';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start'
-  },
   fullWidthInput: {
     width: '100%',
     margin: '5px'
@@ -32,17 +26,22 @@ const useStyles = makeStyles((theme) => ({
   rowInputRight: {
     marginLeft: '2.5px',
     flex: 1
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    width: '100%',
-    margin: '5px'
   }
-}))
+}));
 
-const CreateTaskPage = () => {
+type CreateTaskModalProps = {
+  open: boolean,
+  currentTask: Task,
+  onClose: () => void,
+  onSubmit?: (task: Task) => any
+};
+
+const CreateTaskModal = ({
+  open,
+  currentTask,
+  onClose,
+  onSubmit
+}: CreateTaskModalProps) => {
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [deadline, setDeadline] = React.useState(moment());
@@ -55,8 +54,12 @@ const CreateTaskPage = () => {
   };
 
   return (
-    <PageWrapper title="Create Task">
-      <div className={classes.root}>
+    <Dialog
+      open={open}
+      onClose={() => onClose()}
+    >
+      <DialogTitle>Create Task</DialogTitle>
+      <DialogContent>
         <TextField
           className={classes.fullWidthInput}
           required
@@ -118,19 +121,25 @@ const CreateTaskPage = () => {
             />
           </div>
         </div>
-        <div className={classes.footer}>
-          <Button
-            size='large'
-            color='primary'
-            variant='contained'
-            onClick={() => submit()}
-          >
-            Create
-          </Button>
-        </div>
-      </div>
-    </PageWrapper>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          size='large'
+          onClick={() => onClose()}
+        >
+          Cancel
+        </Button>
+        <Button
+          size='large'
+          color='primary'
+          variant='contained'
+          onClick={() => submit()}
+        >
+          Create
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }
 
-export default CreateTaskPage;
+export default CreateTaskModal;
