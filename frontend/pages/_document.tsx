@@ -1,12 +1,12 @@
-import { ServerStyleSheets } from '@material-ui/core'
+import { ServerStyleSheets } from "@material-ui/core";
 import NextDocument, {
   Html,
   Head,
   Main,
   NextScript,
   DocumentContext,
-} from 'next/document'
-import React from 'react'
+} from "next/document";
+import React from "react";
 
 class MyDocument extends NextDocument {
   // `getInitialProps` belongs to `_document` (instead of `_app`),
@@ -35,16 +35,16 @@ class MyDocument extends NextDocument {
     // 4. page.render
 
     // Render app and page and get the context of the page with collected side effects.
-    const sheets = new ServerStyleSheets()
-    const originalRenderPage = ctx.renderPage
+    const sheets = new ServerStyleSheets();
+    const originalRenderPage = ctx.renderPage;
 
     ctx.renderPage = () =>
       originalRenderPage({
         enhanceApp: (App: any) => (props: any) =>
           sheets.collect(<App {...props} />),
-      })
+      });
 
-    const initialProps = await NextDocument.getInitialProps(ctx)
+    const initialProps = await NextDocument.getInitialProps(ctx);
 
     return {
       ...initialProps,
@@ -53,7 +53,7 @@ class MyDocument extends NextDocument {
         ...React.Children.toArray(initialProps.styles),
         sheets.getStyleElement(),
       ],
-    }
+    };
   }
 
   render(): JSX.Element {
@@ -73,8 +73,8 @@ class MyDocument extends NextDocument {
           <NextScript />
         </body>
       </Html>
-    )
+    );
   }
 }
 
-export default MyDocument
+export default MyDocument;

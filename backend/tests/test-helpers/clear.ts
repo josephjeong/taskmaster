@@ -9,5 +9,9 @@ import { Task } from "../../src/entity/Task";
 
 /** simple helper function to clear a table of entity table */
 export async function clearEntity(entity : typeof User | Task | any) {
-    return await getConnection().createQueryBuilder().delete().from(entity).execute();
+  return await getConnection()
+    .createQueryBuilder()
+    .delete()
+    .from(entity)
+    .execute();
 }

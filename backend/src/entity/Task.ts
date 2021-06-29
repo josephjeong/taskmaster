@@ -1,4 +1,4 @@
-import {Entity, PrimaryColumn, Column} from "typeorm";
+import { Entity, PrimaryColumn, Column } from "typeorm";
 
 export enum Status {
   NOT_STARTED = "TO_DO",

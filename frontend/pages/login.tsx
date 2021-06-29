@@ -1,32 +1,32 @@
-import NextLink from 'next/link'
-import { makeStyles, TextField, Link, Button } from '@material-ui/core'
-import { FormEventHandler } from 'react'
+import NextLink from "next/link";
+import { makeStyles, TextField, Link, Button } from "@material-ui/core";
+import { FormEventHandler } from "react";
 
-import AuthWrapper from '../components/auth/AuthWrapper'
+import AuthWrapper from "../components/auth/AuthWrapper";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form: {
-    '& > * + *': {
+    "& > * + *": {
       marginTop: theme.spacing(3),
     },
   },
   footer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-}))
+}));
 
 const LoginPage: React.FC = () => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async event => {
-    event.preventDefault()
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
 
     // do login stuff
 
     // redirect to main app
-  }
+  };
 
   return (
     <AuthWrapper title="Login">
@@ -62,7 +62,7 @@ const LoginPage: React.FC = () => {
         </div>
       </form>
     </AuthWrapper>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;
