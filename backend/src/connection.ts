@@ -23,8 +23,6 @@ export async function createUserConnection(
     if (await connRepo.findOne({where : {requestee : requester, requester: requestee}})) {
         return ('Connection already exists');
     }
-
-
     const conn = new Connection();
     conn.requestee = requestee;
     conn.requester = requester;
