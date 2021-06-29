@@ -49,7 +49,7 @@ createConnection(). then(connection => {
     });
 
     app.get('users/me', async (req, res) => {
-        return res.send(await fetchUserDetails(res.locals.id));
+        return res.send(await fetchUserDetails(res.locals.session.id));
     });
 
     app.post('users/update', async (req, res) => {
