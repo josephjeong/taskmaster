@@ -48,8 +48,9 @@ export function createSession(id: string): EncodeResult {
 }
 
 /** simple helper function to access id from token */
-export function decodeJWTPayload(token: string): Promise<Session> {
-  return decode(token, JWT_SECRET, true, JWT_ALG);
+export function decodeJWTPayload(token : string) : Promise<Session> {
+    try {return decode(token, JWT_SECRET, true, JWT_ALG);}
+    catch(err) {throw 'could not validate your session'}
 }
 
 /** checks if email matches valid email regex */
