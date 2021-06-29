@@ -1,12 +1,12 @@
-import { createMuiTheme } from '@material-ui/core'
+import { createMuiTheme } from "@material-ui/core";
 
 const theme = createMuiTheme({
   props: {
     MuiTextField: {
-      variant: 'outlined',
+      variant: "outlined",
       fullWidth: true,
     },
   },
-})
+});
 
-export default theme
+export default theme;

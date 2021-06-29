@@ -1,32 +1,32 @@
-import NextLink from 'next/link'
-import { makeStyles, TextField, Link, Button } from '@material-ui/core'
-import { FormEventHandler } from 'react'
+import NextLink from "next/link";
+import { makeStyles, TextField, Link, Button } from "@material-ui/core";
+import { FormEventHandler } from "react";
 
-import AuthWrapper from '../components/auth/AuthWrapper'
+import AuthWrapper from "../components/auth/AuthWrapper";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form: {
-    '& > * + *': {
+    "& > * + *": {
       marginTop: theme.spacing(3),
     },
   },
   footer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-}))
+}));
 
 const SignUpPage: React.FC = () => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async event => {
-    event.preventDefault()
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
 
     // do signup stuff
 
     // redirect to main app
-  }
+  };
 
   return (
     <AuthWrapper title="Sign Up to Tasker">
@@ -86,7 +86,7 @@ const SignUpPage: React.FC = () => {
         </div>
       </form>
     </AuthWrapper>
-  )
-}
+  );
+};
 
-export default SignUpPage
+export default SignUpPage;

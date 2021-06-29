@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import "dotenv/config"
+import "dotenv/config";
 
 import express from 'express';
 import { createConnection } from "typeorm";
