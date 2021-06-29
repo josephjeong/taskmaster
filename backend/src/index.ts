@@ -18,10 +18,7 @@ createConnection(). then(connection => {
     // start express server 
     const app = express();
 
-    // to pass session between middleware
-    let session : Session | null = null;
-
-    app.post('/backend/users/signup', async (req, res) => {
+    app.post('users/signup', async (req, res) => {
         let token = await createUser(
             req.body.email,
             req.body.password,
@@ -33,7 +30,7 @@ createConnection(). then(connection => {
         return res.send({token : token});
       });
 
-    app.post('/backend/users/login', async (req, res) => {
+    app.post('/users/login', async (req, res) => {
         let token = await loginUser(
             req.body.email,
             req.body.password
@@ -42,28 +39,32 @@ createConnection(). then(connection => {
     return res.send({token: token});
     });
       
-    app.all('/backend', async (req, res, next) => {
-        session = await decodeJWTPayload(req.header('jwt'));
+    app.all('/', async (req, res, next) => {
+        res.locals.session = await decodeJWTPayload(req.header('jwt'));
         
         // check for expired session
-        if (session.exp > Date.now()) {
+        if (res.locals.session.exp > Date.now()) {
             throw 'Your session has expired. Please log in again.'
         }
 
         next();
     });
 
-    app.get('backend/users/details', async (req, res) => {
+    app.get('users/details', async (req, res) => {
         return res.send(await fetchUserDetails(req.body.id));
     });
 
-    app.post('backend/users/update', async (req, res) => {
+    app.get('users/me', async (req, res) => {
+        return res.send(await fetchUserDetails(res.locals.id));
+    });
+
+    app.post('users/update', async (req, res) => {
         await updateUser(req.body.id, req.body.changes);
         return res.send('updated succesfully!')
-    }) 
-      
-      app.listen(PORT, () =>
+    });
+ 
+    app.listen(PORT, () =>
         // tslint:disable-next-line:no-console
         console.log(`App listening on port ${PORT}!`),
-      );
+    );
 });
