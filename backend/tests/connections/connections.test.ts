@@ -112,7 +112,7 @@ test('Connection correctly accepted', async () => {
     
 });
 // 3. test declination of connection.
-test('Connection correctly accepted', async () => {
+test('Connection correctly declined', async () => {
     const user_email = 'validemail@webiste.com'
     const user_password = 'strong password'
     const user_first_name = 'dude';
@@ -146,5 +146,43 @@ test('Connection correctly accepted', async () => {
     await createUserConnection(user1.id, user2.id);
     await declineRequest(user1.id, user2.id);
     const connRepo = getConnection().getRepository(Connection);
-    const conn = await connRepo.findOne({where : {requestee : user1.id, requester: user2.id}});
+    const connDeleted = await connRepo.find({where : {requestee : user1.id}});
+    expect(connDeleted).toHaveLength(0);
+});
+
+// 3. test adding users multiple times
+test('Connection correctly declined', async () => {
+    const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
+    const user_first_name = 'dude';
+    const user_last_name = 'bro';
+    const user_bio = 'an awesome person';
+    await createUser(
+        user_email,
+        user_password,
+        user_first_name,
+        user_last_name,
+        user_bio
+    )
+
+    const user_email1 = 'validemail888@webiste.com'
+    const user_password1 = 'stronger password'
+    const user_first_name1 = 'dudeman';
+    const user_last_name1 = 'broseph';
+    const user_bio1 = 'an awesome person with a moustache';
+    await createUser(
+        user_email1,
+        user_password1,
+        user_first_name1,
+        user_last_name1,
+        user_bio1
+    )
+
+    const userRepo = getConnection().getRepository(User);
+    const user1 = await userRepo.findOne({where : {email : user_email}});
+    const user2 = await userRepo.findOne({where : {email : user_email1}});
+
+    await createUserConnection(user1.id, user2.id);
+    await createUserConnection(user1.id, user2.id);
+    expect(await createUserConnection(user1.id, user2.id)).toBe('Connection already exists');
 });
