@@ -9,19 +9,18 @@ export async function createTask(
     title : string,
     deadline : Date,
     status : Status,
-    // jwt : string,
-    project? : string,
-    description? : string,
-    estimated_days? : number
+    project? : string | null,
+    description? : string | null,
+    estimated_days? : number | null
 ) : Promise<string> {
 
-    // todo: authenticate jwt?
-
+    // check user in group/project
+    
     // maybe check for duplicate task title or overlap?
     
     // check values are not empty strings, null/undefined etc.
-    if (!(creator && title && deadline && status)) { // && project && jwt
-        throw "error creating task with given params, ensure they are all defined";
+    if (!(creator && title && deadline && status)) { // && project
+        throw "error creating task with given params, ensure they are defined, not empty strings etc.";
     }
 
     // new task
