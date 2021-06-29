@@ -22,8 +22,7 @@ export async function createTask(
     // check creator in group/project
     
     // check valid status
-    if (!(status === Status.NOT_STARTED || status === Status.IN_PROGRESS ||
-        status === Status.BLOCKED || status === Status.COMPLETED)) {
+    if (!Object.values(Status).includes(status)) {
         throw "invalid task status"
     }
     

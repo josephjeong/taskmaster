@@ -24,8 +24,7 @@ export async function editTask(
     }
     
     // check valid status
-    if (status && !(status === Status.NOT_STARTED || status === Status.IN_PROGRESS ||
-        status === Status.BLOCKED || status === Status.COMPLETED)) {
+    if (status && !Object.values(Status).includes(status)) {
         throw "invalid task status"
     }
     
@@ -40,30 +39,30 @@ export async function editTask(
     }
     
     // get task
-    let task = await getConnection().getRepository(Task).find({where : {id : task_id}});
-    console.log(task.length);
-    if (task.length !== 1) {
+    let tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
+    
+    if (tasks.length != 1) {
         throw "either task does not exist or duplicate task ids exist";
     }
     
     // check editor is creator of task
-    if (task[0].creator != editor) {
+    if (tasks[0].creator != editor) {
         throw "this user cannot edit this task, only it's creator"
     }
     
     if (title)
-        task[0].title = title;
+        tasks[0].title = title;
     if (deadline)
-        task[0].deadline = deadline;
+        tasks[0].deadline = deadline;
     if (status)
-        task[0].status = status;
+        tasks[0].status = status;
     if (description)  
-        task[0].description = description;
+        tasks[0].description = description;
     if (estimated_days)
-        task[0].estimated_days = estimated_days;
+        tasks[0].estimated_days = estimated_days;
 
     // save task
-    await getConnection().manager.save(task[0]);
+    await getConnection().manager.save(tasks[0]);
 
     return;
 }

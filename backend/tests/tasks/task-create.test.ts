@@ -30,15 +30,15 @@ test('correct task creation', async () => {
     )
     
     expect.assertions(8);
-    const task = await getConnection().getRepository(Task).find({where : {id : task_id}});
-    expect(task.length).toBe(1);
-    expect(task[0].project).toBe(task_project);
-    expect(task[0].creator).toBe(task_creator);
-    expect(task[0].title).toBe(task_title);
-    expect(task[0].deadline).toStrictEqual(task_deadline);
-    expect(task[0].status).toBe(task_status);
-    expect(task[0].description).toBe(task_description);
-    expect(task[0].estimated_days).toBe(task_estimated_days);
+    const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].project).toBe(task_project);
+    expect(tasks[0].creator).toBe(task_creator);
+    expect(tasks[0].title).toBe(task_title);
+    expect(tasks[0].deadline).toStrictEqual(task_deadline);
+    expect(tasks[0].status).toBe(task_status);
+    expect(tasks[0].description).toBe(task_description);
+    expect(tasks[0].estimated_days).toBe(task_estimated_days);
 });
 
 test('invalid status test', async () => {
