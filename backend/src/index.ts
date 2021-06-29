@@ -41,12 +41,6 @@ createConnection(). then(connection => {
       
     app.all('/', async (req, res, next) => {
         res.locals.session = await decodeJWTPayload(req.header('jwt'));
-        
-        // check for expired session
-        if (res.locals.session.exp > Date.now()) {
-            throw 'Your session has expired. Please log in again.'
-        }
-
         next();
     });
 
