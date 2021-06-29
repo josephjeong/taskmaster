@@ -39,7 +39,7 @@ createConnection(). then(connection => {
     return res.send({token: token});
     });
       
-    app.all('/', async (req, res, next) => {
+    app.all('', async (req, res, next) => {
         res.locals.session = await decodeJWTPayload(req.header('jwt'));
         next();
     });
