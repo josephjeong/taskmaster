@@ -50,8 +50,8 @@ createConnection(). then(connection => {
         next();
     });
 
-    app.get('users/details', async (req, res) => {
-        return res.send(await fetchUserDetails(req.body.id));
+    app.get('users/details/:id', async (req, res) => {
+        return res.send(await fetchUserDetails(req.params.id));
     });
 
     app.get('users/me', async (req, res) => {
