@@ -1,10 +1,10 @@
 import { Entity, PrimaryColumn, Column } from "typeorm";
 
 export enum Status {
-  NOT_STARTED = "Not Started",
-  IN_PROGRESS = "In Progress",
-  BLOCKED = "Blocked",
-  COMPLETED = "Completed",
+  NOT_STARTED = "TO_DO",
+  IN_PROGRESS = "IN_PROGRESS",
+  BLOCKED = "BLOCKED",
+  COMPLETED = "DONE",
 }
 
 @Entity("Task")
@@ -12,7 +12,7 @@ export class Task {
   @PrimaryColumn()
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   project: string;
 
   @Column()
@@ -21,7 +21,7 @@ export class Task {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   // timestamptz converts and stores as UTC timestamp in database
@@ -35,6 +35,6 @@ export class Task {
   })
   status: Status;
 
-  @Column("float")
+  @Column({ type: "real", nullable: true })
   estimated_days: number;
 }
