@@ -12,6 +12,7 @@ import { ConnectionStatus, User } from "../../types";
 import ConnectionButton from "../../components/profile/ConnectionButton";
 import UpdateProfileModal from "../../components/profile/UpdateProfileModal";
 import Title from "../../components/shared/Title";
+import { fetchProfile } from "../../api";
 
 const EXAMPLE_USER: User = {
   id: "b59aa143-5e1c-46af-b05c-85908324e097",
@@ -22,7 +23,7 @@ const EXAMPLE_USER: User = {
 };
 
 interface ProfilePageProps {
-  user: User;
+  profile: User;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -46,14 +47,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ profile }) => {
   const classes = useStyles();
   const [connectionStatus, setConnectionStatus] = useState(
     ConnectionStatus.UNCONNECTED
   );
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
-  const userName = `${user.first_name} ${user.last_name}`;
+  const userName = `${profile.first_name} ${profile.last_name}`;
 
   const handleConnectionButtonClick = () => {
     setConnectionStatus((prev) => {
@@ -75,7 +76,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
         <div>
           <Avatar
             alt={userName}
-            src={user.avatar_url}
+            src={profile.avatar_url}
             className={classes.avatar}
           />
         </div>
@@ -83,7 +84,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
           <Typography variant="h4" component="h1" className={classes.name}>
             {userName}
           </Typography>
-          <Typography>{user.email}</Typography>
+          <Typography>{profile.email}</Typography>
         </div>
         <div>
           <ConnectionButton
@@ -99,7 +100,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
         </Button>
         <UpdateProfileModal
           open={showUpdateModal}
-          currentProfile={user}
+          currentProfile={profile}
           onClose={() => setShowUpdateModal(false)}
         />
       </div>
@@ -109,9 +110,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user }) => {
 
 export default ProfilePage;
 
-export const getServerSideProps: GetServerSideProps<ProfilePageProps> =
-  async () => {
-    return {
-      props: { user: EXAMPLE_USER },
-    };
+export const getServerSideProps: GetServerSideProps<
+  ProfilePageProps,
+  { userId: string }
+> = async ({ params }) => {
+  const profile = await fetchProfile(params!.userId);
+  return {
+    props: { profile },
   };
+};

@@ -1,6 +1,33 @@
-import useSWR from 'swr'
-import { User } from '../types'
+import useSWR from "swr";
+import { User } from "../types";
+import { api } from "./utils";
 
-export const useMe = () => {
-  return useSWR<User | null>('/profile/me')
-}
+export const login = async (
+  email: string,
+  password: string
+): Promise<string> => {
+  const response = await api.post("/users/login", { email, password });
+  return response.data.token;
+};
+
+export type SignupInput = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  bio?: string;
+};
+
+export const signup = async (args: SignupInput) => {
+  if (!args.bio) {
+    args.bio = "";
+  }
+
+  const response = await api.post("/users/signup", args);
+
+  return response.data.token;
+};
+
+export const useMe = (runQuery: boolean) => {
+  return useSWR<User | null>(runQuery ? "/users/me" : null);
+};

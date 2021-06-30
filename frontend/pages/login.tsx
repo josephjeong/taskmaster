@@ -1,8 +1,11 @@
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { makeStyles, TextField, Link, Button } from "@material-ui/core";
 import { FormEventHandler } from "react";
 
 import AuthWrapper from "../components/auth/AuthWrapper";
+import { useAuthContext } from "../context/AuthContext";
+import { login } from "../api";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -19,13 +22,24 @@ const useStyles = makeStyles((theme) => ({
 
 const LoginPage: React.FC = () => {
   const classes = useStyles();
+  const { setToken } = useAuthContext();
+  const router = useRouter();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
+    const formData = new FormData(event.currentTarget);
+
     // do login stuff
+    const newToken = await login(
+      formData.get("email") as string,
+      formData.get("password") as string
+    );
+
+    setToken(newToken);
 
     // redirect to main app
+    router.push("/profile/me");
   };
 
   return (

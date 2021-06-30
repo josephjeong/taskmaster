@@ -1,8 +1,11 @@
 import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { makeStyles, TextField, Link, Button } from "@material-ui/core";
 import { FormEventHandler } from "react";
 
 import AuthWrapper from "../components/auth/AuthWrapper";
+import { signup, SignupInput } from "../api";
+import { useAuthContext } from "../context/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -20,12 +23,23 @@ const useStyles = makeStyles((theme) => ({
 const SignUpPage: React.FC = () => {
   const classes = useStyles();
 
+  const { setToken } = useAuthContext();
+  const router = useRouter();
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
     // do signup stuff
+    const signupArgs = Object.fromEntries(
+      new FormData(event.currentTarget)
+    ) as SignupInput;
+
+    const newToken = await signup(signupArgs);
+
+    setToken(newToken);
 
     // redirect to main app
+    router.push("/profile/me");
   };
 
   return (
