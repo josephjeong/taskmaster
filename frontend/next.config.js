@@ -3,5 +3,6 @@ if (!process.env.NEXT_PUBLIC_API_URL) {
 }
 
 module.exports = {
-  reactStrictMode: true,
+  // This need to be off because Material-UI v4 uses deprecated things.
+  reactStrictMode: false,
 };
