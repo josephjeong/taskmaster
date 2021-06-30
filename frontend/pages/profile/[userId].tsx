@@ -12,7 +12,13 @@ import { ConnectionStatus, User } from "../../types";
 import ConnectionButton from "../../components/profile/ConnectionButton";
 import UpdateProfileModal from "../../components/profile/UpdateProfileModal";
 import Title from "../../components/shared/Title";
-import { fetchProfile } from "../../api";
+import {
+  fetchProfile,
+  UpdateProfileInput,
+  useUpdateProfile,
+  useUserProfile,
+} from "../../api";
+import { useAuthContext } from "../../context/AuthContext";
 
 const EXAMPLE_USER: User = {
   id: "b59aa143-5e1c-46af-b05c-85908324e097",
@@ -47,14 +53,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ profile }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({
+  profile: initialProfile,
+}) => {
   const classes = useStyles();
   const [connectionStatus, setConnectionStatus] = useState(
     ConnectionStatus.UNCONNECTED
   );
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const { user } = useAuthContext();
+  const { data: profile } = useUserProfile(initialProfile.id, initialProfile);
 
-  const userName = `${profile.first_name} ${profile.last_name}`;
+  const updateProfile = useUpdateProfile();
 
   const handleConnectionButtonClick = () => {
     setConnectionStatus((prev) => {
@@ -68,6 +78,19 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ profile }) => {
       }
     });
   };
+
+  const handleProfileSave = async (changes: UpdateProfileInput) => {
+    console.log("page");
+    updateProfile(changes);
+  };
+
+  // TODO: Figure out a better way to handle this
+  // * NB: This shouldn't happen since we should be getting a profile on the server
+  if (!profile) return null;
+
+  const isProfileOfLoggedInUser = user && user.id === profile.id;
+
+  const userName = `${profile.first_name} ${profile.last_name}`;
 
   return (
     <Container>
@@ -87,20 +110,28 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ profile }) => {
           <Typography>{profile.email}</Typography>
         </div>
         <div>
-          <ConnectionButton
-            status={connectionStatus}
-            onClick={handleConnectionButtonClick}
-          />
+          {isProfileOfLoggedInUser ? (
+            <Button
+              onClick={() => setShowUpdateModal((p) => !p)}
+              color="primary"
+              variant="contained"
+            >
+              Edit Profile
+            </Button>
+          ) : (
+            <ConnectionButton
+              status={connectionStatus}
+              onClick={handleConnectionButtonClick}
+            />
+          )}
         </div>
       </div>
 
       <div>
-        <Button onClick={() => setShowUpdateModal((p) => !p)}>
-          Toggle Modal
-        </Button>
         <UpdateProfileModal
           open={showUpdateModal}
           currentProfile={profile}
+          onSave={handleProfileSave}
           onClose={() => setShowUpdateModal(false)}
         />
       </div>

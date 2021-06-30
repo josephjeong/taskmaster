@@ -1,4 +1,6 @@
+import { useCallback } from "react";
 import useSWR from "swr";
+import { useAuthContext } from "../context/AuthContext";
 import { User } from "../types";
 import { api } from "./utils";
 
@@ -30,4 +32,11 @@ export const signup = async (args: SignupInput) => {
 
 export const useMe = (runQuery: boolean) => {
   return useSWR<User | null>(runQuery ? "/users/me" : null);
+};
+
+export const useLogout = () => {
+  const { setToken } = useAuthContext();
+  return useCallback(() => {
+    setToken(null);
+  }, [setToken]);
 };
