@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Awesome project developed with TypeORM.",
   "devDependencies": {
+    "@types/cors": "^2.8.10",
     "@types/jest": "^26.0.23",
     "@types/jwt-simple": "^0.5.33",
     "@types/node": "^15.12.4",
@@ -23,6 +24,7 @@
     "@types/express": "^4.17.12",
     "@types/uuid": "^8.3.0",
     "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "jwt-simple": "^0.5.6",
     "pg": "^8.6.0",

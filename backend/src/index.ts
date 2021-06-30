@@ -9,6 +9,7 @@ import { Session } from "./users/users-interface";
 import { decodeJWTPayload } from "./users/users-helpers";
 import { fetchUserDetails } from "./users/users-details";
 import { updateUser } from "./users/users-update";
+import cors from 'cors';
 
 const PORT = 8080;
 
@@ -17,6 +18,9 @@ createConnection(). then(connection => {
 
     // start express server
     const app = express();
+
+    app.use(cors());
+    app.use(express.json());
 
     app.post('/users/signup', async (req, res) => {
         let token = await createUser(
