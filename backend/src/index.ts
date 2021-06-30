@@ -1,68 +1,80 @@
 import "reflect-metadata";
 import "dotenv/config";
 
-import express from 'express';
+import express from "express";
 import { createConnection } from "typeorm";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
-import { Session } from "./users/users-interface";
 import { decodeJWTPayload } from "./users/users-helpers";
 import { fetchUserDetails } from "./users/users-details";
 import { updateUser } from "./users/users-update";
-import cors from 'cors';
+import cors from "cors";
+import { User } from "./entity/User";
+import { Task } from "./entity/Task";
+import { Connection } from "./entity/Connection";
 
 const PORT = 8080;
 
 // create typeorm connection
-createConnection(). then(connection => {
-
+createConnection({
+  entities: [User, Task, Connection],
+  type: "postgres",
+  username: process.env.TYPEORM_USERNAME,
+  password: process.env.TYPEORM_PASSWORD,
+  database: process.env.TYPEORM_DATABASE,
+  port: Number(process.env.TYPEORM_PORT),
+  host: process.env.TYPEORM_HOST,
+  synchronize: process.env.TYPEORM_SYNCHRONIZE === "true",
+  logging: true,
+})
+  .then((connection) => {
     // start express server
     const app = express();
 
     app.use(cors());
     app.use(express.json());
 
-    app.post('/users/signup', async (req, res) => {
-        let token = await createUser(
-            req.body.email,
-            req.body.password,
-            req.body.first_name,
-            req.body.last_name,
-            req.body.bio
-        );
+    app.post("/users/signup", async (req, res) => {
+      const token = await createUser(
+        req.body.email,
+        req.body.password,
+        req.body.first_name,
+        req.body.last_name,
+        req.body.bio
+      );
 
-        return res.send({token : token});
-      });
+      return res.send({ token: token });
+    });
 
-    app.post('/users/login', async (req, res) => {
-        let token = await loginUser(
-            req.body.email,
-            req.body.password
-        );
+    app.post("/users/login", async (req, res) => {
+      const token = await loginUser(req.body.email, req.body.password);
 
-    return res.send({token: token});
+      return res.send({ token: token });
+    });
+
+    app.get("/users/details/:id", async (req, res) => {
+      return res.send(await fetchUserDetails(req.params.id));
     });
 
     app.use(async (req, res, next) => {
-        res.locals.session = await decodeJWTPayload(req.header('jwt'));
-        next();
+      res.locals.session = await decodeJWTPayload(req.header("jwt"));
+      next();
     });
 
-    app.get('/users/details/:id', async (req, res) => {
-        return res.send(await fetchUserDetails(req.params.id));
+    app.get("/users/me", async (req, res) => {
+      return res.send(await fetchUserDetails(res.locals.session.id));
     });
 
-    app.get('/users/me', async (req, res) => {
-        return res.send(await fetchUserDetails(res.locals.session.id));
-    });
-
-    app.post('/users/update', async (req, res) => {
-        await updateUser(req.body.id, req.body.changes);
-        return res.send('updated succesfully!')
+    app.post("/users/update", async (req, res) => {
+      await updateUser(req.body.id, req.body.changes);
+      return res.send("updated succesfully!");
     });
 
     app.listen(PORT, () =>
-        // tslint:disable-next-line:no-console
-        console.log(`App listening on port ${PORT}!`),
+      // tslint:disable-next-line:no-console
+      console.log(`App listening on port ${PORT}!`)
     );
-});
+  })
+  .catch((err) => {
+    console.log("Could not connect to database", err);
+  });

@@ -33,6 +33,7 @@ export interface UpdateUser {
 }
 
 export interface UserDetails {
+  id: string;
   email: string;
   first_name: string;
   last_name: string;
