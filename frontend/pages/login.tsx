@@ -6,6 +6,7 @@ import { FormEventHandler } from "react";
 import AuthWrapper from "../components/auth/AuthWrapper";
 import { useAuthContext } from "../context/AuthContext";
 import { login } from "../api";
+import { useLoggedInRedirect } from "../hooks/useLoggedInRedirect";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -25,6 +26,8 @@ const LoginPage: React.FC = () => {
   const { setToken } = useAuthContext();
   const router = useRouter();
 
+  useLoggedInRedirect();
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
@@ -37,9 +40,6 @@ const LoginPage: React.FC = () => {
     );
 
     setToken(newToken);
-
-    // redirect to main app
-    router.push("/profile/me");
   };
 
   return (

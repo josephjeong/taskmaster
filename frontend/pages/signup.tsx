@@ -6,6 +6,7 @@ import { FormEventHandler } from "react";
 import AuthWrapper from "../components/auth/AuthWrapper";
 import { signup, SignupInput } from "../api";
 import { useAuthContext } from "../context/AuthContext";
+import { useLoggedInRedirect } from "../hooks/useLoggedInRedirect";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -25,6 +26,8 @@ const SignUpPage: React.FC = () => {
 
   const { setToken } = useAuthContext();
   const router = useRouter();
+
+  useLoggedInRedirect();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
