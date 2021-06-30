@@ -66,7 +66,7 @@ createConnection({
     });
 
     app.post("/users/update", async (req, res) => {
-      await updateUser(req.body.id, req.body.changes);
+      await updateUser(res.locals.session.id, req.body.changes);
       return res.send("updated succesfully!");
     });
 
