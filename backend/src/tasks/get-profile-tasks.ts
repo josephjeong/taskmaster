@@ -16,7 +16,7 @@ export async function getProfileTasks(
     // for later: show common group/project tasks even if not connected?
     
     // if users are not connected, return empty
-    if (user_id != profile_user_id && !(usersAreConnected(user_id, profile_user_id))) {
+    if (user_id != profile_user_id && !(await usersAreConnected(user_id, profile_user_id))) {
         return [];
     }
     
@@ -30,8 +30,8 @@ async function usersAreConnected(
     user_id : string,
     profile_user_id : string
 ) : Promise<boolean> {
-    let connections = await getConnection().getRepository(Connection).find({where : {requester: user_id}});
-    let connections2 = await getConnection().getRepository(Connection).find({where : {requestee: user_id}});
+    const connections = await getConnection().getRepository(Connection).find({where : {requester: user_id}});
+    const connections2 = await getConnection().getRepository(Connection).find({where : {requestee: user_id}});
     for (const connection of connections) {
         if (connection.requestee == profile_user_id && connection.accepted == true) return true;
     }
