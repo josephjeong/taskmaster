@@ -15,18 +15,20 @@ import Title from "../../components/shared/Title";
 import {
   fetchProfile,
   UpdateProfileInput,
+  useConnectionStatus,
+  useRequestConnection,
   useUpdateProfile,
   useUserProfile,
 } from "../../api";
 import { useAuthContext } from "../../context/AuthContext";
 
-const EXAMPLE_USER: User = {
-  id: "b59aa143-5e1c-46af-b05c-85908324e097",
-  email: "soorria.ss@gmail.com",
-  first_name: "Soorria",
-  last_name: "Saruva",
-  avatar_url: "https://mooth.tech/logo.svg",
-};
+// const EXAMPLE_USER: User = {
+//   id: "b59aa143-5e1c-46af-b05c-85908324e097",
+//   email: "soorria.ss@gmail.com",
+//   first_name: "Soorria",
+//   last_name: "Saruva",
+//   avatar_url: "https://mooth.tech/logo.svg",
+// };
 
 interface ProfilePageProps {
   profile: User;
@@ -57,30 +59,24 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   profile: initialProfile,
 }) => {
   const classes = useStyles();
-  const [connectionStatus, setConnectionStatus] = useState(
-    ConnectionStatus.UNCONNECTED
-  );
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { user } = useAuthContext();
   const { data: profile } = useUserProfile(initialProfile.id, initialProfile);
 
+  const profileId = profile!.id;
+
+  const { data: connectionStatus } = useConnectionStatus(profileId);
+  const requestConnection = useRequestConnection();
+
   const updateProfile = useUpdateProfile();
 
-  const handleConnectionButtonClick = () => {
-    setConnectionStatus((prev) => {
-      switch (prev) {
-        case ConnectionStatus.CONNECTED:
-          return ConnectionStatus.UNCONNECTED;
-        case ConnectionStatus.UNCONNECTED:
-          return ConnectionStatus.REQUESTED;
-        case ConnectionStatus.REQUESTED:
-          return ConnectionStatus.CONNECTED;
-      }
-    });
+  const handleConnectionButtonClick = async () => {
+    if (connectionStatus === ConnectionStatus.UNCONNECTED) {
+      await requestConnection(profileId);
+    }
   };
 
   const handleProfileSave = async (changes: UpdateProfileInput) => {
-    console.log("page");
     updateProfile(changes);
   };
 
@@ -120,7 +116,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
             </Button>
           ) : (
             <ConnectionButton
-              status={connectionStatus}
+              status={connectionStatus ?? ConnectionStatus.UNCONNECTED}
               onClick={handleConnectionButtonClick}
             />
           )}
