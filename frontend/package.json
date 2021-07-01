@@ -9,7 +9,11 @@
     "lint": "yarn prettier --check ."
   },
   "dependencies": {
+    "@date-io/moment": "1.x",
     "@material-ui/core": "^4.11.4",
+    "@material-ui/pickers": "^3.3.10",
+    "material-ui-numeric-input": "^1.0.8",
+    "moment": "^2.29.1",
     "axios": "^0.21.1",
     "next": "11.0.0",
     "react": "17.0.2",

@@ -1,4 +1,5 @@
-import { FC } from "react";
+import { FC } from 'react'
+import moment from 'moment';
 
 export type User = {
   id: string;
@@ -15,7 +16,23 @@ export enum ConnectionStatus {
   CONNECTED = "connected",
 }
 
-export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0];
+export type Task = {
+  id: string,
+  title: string,
+  description: string,
+  deadline: moment.Moment,
+  status: TaskStatus,
+  estimatedDays: number
+};
+
+export enum TaskStatus {
+  TO_DO = 'to do',
+  IN_PROGRESS = 'in progress',
+  BLOCKED = 'blocked',
+  DONE = 'done'
+}
+
+export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0]
 
 export type ApiError = {
   code: string;
