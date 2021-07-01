@@ -97,9 +97,10 @@ createConnection({
       return res.send("create task success");
     });
     
-    app.post("/tasks/edit", async (req, res) => {\
-      if (req.body.deadline)
+    app.post("/tasks/edit", async (req, res) => {
+      if (req.body.deadline) {
         const deadlineTime = new Date(req.body.deadline);
+      }
       await editTask(req.body.task_id,
         res.locals.session.id,
         // must specify at least one of the following
