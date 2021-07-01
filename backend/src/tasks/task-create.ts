@@ -3,7 +3,7 @@ import {v4 as uuidv4} from "uuid";
 
 import {Task, Status} from "../entity/Task";
 
-/* function to create and store task in database */
+/** function to create and store task in database */
 export async function createTask(
     creator : string,
     title : string,
@@ -14,13 +14,26 @@ export async function createTask(
     estimated_days? : number | null
 ) : Promise<string> {
 
-    // check user in group/project
-    
-    // maybe check for duplicate task title or overlap?
-    
     // check values are not empty strings, null/undefined etc.
     if (!(creator && title && deadline && status)) { // && project
         throw "error creating task with given params, ensure they are defined, not empty strings etc.";
+    }
+    
+    // check creator in group/project
+    
+    // check valid status
+    if (!Object.values(Status).includes(status)) {
+        throw "invalid task status"
+    }
+    
+    // ensure deadline in the future
+    if (deadline.getTime() <= Date.now()) {
+        throw "deadline must be in the future"
+    }
+    
+    // ensure estimated_days is positive
+    if (estimated_days != null && estimated_days <= 0) {
+        throw "estimated_days must be >= 0"
     }
 
     // new task
