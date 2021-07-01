@@ -7,7 +7,7 @@ import { createConnection, getConnection } from "typeorm";
 import {User} from "../../src/entity/User";
 import { Connection } from "../../src/entity/Connection";
 import { createUser } from "../../src/users/users-create";
-import { createUserConnection, acceptRequest, declineRequest } from "../../src/connection";
+import { createUserConnection, acceptRequest, declineRequest, isConnected } from "../../src/connection";
 import { clearEntity } from "../test-helpers/clear";
 
 beforeAll(async () => {
@@ -220,4 +220,77 @@ test('Connection prevented when trying to add existing connection where users we
 
     await createUserConnection(user1.id, user2.id);
     expect(await createUserConnection(user2.id, user1.id)).toBe('Connection already exists');
+});
+
+// 5. test if two users are not connected
+test('if two users are not connected', async () => {
+    const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
+    const user_first_name = 'dude';
+    const user_last_name = 'bro';
+    const user_bio = 'an awesome person';
+    await createUser(
+        user_email,
+        user_password,
+        user_first_name,
+        user_last_name,
+        user_bio
+    )
+
+    const user_email1 = 'validemail888@webiste.com'
+    const user_password1 = 'stronger password'
+    const user_first_name1 = 'dudeman';
+    const user_last_name1 = 'broseph';
+    const user_bio1 = 'an awesome person with a moustache';
+    await createUser(
+        user_email1,
+        user_password1,
+        user_first_name1,
+        user_last_name1,
+        user_bio1
+    )
+
+    const userRepo = getConnection().getRepository(User);
+    const user1 = await userRepo.findOne({where : {email : user_email}});
+    const user2 = await userRepo.findOne({where : {email : user_email1}});
+
+    await createUserConnection(user1.id, user2.id);
+    //console.log(isConnected(user1.id, user2.id));
+    expect(await isConnected(user1.id, user2.id)).toEqual("requested");
+});
+// test if two users are connected
+test('if two users are connected', async () => {
+    const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
+    const user_first_name = 'dude';
+    const user_last_name = 'bro';
+    const user_bio = 'an awesome person';
+    await createUser(
+        user_email,
+        user_password,
+        user_first_name,
+        user_last_name,
+        user_bio
+    )
+
+    const user_email1 = 'validemail888@webiste.com'
+    const user_password1 = 'stronger password'
+    const user_first_name1 = 'dudeman';
+    const user_last_name1 = 'broseph';
+    const user_bio1 = 'an awesome person with a moustache';
+    await createUser(
+        user_email1,
+        user_password1,
+        user_first_name1,
+        user_last_name1,
+        user_bio1
+    )
+
+    const userRepo = getConnection().getRepository(User);
+    const user1 = await userRepo.findOne({where : {email : user_email}});
+    const user2 = await userRepo.findOne({where : {email : user_email1}});
+
+    await createUserConnection(user1.id, user2.id);
+    await acceptRequest(user1.id, user2.id);
+    expect(await isConnected(user1.id, user2.id)).toEqual("connected");
 });
