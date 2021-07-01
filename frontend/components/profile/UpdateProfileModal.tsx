@@ -6,25 +6,26 @@ import {
   DialogActions,
   TextField,
   makeStyles,
-} from '@material-ui/core'
-import { FormEventHandler } from 'react'
+} from "@material-ui/core";
+import { FormEventHandler } from "react";
+import { UpdateProfileInput } from "../../api";
 
-import { User } from '../../types'
+import { User } from "../../types";
 
 interface UpdateProfileModalProps {
-  open: boolean
-  currentProfile: User
-  onClose: () => void
-  onSave?: (updatedUser: Partial<User>) => any
+  open: boolean;
+  currentProfile: User;
+  onClose: () => void;
+  onSave?: (updatedUser: UpdateProfileInput) => any;
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   spacing: {
-    '& > * + *': {
+    "& > * + *": {
       marginTop: theme.spacing(3),
     },
   },
-}))
+}));
 
 const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   open,
@@ -32,17 +33,29 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   currentProfile,
   onSave,
 }) => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
-    event.preventDefault()
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
 
     const possiblyUpdatedProfile = Object.fromEntries(
       new FormData(event.target as HTMLFormElement)
-    ) as Partial<User>
+    ) as Partial<User>;
 
-    onSave?.(possiblyUpdatedProfile)
-  }
+    const changes: UpdateProfileInput = {};
+    Object.keys(currentProfile).map((key) => {
+      if (!(key in currentProfile) || key === "id") return;
+
+      const typedKey = key as keyof UpdateProfileInput;
+
+      if (currentProfile[typedKey] !== possiblyUpdatedProfile[typedKey]) {
+        changes[typedKey] = possiblyUpdatedProfile[typedKey];
+      }
+    });
+
+    await onSave?.(changes);
+    onClose();
+  };
 
   return (
     <Dialog
@@ -104,7 +117,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
         </DialogActions>
       </form>
     </Dialog>
-  )
-}
+  );
+};
 
-export default UpdateProfileModal
+export default UpdateProfileModal;

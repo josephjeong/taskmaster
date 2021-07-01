@@ -1,31 +1,31 @@
-import { makeStyles, Paper, Typography } from '@material-ui/core'
-import Title from '../shared/Title'
+import { makeStyles, Paper, Typography } from "@material-ui/core";
+import Title from "../shared/Title";
 
 interface AuthWrapperProps {
-  title: string
+  title: string;
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    bgcolor: '#eee',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
+    bgcolor: "#eee",
   },
   container: {
     padding: theme.spacing(6),
-    width: '100%',
-    maxWidth: theme.breakpoints.values.sm + 'px',
+    width: "100%",
+    maxWidth: theme.breakpoints.values.sm + "px",
   },
   heading: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: theme.spacing(3),
   },
-}))
+}));
 
 const AuthWrapper: React.FC<AuthWrapperProps> = ({ title, children }) => {
-  const classes = useStyles()
+  const classes = useStyles();
   return (
     <div className={classes.root}>
       <Title>{title}</Title>
@@ -36,7 +36,7 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ title, children }) => {
         {children}
       </Paper>
     </div>
-  )
-}
+  );
+};
 
-export default AuthWrapper
+export default AuthWrapper;

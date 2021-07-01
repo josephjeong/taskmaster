@@ -2,7 +2,10 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useEffect } from 'react'
 import { ThemeProvider, CssBaseline } from '@material-ui/core'
+import { SWRConfig } from 'swr'
 
+import { swrFetcher } from '../api/utils'
+import { AuthContextProvider } from '../context/AuthContext'
 import theme from '../theme'
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -24,7 +27,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Component {...pageProps} />
+        <SWRConfig value={{ fetcher: swrFetcher }}>
+          <AuthContextProvider>
+            <Component {...pageProps} />
+          </AuthContextProvider>
+        </SWRConfig>
       </ThemeProvider>
     </>
   )

@@ -1,32 +1,49 @@
-import NextLink from 'next/link'
-import { makeStyles, TextField, Link, Button } from '@material-ui/core'
-import { FormEventHandler } from 'react'
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { makeStyles, TextField, Link, Button } from "@material-ui/core";
+import { FormEventHandler } from "react";
 
-import AuthWrapper from '../components/auth/AuthWrapper'
+import AuthWrapper from "../components/auth/AuthWrapper";
+import { signup, SignupInput } from "../api";
+import { useAuthContext } from "../context/AuthContext";
+import { useLoggedInRedirect } from "../hooks/useLoggedInRedirect";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   form: {
-    '& > * + *': {
+    "& > * + *": {
       marginTop: theme.spacing(3),
     },
   },
   footer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-}))
+}));
 
 const SignUpPage: React.FC = () => {
-  const classes = useStyles()
+  const classes = useStyles();
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = async event => {
-    event.preventDefault()
+  const { setToken } = useAuthContext();
+  const router = useRouter();
+
+  useLoggedInRedirect();
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
 
     // do signup stuff
+    const signupArgs = Object.fromEntries(
+      new FormData(event.currentTarget)
+    ) as SignupInput;
+
+    const newToken = await signup(signupArgs);
+
+    setToken(newToken);
 
     // redirect to main app
-  }
+    router.push("/profile/me");
+  };
 
   return (
     <AuthWrapper title="Sign Up to Tasker">
@@ -86,7 +103,7 @@ const SignUpPage: React.FC = () => {
         </div>
       </form>
     </AuthWrapper>
-  )
-}
+  );
+};
 
-export default SignUpPage
+export default SignUpPage;
