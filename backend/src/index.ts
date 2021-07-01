@@ -98,14 +98,15 @@ createConnection({
     });
     
     app.post("/tasks/edit", async (req, res) => {
+      let deadlineTime = null;
       if (req.body.deadline) {
-        const deadlineTime = new Date(req.body.deadline);
+        deadlineTime = new Date(req.body.deadline);
       }
       await editTask(req.body.task_id,
         res.locals.session.id,
         // must specify at least one of the following
         req.body.title,
-        req.body.deadlineTime,
+        deadlineTime,
         req.body.status,
         req.body.description,
         req.body.estimated_days
