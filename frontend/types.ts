@@ -16,3 +16,14 @@ export enum ConnectionStatus {
 }
 
 export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0];
+
+export type ApiError = {
+  code: string;
+  message: string;
+};
+
+export type ApiErrors = ApiError[];
+
+export type ApiResponse<TData = any> =
+  | { data: null; errors: ApiErrors }
+  | { data: TData; errors: null };

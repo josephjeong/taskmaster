@@ -14,7 +14,8 @@ export async function fetchUserDetails(id: string): Promise<UserDetails> {
     throw "This Account does not exist";
   }
 
-  let details: UserDetails = {
+  const details: UserDetails = {
+    id: user[0].id,
     avatar_url: user[0].avatar_url,
     email: user[0].email,
     first_name: user[0].first_name,
