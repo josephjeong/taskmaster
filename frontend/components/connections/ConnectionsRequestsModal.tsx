@@ -1,7 +1,7 @@
 import React from 'react';
-import { makeStyles, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from '@material-ui/core';
+import { makeStyles, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Avatar, Typography } from '@material-ui/core';
 
-import { Task, TaskStatus } from '../../types';
+import { User } from '../../types';
 
 const useStyles = makeStyles((theme) => ({
   row: {
@@ -23,16 +23,48 @@ const useStyles = makeStyles((theme) => ({
   searchButton: {
     height: 55,
     marginLeft: 5
+  },
+  user: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 5,
+    marginBottom: 5
+  },
+  userProfileShort: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  avatar: {
+    width: 60,
+    height: 60
+  },
+  userActions: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 }));
 
 type ConnectionsModalProps = {
   open: boolean,
+  incoming: User[],
+  setIncoming: (requests: User[]) => void,
+  outgoing: User[],
+  setOutgoing: (requests: User[]) => void,
   onClose: () => void
 };
 
 const ConnectionsModal = ({
   open,
+  incoming,
+  setIncoming,
+  outgoing,
+  setOutgoing,
   onClose
 }: ConnectionsModalProps) => {
   const [search, setSearch] = React.useState('');
@@ -62,6 +94,54 @@ const ConnectionsModal = ({
               Connect
             </Button>
           </div>
+          {incoming.map((request) => (
+            <div className={classes.user}>
+              <div className={classes.userProfileShort}>
+                <Avatar
+                  alt={request.email}
+                  src={request.avatar_url}
+                  className={classes.avatar}
+                />
+                <Typography>{`${request.first_name} ${request.last_name}`}</Typography>
+              </div>
+              <div className={classes.userActions}>
+                <Button
+                  size='medium'
+                  color='primary'
+                  variant='contained'
+                  onClick={() => {}}
+                >
+                  Accept
+                </Button>
+                <Button
+                  size='medium'
+                  onClick={() => {}}
+                >
+                  Reject
+                </Button>
+              </div>
+            </div>
+          ))}
+          {outgoing.map((request) => (
+            <div className={classes.user}>
+              <div className={classes.userProfileShort}>
+                <Avatar
+                  alt={request.email}
+                  src={request.avatar_url}
+                  className={classes.avatar}
+                />
+                <Typography>{`${request.first_name} ${request.last_name}`}</Typography>
+              </div>
+              <div className={classes.userActions}>
+                <Button
+                  size='medium'
+                  onClick={() => {}}
+                >
+                  Cancel Request
+                </Button>
+              </div>
+            </div>
+          ))}
         </DialogContent>
         <DialogActions>
           <Button
