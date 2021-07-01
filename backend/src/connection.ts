@@ -80,14 +80,25 @@ export async function isConnected(
     const connRepo = getConnection().getRepository(Connection);
     const conn = await connRepo.find({where : {requestee : requestee, requester: requester}});
     if (conn.length == 0) {
-        return false;
+        const connCheck = await connRepo.find({where : {requestee : requester, requester: requestee}});
+        if (connCheck.length == 0) {
+            return "unconnected";
+        }
+        else {
+            if (connCheck[0].accepted == true) {
+                return "connected";
+            }
+            else {
+                return "requested";
+            }
+        }
     }
     else {
         if (conn[0].accepted == true) {
-            return true;
+            return "connected";
         }
         else {
-            return false;
+            return "requested";
         }
     }
 }

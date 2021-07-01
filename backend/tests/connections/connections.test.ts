@@ -256,7 +256,7 @@ test('if two users are not connected', async () => {
 
     await createUserConnection(user1.id, user2.id);
     //console.log(isConnected(user1.id, user2.id));
-    expect(await isConnected(user1.id, user2.id)).toEqual(false);
+    expect(await isConnected(user1.id, user2.id)).toEqual("requested");
 });
 // test if two users are connected
 test('if two users are connected', async () => {
@@ -292,5 +292,5 @@ test('if two users are connected', async () => {
 
     await createUserConnection(user1.id, user2.id);
     await acceptRequest(user1.id, user2.id);
-    expect(await isConnected(user1.id, user2.id)).toEqual(true);
+    expect(await isConnected(user1.id, user2.id)).toEqual("connected");
 });
