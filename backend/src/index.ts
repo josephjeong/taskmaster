@@ -54,24 +54,25 @@ createConnection({
 
       return res.send({ token: token });
     });
-
-    app.get("/users/details/:id", async (req, res) => {
-      const details = await fetchUserDetails(req.params.id);
-      const tasks = await getProfileTasks(res.locals.sessions.id, req.params.id);
-      details.tasks = tasks;
-      return res.send(details);
-      
-    });
-
+    
     app.use(async (req, res, next) => {
       res.locals.session = await decodeJWTPayload(req.header("jwt"));
       next();
     });
 
+    app.get("/users/details/:id", async (req, res) => {
+      const profile_id = req.params.id;
+      // const id = res.locals.sessions.id;
+      const details = await fetchUserDetails(profile_id);
+      // const tasks = await getProfileTasks(id,profile_id);
+      // details.tasks = tasks;
+      return res.send(details);
+    });
+
     app.get("/users/me", async (req, res) => {
-      const tasks = await getProfileTasks(res.locals.sessions.id, res.locals.session.id);
-      let details = await fetchUserDetails(res.locals.session.id);
-      console.log(details);
+      const id = res.locals.session.id;
+      const tasks = await getProfileTasks(id, id);
+      let details = await fetchUserDetails(id);
       details.tasks = tasks;
       return res.send(details);
     });
@@ -86,9 +87,10 @@ createConnection({
     });
     
     app.post("/tasks/create", async (req, res) => {
+      const deadlineTime = new Date(Date.parse(req.body.deadline));
       await createTask(res.locals.session.id,
         req.body.title,
-        req.body.deadline,
+        deadlineTime,
         req.body.status,
         req.body.project, // can be null
         req.body.description, // can be null
