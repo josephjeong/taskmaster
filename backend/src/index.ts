@@ -12,6 +12,8 @@ import cors from "cors";
 import { User } from "./entity/User";
 import { Task } from "./entity/Task";
 import { Connection } from "./entity/Connection";
+import { acceptRequest, createUserConnection, declineRequest } from "./connection";
+
 
 const PORT = 8080;
 
@@ -67,6 +69,21 @@ createConnection({
 
     app.post("/users/update", async (req, res) => {
       await updateUser(res.locals.session.id, req.body.changes);
+      return res.send("updated succesfully!");
+    });
+
+    app.post("/connection/create", async (req, res) => {
+      await createUserConnection(res.locals.session.id, req.body.id);
+      return res.send("updated succesfully!");
+    });
+
+    app.post("/connection/accept", async (req, res) => {
+      await acceptRequest(res.locals.session.id, req.body.id);
+      return res.send("updated succesfully!");
+    });
+
+    app.post("/connection/decline", async (req, res) => {
+      await declineRequest(res.locals.session.id, req.body.id);
       return res.send("updated succesfully!");
     });
 
