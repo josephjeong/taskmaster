@@ -21,6 +21,7 @@ export async function fetchUserDetails(id: string): Promise<UserDetails> {
     first_name: user[0].first_name,
     last_name: user[0].last_name,
     bio: user[0].bio,
+    tasks: []
   };
 
   return details;

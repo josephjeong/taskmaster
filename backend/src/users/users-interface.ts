@@ -1,7 +1,7 @@
 /*
     interfaces for handling users and auth
 */
-
+import { Task } from "../Entity/Task"
 export interface Session {
   id: string;
   iat: number;
@@ -39,4 +39,5 @@ export interface UserDetails {
   last_name: string;
   avatar_url?: string;
   bio: string;
+  tasks: Task[]
 }
