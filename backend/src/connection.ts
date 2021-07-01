@@ -70,3 +70,24 @@ export async function declineRequest(
         return ('Error deleting connection: ' + e);    }
     return true;
 }
+
+/* function to check if user is connected*/
+
+export async function isConnected(
+    requestee : String,
+    requester : String,
+): Promise<any> {
+    const connRepo = getConnection().getRepository(Connection);
+    const conn = await connRepo.find({where : {requestee : requestee, requester: requester}});
+    if (conn.length == 0) {
+        return false;
+    }
+    else {
+        if (conn[0].accepted == true) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}
