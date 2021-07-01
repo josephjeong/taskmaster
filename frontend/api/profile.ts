@@ -15,20 +15,23 @@ export const useUpdateProfile = () => {
   const { user } = useAuthContext();
   const userId = user?.id;
 
-  return useCallback(async (changes: UpdateProfileInput) => {
-    const updater = (data: User | null) => data && { ...data, ...changes };
-    // Optimistic update
-    mutate("/users/me", updater, false);
+  return useCallback(
+    async (changes: UpdateProfileInput) => {
+      const updater = (data: User | null) => data && { ...data, ...changes };
+      // Optimistic update
+      mutate("/users/me", updater, false);
 
-    if (userId) {
-      mutate(`/users/details/${userId}`, updater, false);
-    }
+      if (userId) {
+        mutate(`/users/details/${userId}`, updater, false);
+      }
 
-    await api.post("/users/update", { changes });
+      await api.post("/users/update", { changes });
 
-    mutate("/users/me");
-    mutate(`/users/details/${userId}`);
-  }, []);
+      mutate("/users/me");
+      mutate(`/users/details/${userId}`);
+    },
+    [userId]
+  );
 };
 
 export const useUserProfile = (userId: string, initialProfile?: User) => {
