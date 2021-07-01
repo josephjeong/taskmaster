@@ -6,6 +6,7 @@ import { SWRConfig } from 'swr'
 
 import { swrFetcher } from '../api/utils'
 import { AuthContextProvider } from '../context/AuthContext'
+import Nav from '../components/nav/Nav';
 import theme from '../theme'
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -29,6 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <CssBaseline />
         <SWRConfig value={{ fetcher: swrFetcher }}>
           <AuthContextProvider>
+            <Nav />
             <Component {...pageProps} />
           </AuthContextProvider>
         </SWRConfig>
