@@ -12,7 +12,7 @@ import cors from "cors";
 import { User } from "./entity/User";
 import { Task } from "./entity/Task";
 import { Connection } from "./entity/Connection";
-import { acceptRequest, createUserConnection, declineRequest } from "./connection";
+import { acceptRequest, createUserConnection, declineRequest, isConnected } from "./connection";
 
 
 const PORT = 8080;
@@ -85,6 +85,11 @@ createConnection({
     app.post("/connection/decline", async (req, res) => {
       await declineRequest(res.locals.session.id, req.body.id);
       return res.send("updated succesfully!");
+    });
+
+    app.post("/connection/status", async (req, res) => {
+      const s = await isConnected(res.locals.session.id, req.body.id);
+      return res.send(s);
     });
 
     app.listen(PORT, () =>
