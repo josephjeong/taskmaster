@@ -87,8 +87,8 @@ createConnection({
       return res.send("updated succesfully!");
     });
 
-    app.get("/connection/status", async (req, res) => {
-      const s = await isConnected(res.locals.session.id, req.body.changes);
+    app.get("/connection/status/:userId", async (req, res) => {
+      const s = await isConnected(res.locals.session.id, req.params.userId);
       return res.send(s);
     });
 
