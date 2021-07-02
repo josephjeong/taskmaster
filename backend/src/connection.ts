@@ -102,3 +102,49 @@ export async function isConnected(
         }
     }
 }
+
+/* function to delete a request in database*/
+
+export async function deleteRequest(
+    requestee : String,
+    requester : String,
+): Promise<any> {
+    const connRepo = getConnection().getRepository(Connection);
+    const conn = await connRepo.findOne({where : {requestee : requestee, requester: requester}});
+    try {
+        await connRepo.delete(conn);
+    } catch (e) {
+        console.error(e);
+        return ('Error deleting connection: ' + e);    }
+    return true;
+}
+
+/* function to show all of user's incoming connection requests in database*/
+
+export async function getIncomingConnectionRequests(
+    requester : String,
+): Promise<any> {
+    const connRepo = getConnection().getRepository(Connection);
+    const conn = await connRepo.find({where : {requester : requester}});
+    try {
+        return conn;
+    } catch (e) {
+        console.error(e);
+        return ('Error showing incoming connection requests: ' + e);
+    }
+}
+
+/* function to show all of user's connection requests in database*/
+
+export async function getOutgoingConnectionRequests(
+    requestee : String,
+): Promise<any> {
+    const connRepo = getConnection().getRepository(Connection);
+    const conn = await connRepo.find({where : {requestee: requestee}});
+    try {
+        return conn;
+    } catch (e) {
+        console.error(e);
+        return ('Error showing outgoing connection requests: ' + e);
+    }
+}
