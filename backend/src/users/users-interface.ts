@@ -1,7 +1,6 @@
 /*
     interfaces for handling users and auth
 */
-
 export interface Session {
   id: string;
   iat: number;
