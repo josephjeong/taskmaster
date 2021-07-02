@@ -7,7 +7,7 @@ import { createConnection, getConnection } from "typeorm";
 import {User} from "../../src/entity/User";
 import { Connection } from "../../src/entity/Connection";
 import { createUser } from "../../src/users/users-create";
-import { createUserConnection, acceptRequest, declineRequest, isConnected } from "../../src/connection";
+import { createUserConnection, acceptRequest, declineRequest, isConnected, getOutgoingConnectionRequests, getIncomingConnectionRequests } from "../../src/connection";
 import { clearEntity } from "../test-helpers/clear";
 
 beforeAll(async () => {
@@ -293,4 +293,138 @@ test('if two users are connected', async () => {
     await createUserConnection(user1.id, user2.id);
     await acceptRequest(user1.id, user2.id);
     expect(await isConnected(user1.id, user2.id)).toEqual("connected");
+});
+
+// test if outgoing connections returns 
+test('outgoing connections ', async () => {
+    const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
+    const user_first_name = 'dude';
+    const user_last_name = 'bro';
+    const user_bio = 'an awesome person';
+    await createUser(
+        user_email,
+        user_password,
+        user_first_name,
+        user_last_name,
+        user_bio
+    )
+
+    const user_email1 = 'validemail888@webiste.com'
+    const user_password1 = 'stronger password'
+    const user_first_name1 = 'dudeman';
+    const user_last_name1 = 'broseph';
+    const user_bio1 = 'an awesome person with a moustache';
+    await createUser(
+        user_email1,
+        user_password1,
+        user_first_name1,
+        user_last_name1,
+        user_bio1
+    )
+    const user_email2 = 'alholda@webiste.com'
+    const user_password2 = 'saffiztwehjfgsdlk'
+    const user_first_name2 = 'Sammy';
+    const user_last_name2 = 'J';
+    const user_bio2 = 'an awesome person with a top hat';
+    await createUser(
+        user_email2,
+        user_password2,
+        user_first_name2,
+        user_last_name2,
+        user_bio2
+    )
+    const user_email3 = 'cowboyboyboy@webiste.com'
+    const user_password3 = '696969hello'
+    const user_first_name3 = 'Randy';
+    const user_last_name3 = 'Randerson';
+    const user_bio3 = 'an awesome person with a tickets to the gun show.';
+    await createUser(
+        user_email3,
+        user_password3,
+        user_first_name3,
+        user_last_name3,
+        user_bio3
+    )
+
+    const userRepo = getConnection().getRepository(User);
+    const user1 = await userRepo.findOne({where : {email : user_email}});
+    const user2 = await userRepo.findOne({where : {email : user_email1}});
+    const user3 = await userRepo.findOne({where : {email : user_email2}});
+    const user4 = await userRepo.findOne({where : {email : user_email3}});
+
+
+    await createUserConnection(user1.id, user2.id);
+    await createUserConnection(user1.id, user3.id);
+    await createUserConnection(user1.id, user4.id);
+    const connList = await getOutgoingConnectionRequests(user1.id);
+    //console.log(connList);
+    expect(connList.length).toBe(3);
+});
+
+// test if outgoing connections returns 
+test('incoming connections ', async () => {
+    const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
+    const user_first_name = 'dude';
+    const user_last_name = 'bro';
+    const user_bio = 'an awesome person';
+    await createUser(
+        user_email,
+        user_password,
+        user_first_name,
+        user_last_name,
+        user_bio
+    )
+
+    const user_email1 = 'validemail888@webiste.com'
+    const user_password1 = 'stronger password'
+    const user_first_name1 = 'dudeman';
+    const user_last_name1 = 'broseph';
+    const user_bio1 = 'an awesome person with a moustache';
+    await createUser(
+        user_email1,
+        user_password1,
+        user_first_name1,
+        user_last_name1,
+        user_bio1
+    )
+    const user_email2 = 'alholda@webiste.com'
+    const user_password2 = 'saffiztwehjfgsdlk'
+    const user_first_name2 = 'Sammy';
+    const user_last_name2 = 'J';
+    const user_bio2 = 'an awesome person with a top hat';
+    await createUser(
+        user_email2,
+        user_password2,
+        user_first_name2,
+        user_last_name2,
+        user_bio2
+    )
+    const user_email3 = 'cowboyboyboy@webiste.com'
+    const user_password3 = '696969hello'
+    const user_first_name3 = 'Randy';
+    const user_last_name3 = 'Randerson';
+    const user_bio3 = 'an awesome person with a tickets to the gun show.';
+    await createUser(
+        user_email3,
+        user_password3,
+        user_first_name3,
+        user_last_name3,
+        user_bio3
+    )
+
+    const userRepo = getConnection().getRepository(User);
+    const user1 = await userRepo.findOne({where : {email : user_email}});
+    const user2 = await userRepo.findOne({where : {email : user_email1}});
+    const user3 = await userRepo.findOne({where : {email : user_email2}});
+    const user4 = await userRepo.findOne({where : {email : user_email3}});
+
+
+    await createUserConnection(user2.id, user1.id);
+    await createUserConnection(user3.id, user1.id);
+    await createUserConnection(user4.id, user1.id);
+    const connList = await getIncomingConnectionRequests(user1.id);
+    //console.log(connList);
+    expect(connList.length).toBe(3);
 });

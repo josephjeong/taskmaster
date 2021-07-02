@@ -12,7 +12,7 @@ import cors from "cors";
 import { User } from "./entity/User";
 import { Task } from "./entity/Task";
 import { Connection } from "./entity/Connection";
-import { acceptRequest, createUserConnection, declineRequest, isConnected } from "./connection";
+import { acceptRequest, createUserConnection, declineRequest, isConnected, getIncomingConnectionRequests, getOutgoingConnectionRequests } from "./connection";
 
 
 const PORT = 8080;
@@ -91,6 +91,18 @@ createConnection({
       const s = await isConnected(res.locals.session.id, req.params.userId);
       return res.send(s);
     });
+
+    app.get("/connection/incomingRequests", async (req, res) => {
+      const s = await getIncomingConnectionRequests(req.params.userId);
+      return res.send(s);
+    });
+
+
+    app.get("/connection/incomingRequests", async (req, res) => {
+      const s = await getOutgoingConnectionRequests(req.params.userId);
+      return res.send(s);
+    });
+
 
     app.listen(PORT, () =>
       // tslint:disable-next-line:no-console
