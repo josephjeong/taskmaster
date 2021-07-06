@@ -28,6 +28,7 @@ test('connected test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
+    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
@@ -38,6 +39,7 @@ test('connected test', async () => {
     const task_project2: string = null;
     const task_title2 = "title2";
     const task_deadline2 = new Date();
+    task_deadline2.setSeconds(task_deadline.getSeconds() + 1);
     const task_status2 = Status.BLOCKED;
     const task_description2 = "description2\n";
     const task_estimated_days2 = 3;
@@ -83,6 +85,7 @@ test('not accepted connection test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
+    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
@@ -93,6 +96,7 @@ test('not accepted connection test', async () => {
     const task_project2: string = null;
     const task_title2 = "title2";
     const task_deadline2 = new Date();
+    task_deadline2.setSeconds(task_deadline.getSeconds() + 1);
     const task_status2 = Status.BLOCKED;
     const task_description2 = "description2\n";
     const task_estimated_days2 = 3;
@@ -123,6 +127,7 @@ test('declined connection test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
+    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
@@ -133,6 +138,7 @@ test('declined connection test', async () => {
     const task_project2: string = null;
     const task_title2 = "title2";
     const task_deadline2 = new Date();
+    task_deadline2.setSeconds(task_deadline.getSeconds() + 1);
     const task_status2 = Status.BLOCKED;
     const task_description2 = "description2\n";
     const task_estimated_days2 = 3;
@@ -161,6 +167,7 @@ test('get own tasks test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
+    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
@@ -205,6 +212,7 @@ test('not connected test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
+    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
