@@ -35,6 +35,10 @@ Week 04
 
 Week 05
 
+- Decided on interface for login, signup and profile routes with Joseph
+- Set up authentication management on Frontend
+- Connect Login and Signup to backend
+- Connect profile update
 
 
 ---
