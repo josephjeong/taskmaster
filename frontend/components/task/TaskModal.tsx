@@ -1,47 +1,62 @@
-import React from 'react';
-import { makeStyles, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, Button, FormControl } from '@material-ui/core';
-import NumericInput from 'material-ui-numeric-input';
-import MomentUtils from '@date-io/moment';
-import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from '@material-ui/pickers';
+import React from "react";
+import {
+  makeStyles,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+  FormControl,
+} from "@material-ui/core";
+import NumericInput from "material-ui-numeric-input";
+import MomentUtils from "@date-io/moment";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
 
-import { Task, TaskStatus } from '../../types';
+import { Task, TaskStatus } from "../../types";
 
 const useStyles = makeStyles((theme) => ({
   fullWidthInput: {
-    width: '100%',
-    margin: '5px'
+    width: "100%",
+    margin: "5px",
   },
   row: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    margin: '5px'
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    margin: "5px",
   },
   rowInputLeft: {
-    marginRight: '2.5px',
-    flex: 1
+    marginRight: "2.5px",
+    flex: 1,
   },
   rowInputRight: {
-    marginLeft: '2.5px',
-    flex: 1
-  }
+    marginLeft: "2.5px",
+    flex: 1,
+  },
 }));
 
 type TaskModalProps = {
-  mode?: string,
-  open: boolean,
-  taskInit: Task,
-  onClose: () => void,
-  onSubmit: (task: Task) => any
+  mode?: "view" | "create" | "edit";
+  open: boolean;
+  taskInit: Task;
+  onClose: () => void;
+  onSubmit: (task: Task) => any;
 };
 
 const TaskModal = ({
-  mode='view',
+  mode = "view",
   open,
   taskInit,
   onClose,
-  onSubmit
+  onSubmit,
 }: TaskModalProps) => {
   const [task, setTask] = React.useState(taskInit);
 
@@ -49,12 +64,12 @@ const TaskModal = ({
 
   const getTitle = () => {
     switch (mode) {
-      case 'view':
-        return 'View Task';
-      case 'create':
-        return 'Create Task';
-      case 'edit':
-        return 'Edit Task';
+      case "view":
+        return "View Task";
+      case "create":
+        return "Create Task";
+      case "edit":
+        return "Edit Task";
     }
   };
 
@@ -64,18 +79,15 @@ const TaskModal = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => onClose()}
-    >
+    <Dialog open={open} onClose={() => onClose()}>
       <DialogTitle>{getTitle()}</DialogTitle>
       <form onSubmit={(event) => submit(event)}>
         <DialogContent>
           <TextField
             className={classes.fullWidthInput}
             required
-            disabled={mode === 'view'}
-            label='Title'
+            disabled={mode === "view"}
+            label="Title"
             value={task.title}
             onChange={(event) => {
               const task_ = { ...task };
@@ -86,10 +98,10 @@ const TaskModal = ({
           <TextField
             className={classes.fullWidthInput}
             required
-            disabled={mode === 'view'}
+            disabled={mode === "view"}
             multiline
             rows={10}
-            label='Description'
+            label="Description"
             value={task.description}
             onChange={(event) => {
               const task_ = { ...task };
@@ -101,12 +113,12 @@ const TaskModal = ({
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <KeyboardDatePicker
                 className={classes.rowInputLeft}
-                disabled={mode === 'view'}
+                disabled={mode === "view"}
                 disableToolbar
-                variant='inline'
-                format='DD/MM/yyyy'
-                margin='normal'
-                label='Due date'
+                variant="inline"
+                format="DD/MM/yyyy"
+                margin="normal"
+                label="Due date"
                 value={task.deadline}
                 onChange={(date) => {
                   const task_ = { ...task };
@@ -116,9 +128,9 @@ const TaskModal = ({
               />
               <KeyboardTimePicker
                 className={classes.rowInputRight}
-                disabled={mode === 'view'}
-                margin='normal'
-                label='Due time'
+                disabled={mode === "view"}
+                margin="normal"
+                label="Due time"
                 value={task.deadline}
                 onChange={(date) => {
                   const task_ = { ...task };
@@ -129,9 +141,9 @@ const TaskModal = ({
             </MuiPickersUtilsProvider>
           </div>
           <div className={classes.row}>
-            <FormControl variant='outlined' className={classes.rowInputLeft}>
+            <FormControl variant="outlined" className={classes.rowInputLeft}>
               <Select
-                disabled={mode === 'view'}
+                disabled={mode === "view"}
                 value={task.status}
                 onChange={(event) => {
                   const task_ = { ...task };
@@ -147,16 +159,16 @@ const TaskModal = ({
             </FormControl>
             <div className={classes.rowInputRight}>
               <NumericInput
-              disabled={mode === 'view'}
-                variant='outlined'
-                precision='2'
-                decimalSeparator='.'
-                thousandSeparator=''
-                label='Estimated Days'
-                value={task.estimatedDays}
+                disabled={mode === "view"}
+                variant="outlined"
+                precision="2"
+                decimalSeparator="."
+                thousandSeparator=""
+                label="Estimated Days"
+                value={task.estimated_days}
                 onChange={(value) => {
                   const task_ = { ...task };
-                  task_.estimatedDays = value;
+                  task_.estimated_days = value;
                   setTask(task_);
                 }}
               />
@@ -164,24 +176,21 @@ const TaskModal = ({
           </div>
         </DialogContent>
         <DialogActions>
-          <Button
-            size='large'
-            onClick={() => onClose()}
-          >
+          <Button size="large" onClick={() => onClose()}>
             Cancel
           </Button>
           <Button
-            size='large'
-            color='primary'
-            variant='contained'
-            type='submit'
+            size="large"
+            color="primary"
+            variant="contained"
+            type="submit"
           >
             Save
           </Button>
         </DialogActions>
       </form>
     </Dialog>
-  )
-}
+  );
+};
 
 export default TaskModal;

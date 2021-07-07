@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
 import { User } from "../types";
 import { api } from "./utils";
@@ -9,6 +9,7 @@ export const login = async (
   password: string
 ): Promise<string> => {
   const response = await api.post("/users/login", { email, password });
+  mutate("/users/me");
   return response.data.token;
 };
 
@@ -38,5 +39,6 @@ export const useLogout = () => {
   const { setToken } = useAuthContext();
   return useCallback(() => {
     setToken(null);
+    mutate("/users/me", null, false);
   }, [setToken]);
 };
