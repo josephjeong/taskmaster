@@ -160,6 +160,13 @@ createConnection({
       return res.send(s);
     });
 
+    if (process.env.NODE_ENV !== "production") {
+      app.get("/this-route-will-error", async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        throw new Error("This is a test error that should not show up in prod");
+      });
+    }
+
     app.use(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
