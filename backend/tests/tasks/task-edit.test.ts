@@ -27,7 +27,7 @@ test('correct task edit', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
-    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
+    task_deadline.setMinutes(task_deadline.getMinutes() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
@@ -37,7 +37,7 @@ test('correct task edit', async () => {
     )
     
     const new_deadline = new Date();
-    new_deadline.setSeconds(new_deadline.getSeconds() + 10);
+    new_deadline.setMinutes(new_deadline.getMinutes() + 10);
     await editTask(
         task_id, task_creator, null, 
         new_deadline, null, null, null
@@ -64,7 +64,7 @@ test('invalid status test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
-    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
+    task_deadline.setMinutes(task_deadline.getMinutes() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
@@ -90,7 +90,7 @@ test('invalid deadline test', async () => {
     const task_title = "title";
     const task_status = Status.NOT_STARTED;
     const task_deadline = new Date();
-    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
+    task_deadline.setMinutes(task_deadline.getMinutes() + 1);
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(
@@ -114,7 +114,7 @@ test('invalid estimated_days test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
-    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
+    task_deadline.setMinutes(task_deadline.getMinutes() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
@@ -138,7 +138,7 @@ test('editor is not creator test', async () => {
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
-    task_deadline.setSeconds(task_deadline.getSeconds() + 1);
+    task_deadline.setMinutes(task_deadline.getMinutes() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
