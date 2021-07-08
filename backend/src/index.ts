@@ -15,8 +15,14 @@ import cors from "cors";
 import { User } from "./entity/User";
 import { Task } from "./entity/Task";
 import { Connection } from "./entity/Connection";
-import { acceptRequest, createUserConnection, declineRequest, isConnected, getIncomingConnectionRequests, getOutgoingConnectionRequests } from "./connection";
-
+import {
+  acceptRequest,
+  createUserConnection,
+  declineRequest,
+  isConnected,
+  getIncomingConnectionRequests,
+  getOutgoingConnectionRequests,
+} from "./connection";
 
 const PORT = 8080;
 
@@ -76,19 +82,25 @@ createConnection({
       await updateUser(res.locals.session.id, req.body.changes);
       return res.send("updated successfully!");
     });
-     
+
     app.get("/tasks", async (req, res) => {
-      return res.send(await getProfileTasks(res.locals.session.id, res.locals.session.id));
+      return res.send(
+        await getProfileTasks(res.locals.session.id, res.locals.session.id)
+      );
     });
-    
+
     app.get("/users/tasks/:id", async (req, res) => {
-      const tasks = await getProfileTasks(res.locals.sessions.id, req.params.id);
+      const tasks = await getProfileTasks(
+        res.locals.session.id,
+        req.params.id
+      );
       return res.send(tasks);
     });
-    
+
     app.post("/tasks/create", async (req, res) => {
       const deadlineTime = new Date(req.body.deadline);
-      await createTask(res.locals.session.id,
+      await createTask(
+        res.locals.session.id,
         req.body.title,
         deadlineTime,
         req.body.status,
@@ -98,13 +110,14 @@ createConnection({
       );
       return res.send("create task success");
     });
-    
+
     app.post("/tasks/edit", async (req, res) => {
       let deadlineTime = null;
       if (req.body.deadline) {
         deadlineTime = new Date(req.body.deadline);
       }
-      await editTask(req.body.task_id,
+      await editTask(
+        req.body.task_id,
         res.locals.session.id,
         // must specify at least one of the following
         req.body.title,
@@ -137,16 +150,14 @@ createConnection({
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getIncomingConnectionRequests(req.params.userId);
+      const s = await getIncomingConnectionRequests(res.locals.session.id);
       return res.send(s);
     });
-
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getOutgoingConnectionRequests(req.params.userId);
+      const s = await getOutgoingConnectionRequests(res.locals.session.id);
       return res.send(s);
     });
-
 
     app.listen(PORT, () =>
       // tslint:disable-next-line:no-console
