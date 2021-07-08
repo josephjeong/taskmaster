@@ -37,14 +37,16 @@ const TasksPage = () => {
     } as Task;
   };
 
-  const getTask = (id: number) => {
-
-  };
-
   const createTask = async (task: Task) => {
     await api.post('/tasks/create', task);
     await reload();
     setShowCreateTaskModal(false);
+  };
+
+  const editTask = async (taskUpdates: Partial<Task>) => {
+    await api.post('/tasks/edit', taskUpdates);
+    await reload();
+    setShowEditTaskModal(null);
   };
 
   const reload = async () => {
@@ -65,7 +67,7 @@ const TasksPage = () => {
         open={showCreateTaskModal}
         taskInit={getDefaultTask()}
         onClose={() => setShowCreateTaskModal(false)}
-        onSubmit={(task) => createTask(task)}
+        onSubmit={(taskUpdates) => createTask(Object.assign({} as Task, getDefaultTask(), taskUpdates))}
       />
       {tasks.map((task) => (
         <Button
@@ -83,7 +85,7 @@ const TasksPage = () => {
         open={showEditTaskModal != null}
         taskInit={tasks.find((task) => task.id === showEditTaskModal) ?? {} as Task}
         onClose={() => setShowEditTaskModal(null)}
-        onSubmit={() => {}}
+        onSubmit={(taskUpdates) => editTask(taskUpdates)}
       />
     </Container>
   )

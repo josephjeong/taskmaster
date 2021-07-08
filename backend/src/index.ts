@@ -118,7 +118,7 @@ createConnection({
         deadlineTime = new Date(req.body.deadline);
       }
       await editTask(
-        req.body.task_id,
+        req.body.id,
         res.locals.session.id,
         // must specify at least one of the following
         req.body.title,
