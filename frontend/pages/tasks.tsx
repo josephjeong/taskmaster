@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles, Container, Button } from '@material-ui/core';
 import moment from 'moment';
 
+import { api } from '../api/utils';
 import { Task, TaskStatus } from '../types';
 import TaskModal from '../components/task/TaskModal';
 
@@ -9,7 +10,7 @@ const DEFAULT_TASK_ATTRIBUTES = {
   title: '',
   description: '',
   deadline: moment(),
-  status: TaskStatus.TO_DO,
+  status: TaskStatus.NOT_STARTED,
   estimatedDays: 1
 } as Task;
 
@@ -36,10 +37,23 @@ const TasksPage = () => {
     } as Task;
   };
 
-  const createTask = (task: Task) => {
-    setTasks([...tasks, task]);
+  const getTask = (id: number) => {
+
+  };
+
+  const createTask = async (task: Task) => {
+    await api.post('/tasks/create', task);
+    await reload();
     setShowCreateTaskModal(false);
   };
+
+  const reload = async () => {
+    setTasks((await api.get('/tasks')).data);
+  };
+
+  React.useEffect(() => {
+    reload();
+  }, []);
 
   return (
     <Container className={classes.root}>
@@ -64,16 +78,13 @@ const TasksPage = () => {
           {`Edit Task "${task.title}"`}
         </Button>
       ))}
-      {tasks.map((task) => (
-        <TaskModal
-          key={task.id}
-          mode='edit'
-          open={showEditTaskModal === task.id}
-          taskInit={task}
-          onClose={() => setShowEditTaskModal(null)}
-          onSubmit={(task) => console.log(task)}
-        />
-      ))}
+      <TaskModal
+        mode='edit'
+        open={showEditTaskModal != null}
+        taskInit={tasks.find((task) => task.id === showEditTaskModal) ?? {} as Task}
+        onClose={() => setShowEditTaskModal(null)}
+        onSubmit={() => {}}
+      />
     </Container>
   )
 }
