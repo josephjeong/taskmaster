@@ -1,10 +1,10 @@
 import { getConnection } from "typeorm";
 
-import {Task, Status} from "../entity/Task";
-import {Connection} from "../entity/Connection"
-import {isConnected} from "../connection"
+import { Task } from "../entity/Task";
+import { TaskAssignment } from "../entity/TaskAssignment"
+import { isConnected } from "../connection"
 
-/** function to get tasks a connected user has created, probably will change later to assigned tasks */
+/** function to get tasks a connected user is assigned, sorted by closer deadline */
 export async function getProfileTasks(
     user_id : string,
     profile_user_id : string
@@ -21,8 +21,28 @@ export async function getProfileTasks(
         return [];
     }
     
-    // get tasks
-    let tasks = await getConnection().getRepository(Task).find({where : {creator: profile_user_id}}); // change creator
-
+    // get task assignments
+    const task_assignments = await getConnection().getRepository(TaskAssignment).find({where : {user_assignee: profile_user_id}});
+    
+    // make array of task_ids 
+    const task_ids = [];
+    
+    for (const assignment of task_assignments) {
+        task_ids.push(assignment.task);
+    }
+    
+    let tasks: Task[] = [] ;
+    
+    // add the tasks
+    for (const task_id of task_ids) {
+        const task = await getConnection().getRepository(Task).find({where : {id: task_id}});
+        tasks = tasks.concat(task);
+    }
+    
+    // sort by deadline, closer deadlines first
+    tasks.sort(function compare(a, b) {
+        return a.deadline.getTime() - b.deadline.getTime();
+    });
+    
     return tasks;
 }

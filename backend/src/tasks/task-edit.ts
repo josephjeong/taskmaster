@@ -1,7 +1,10 @@
 import { getConnection } from "typeorm";
+import { isConnected } from "../connection";
+import {TaskAssignment} from "../entity/TaskAssignment";
 import {v4 as uuidv4} from "uuid";
 
-import {Task, Status} from "../entity/Task";
+
+import { Task, Status } from "../entity/Task";
 
 /** function to edit task in database, only creator of the task can edit */
 export async function editTask(
@@ -11,7 +14,8 @@ export async function editTask(
     deadline? : Date | null,
     status? : Status | null,
     description? : string | null,
-    estimated_days? : number | null
+    estimated_days? : number | null,
+    assignee? : string | null
 ) : Promise<void> {
 
     if (!(task_id && editor)) {
@@ -19,7 +23,7 @@ export async function editTask(
     }
 
     // check at least one of the other params are defined
-    if (!(title || deadline || status || description || estimated_days)) { // && project
+    if (!(title || deadline || status || description || estimated_days || assignee)) { // && project
         throw "error editing task with given params, ensure at least one field is defined or not empty";
     }
     
@@ -60,6 +64,22 @@ export async function editTask(
         tasks[0].description = description;
     if (estimated_days)
         tasks[0].estimated_days = estimated_days;
+    // maybe check same group/project
+    if (assignee && (await isConnected(editor, assignee) == "connected" || editor == assignee)) {
+        const assignment = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}});
+        if (assignment.length == 0) {
+            const new_assignment = new TaskAssignment();
+            new_assignment.id = uuidv4();
+            new_assignment.task = task_id;
+            new_assignment.user_assignee = assignee;
+            await getConnection().manager.save(new_assignment);
+        } else {
+            if (assignee == "None") assignment[0].user_assignee = null;
+            else assignment[0].user_assignee = assignee;
+            await getConnection().manager.save(assignment[0]);
+        }
+    }
+    // edit group_assignee
 
     // save task
     await getConnection().manager.save(tasks[0]);

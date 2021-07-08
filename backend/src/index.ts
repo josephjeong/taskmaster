@@ -76,7 +76,8 @@ createConnection({
       await updateUser(res.locals.session.id, req.body.changes);
       return res.send("updated successfully!");
     });
-     
+    
+    // the two routes below return an array of tasks sorted by deadline, closer deadlines first
     app.get("/tasks", async (req, res) => {
       return res.send(await getProfileTasks(res.locals.session.id, res.locals.session.id));
     });
@@ -94,7 +95,8 @@ createConnection({
         req.body.status,
         req.body.project, // can be null
         req.body.description, // can be null
-        req.body.estimated_days // can be null
+        req.body.estimated_days, // can be null
+        req.body.assignee // can be null
       );
       return res.send("create task success");
     });
@@ -106,12 +108,13 @@ createConnection({
       }
       await editTask(req.body.task_id,
         res.locals.session.id,
-        // must specify at least one of the following
+        // must specify at least one of the following, rest can be null
         req.body.title,
         deadlineTime,
         req.body.status,
         req.body.description,
-        req.body.estimated_days
+        req.body.estimated_days,
+        req.body.assignee // pass in the string "None" here to remove assignee from task
       );
       return res.send("edit task success");
     });

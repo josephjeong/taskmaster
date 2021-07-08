@@ -1,12 +1,13 @@
 import { createConnection, getConnection } from "typeorm";
 import { clearEntity } from "../test-helpers/clear";
-import { Task, Status } from "../../src/entity/Task"
-import { User } from "../../src/entity/User"
-import { Connection } from "../../src/entity/Connection"
-import { getProfileTasks } from "../../src/tasks/get-profile-tasks"
-import { createTask } from "../../src/tasks/task-create"
-import { createUser } from "../../src/users/users-create"
-import { createUserConnection, declineRequest, acceptRequest } from "../../src/connection"
+import { Task, Status } from "../../src/entity/Task";
+import { User } from "../../src/entity/User";
+import { Connection } from "../../src/entity/Connection";
+import { TaskAssignment } from "../../src/entity/TaskAssignment";
+import { getProfileTasks } from "../../src/tasks/get-profile-tasks";
+import { createTask } from "../../src/tasks/task-create";
+import { createUser } from "../../src/users/users-create";
+import { createUserConnection, declineRequest, acceptRequest } from "../../src/connection";
 
 test('invalid ids test', async () => {
     expect.assertions(4);
@@ -34,7 +35,7 @@ test('connected test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, task_project, task_description, task_estimated_days, task_creator
     )
     const task_project2: string = null;
     const task_title2 = "title2";
@@ -47,11 +48,11 @@ test('connected test', async () => {
     const task_creator2 = user2[0].id;
     await createTask(
         task_creator2, task_title2, task_deadline2, 
-        task_status2, task_project2, task_description2, task_estimated_days2
+        task_status2, task_project2, task_description2, task_estimated_days2, task_creator2
     ) 
     await createUserConnection(task_creator, task_creator2);
     await acceptRequest(task_creator, task_creator2);
-    expect.assertions(16);
+    expect.assertions(17);
     const tasks = await getProfileTasks(task_creator, task_creator2);
     expect(tasks.length).toBe(1);
     expect(tasks[0].project).toBe(task_project2);
@@ -71,6 +72,13 @@ test('connected test', async () => {
     expect(tasks2[0].status).toBe(task_status);
     expect(tasks2[0].description).toBe(task_description);
     expect(tasks2[0].estimated_days).toBe(task_estimated_days);
+    
+    await createTask(
+        task_creator2, task_title2, task_deadline2, 
+        task_status2, task_project2, task_description2, task_estimated_days2, task_creator
+    ) 
+    const tasks3 = await getProfileTasks(task_creator2, task_creator);
+    expect(tasks3.length).toBe(2);
 });
 
 test('not accepted connection test', async () => {
@@ -91,7 +99,7 @@ test('not accepted connection test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, task_project, task_description, task_estimated_days, task_creator
     )
     const task_project2: string = null;
     const task_title2 = "title2";
@@ -173,11 +181,11 @@ test('get own tasks test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, task_project, task_description, task_estimated_days, task_creator
     )
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, task_project, task_description, task_estimated_days, task_creator
     )
     
     expect.assertions(15);
@@ -240,12 +248,14 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+    await clearEntity(TaskAssignment);
     await clearEntity(Task);
     await clearEntity(Connection);
     await clearEntity(User);
 });
 
 afterAll(async () => {
+    await clearEntity(TaskAssignment);
     await clearEntity(Task);
     await clearEntity(Connection);
     await clearEntity(User);

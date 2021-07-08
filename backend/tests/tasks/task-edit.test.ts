@@ -1,10 +1,13 @@
 import { createConnection, getConnection } from "typeorm";
 import { clearEntity } from "../test-helpers/clear";
-import { Task, Status } from "../../src/entity/Task"
-import { User } from "../../src/entity/User"
-import { editTask } from "../../src/tasks/task-edit"
-import { createTask } from "../../src/tasks/task-create"
-import { createUser } from "../../src/users/users-create"
+import { Task, Status } from "../../src/entity/Task";
+import { User } from "../../src/entity/User";
+import { editTask } from "../../src/tasks/task-edit";
+import { createTask } from "../../src/tasks/task-create";
+import { createUser } from "../../src/users/users-create";
+import { Connection } from "../../src/entity/Connection";
+import { TaskAssignment } from "../../src/entity/TaskAssignment";
+import { createUserConnection, acceptRequest } from "../../src/connection";
 
 test('empty string param of editTask test', async () => {
     expect.assertions(4);
@@ -22,8 +25,13 @@ test('correct task edit', async () => {
     await createUser(
         "asd@gmail.com","badpassword","bob","dob","asd"
     )
+    await createUser(
+        "bas@gmail.com","badpassword","bob","dob","asd"
+    )
     const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
+    const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
     const task_creator = user[0].id;
+    const user2_id = user[0].id;
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
@@ -32,14 +40,14 @@ test('correct task edit', async () => {
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(
-        task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        user2_id, task_title, task_deadline, 
+        task_status, task_project, task_description, task_estimated_days, task_creator
     )
     
     const new_deadline = new Date();
     new_deadline.setMinutes(new_deadline.getMinutes() + 10);
     await editTask(
-        task_id, task_creator, null, 
+        task_id, user2_id, null, 
         new_deadline, null, null, null
     )
     expect.assertions(8);
@@ -142,21 +150,32 @@ test('editor is not creator test', async () => {
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
-    const task_id = await createTask(
-        task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
-    );
-    expect.assertions(2);
-    await expect(editTask(
-        task_id, "asd", "newtitle"
-    )).rejects.toEqual("this user cannot edit this task, only it's creator");
+    
     await createUser(
         "bas@gmail.com","badpassword","bob","dob","asd"
     )
     const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
     const user2_id = user2[0].id;
-    return expect(editTask(
+    await createUserConnection(task_creator, user2_id);
+    await acceptRequest(task_creator, user2_id);
+    
+    const task_id = await createTask(
+        task_creator, task_title, task_deadline, 
+        task_status, task_project, task_description, task_estimated_days, user2_id
+    );
+    const task_id2 = await createTask(
+        user2_id, task_title, task_deadline, 
+        task_status, task_project, task_description, task_estimated_days, task_creator
+    );
+    expect.assertions(3);
+    await expect(editTask(
+        task_id, "asd", "newtitle"
+    )).rejects.toEqual("this user cannot edit this task, only it's creator");
+    await expect(editTask(
         task_id, user2_id, "newtitle"
+    )).rejects.toEqual("this user cannot edit this task, only it's creator");
+    await expect(editTask(
+        task_id2, task_creator, "newtitle"
     )).rejects.toEqual("this user cannot edit this task, only it's creator");
 });
 
@@ -194,12 +213,16 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+    await clearEntity(TaskAssignment);
     await clearEntity(Task);
+    await clearEntity(Connection);
     await clearEntity(User);
 });
 
 afterAll(async () => {
+    await clearEntity(TaskAssignment);
     await clearEntity(Task);
+    await clearEntity(Connection);
     await clearEntity(User);
     return await getConnection().close()
 });

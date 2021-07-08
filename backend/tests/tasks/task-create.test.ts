@@ -1,9 +1,11 @@
 import { createConnection, getConnection } from "typeorm";
 import { clearEntity } from "../test-helpers/clear";
-import { Task, Status } from "../../src/entity/Task"
-import { User } from "../../src/entity/User"
-import { createTask } from "../../src/tasks/task-create"
-import { createUser } from "../../src/users/users-create"
+import { Task, Status } from "../../src/entity/Task";
+import { Connection } from "../../src/entity/Connection";
+import { TaskAssignment } from "../../src/entity/TaskAssignment";
+import { User } from "../../src/entity/User";
+import { createTask } from "../../src/tasks/task-create";
+import { createUser } from "../../src/users/users-create";
 
 test('empty string param of createTask test', async () => {
     expect.assertions(1);
@@ -104,12 +106,16 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+    await clearEntity(TaskAssignment);
     await clearEntity(Task);
+    await clearEntity(Connection);
     await clearEntity(User);
 });
 
 afterAll(async () => {
+    await clearEntity(TaskAssignment);
     await clearEntity(Task);
+    await clearEntity(Connection);
     await clearEntity(User);
     return await getConnection().close()
 });

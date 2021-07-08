@@ -2,6 +2,8 @@ import { getConnection } from "typeorm";
 import {v4 as uuidv4} from "uuid";
 
 import {Task, Status} from "../entity/Task";
+import {TaskAssignment} from "../entity/TaskAssignment";
+import {isConnected} from "../connection";
 
 /** function to create and store task in database */
 export async function createTask(
@@ -11,7 +13,8 @@ export async function createTask(
     status : Status,
     project? : string | null,
     description? : string | null,
-    estimated_days? : number | null
+    estimated_days? : number | null,
+    assignee?: string | null
 ) : Promise<string> {
 
     // check values are not empty strings, null/undefined etc.
@@ -45,12 +48,21 @@ export async function createTask(
     task.status = status;
     task.description = description;
     task.estimated_days = estimated_days;
-
     // task id as uuid
     task.id = uuidv4();
 
     // save task
     await getConnection().manager.save(task);
+    
+    // save assignment in database if specified, maybe check same group/project
+    if (assignee && (await isConnected(creator, assignee) == "connected" || creator == assignee)) {
+        const assignment = new TaskAssignment();
+        assignment.id = uuidv4();
+        assignment.task = task.id;
+        assignment.user_assignee = assignee;
+        // set assignment.group_assignee
+        await getConnection().manager.save(assignment);
+    }
 
     // return task id
     return task.id;
