@@ -20,6 +20,10 @@ import { acceptRequest, createUserConnection, declineRequest, isConnected, getIn
 
 const PORT = 8080;
 
+// start express server
+// initiated outside of connection to export it
+const app = express();
+
 // create typeorm connection
 createConnection({
   entities: [User, Task, Connection],
@@ -33,8 +37,6 @@ createConnection({
   logging: true,
 })
   .then((connection) => {
-    // start express server
-    const app = express();
 
     app.use(cors());
     app.use(express.json());
@@ -156,3 +158,5 @@ createConnection({
   .catch((err) => {
     console.log("Could not connect to database", err);
   });
+
+  export default app;
