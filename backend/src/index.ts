@@ -170,20 +170,17 @@ createConnection({
     app.use(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+        console.error(err);
         if (res.headersSent) {
-          console.error(err);
+          return;
         } else if (err instanceof ApiError) {
           res.json({
             error: {
               code: err.code,
               message: err.message,
-              ...(process.env.NODE_ENV !== "production"
-                ? { stack: err.stack }
-                : undefined),
             },
           });
         } else {
-          console.error(err);
           res.json({
             error: {
               code: "UNKNOWN_ERROR",
