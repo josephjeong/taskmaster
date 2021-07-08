@@ -1,7 +1,10 @@
 import "reflect-metadata";
 import "dotenv/config";
 
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
+// Probably needs to be imported after express
+import "express-async-errors";
+
 import { createConnection } from "typeorm";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
@@ -23,6 +26,7 @@ import {
   getIncomingConnectionRequests,
   getOutgoingConnectionRequests,
 } from "./connection";
+import { ApiError } from "./errors";
 
 const PORT = 8080;
 
@@ -90,10 +94,7 @@ createConnection({
     });
 
     app.get("/users/tasks/:id", async (req, res) => {
-      const tasks = await getProfileTasks(
-        res.locals.session.id,
-        req.params.id
-      );
+      const tasks = await getProfileTasks(res.locals.session.id, req.params.id);
       return res.send(tasks);
     });
 
@@ -158,6 +159,33 @@ createConnection({
       const s = await getOutgoingConnectionRequests(res.locals.session.id);
       return res.send(s);
     });
+
+    app.use(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+        if (res.headersSent) {
+          console.error(err);
+        } else if (err instanceof ApiError) {
+          res.json({
+            error: {
+              code: err.code,
+              message: err.message,
+              ...(process.env.NODE_ENV !== "production"
+                ? { stack: err.stack }
+                : undefined),
+            },
+          });
+        } else {
+          console.error(err);
+          res.json({
+            error: {
+              code: "UNKNOWN_ERROR",
+              message: "An unknown error occurred on the server",
+            },
+          });
+        }
+      }
+    );
 
     app.listen(PORT, () =>
       // tslint:disable-next-line:no-console
