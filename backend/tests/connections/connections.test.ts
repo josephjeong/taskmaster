@@ -26,7 +26,7 @@ afterAll(async () => {
     return await getConnection().close()
 });
 
-// 1. test creation of connection. 
+//  test creation of connection. 
 test('Connection correctly created', async () => {
     const user_email = 'validemail@webiste.com'
     const user_password = 'strong password'
@@ -69,7 +69,29 @@ test('Connection correctly created', async () => {
     expect(conn.requester).toBe(user2.id);
     
 });
-// 2. test accepting of connection.
+// test cannot create connection between same .
+test('Cannot create connection between same user', async () => {
+    const user_email = 'validemail@webiste.com'
+    const user_password = 'strong password'
+    const user_first_name = 'dude';
+    const user_last_name = 'bro';
+    const user_bio = 'an awesome person';
+    await createUser(
+        user_email,
+        user_password,
+        user_first_name,
+        user_last_name,
+        user_bio
+    )
+
+    const userRepo = getConnection().getRepository(User);
+    const user1 = await userRepo.findOne({where : {email : user_email}});
+
+    expect(await createUserConnection(user1.id, user1.id)).toBe('Cannot create connection with the same user.');
+    
+});
+
+// test accepting of connection.
 test('Connection correctly accepted', async () => {
     const user_email = 'validemail@webiste.com'
     const user_password = 'strong password'
@@ -111,7 +133,7 @@ test('Connection correctly accepted', async () => {
     expect(conn.requester).toBe(user2.id);
     
 });
-// 3. test declination of connection.
+// test declination of connection.
 test('Connection correctly declined', async () => {
     const user_email = 'validemail@webiste.com'
     const user_password = 'strong password'
@@ -150,7 +172,7 @@ test('Connection correctly declined', async () => {
     expect(connDeleted).toHaveLength(0);
 });
 
-// 4. test adding users multiple times
+//  test adding users multiple times
 test('Connection prevented when trying to add existing connection', async () => {
     const user_email = 'validemail@webiste.com'
     const user_password = 'strong password'
@@ -186,7 +208,7 @@ test('Connection prevented when trying to add existing connection', async () => 
     expect(await createUserConnection(user1.id, user2.id)).toBe('Connection already exists');
 });
 
-// 5. test adding users multiple times vice versa
+//  test adding users multiple times vice versa
 test('Connection prevented when trying to add existing connection where users were switched', async () => {
     const user_email = 'validemail@webiste.com'
     const user_password = 'strong password'
@@ -222,7 +244,7 @@ test('Connection prevented when trying to add existing connection where users we
     expect(await createUserConnection(user2.id, user1.id)).toBe('Connection already exists');
 });
 
-// 5. test if two users are not connected
+//  test if two users are not connected
 test('if two users are not connected', async () => {
     const user_email = 'validemail@webiste.com'
     const user_password = 'strong password'

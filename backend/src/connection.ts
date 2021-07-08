@@ -16,7 +16,9 @@ export async function createUserConnection(
 ) : Promise<any> {
 
     const connRepo = getConnection().getRepository(Connection);
-    
+    if (requestee == requester) {
+        return ('Cannot create connection with the same user.');
+    }
     if (await connRepo.findOne({where : {requestee : requestee, requester: requester}})) {
         return ('Connection already exists');
     }
