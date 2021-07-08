@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --detectOpenHandles",
     "lint": "yarn prettier --check ."
   }
 }

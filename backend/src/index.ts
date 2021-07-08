@@ -42,6 +42,7 @@ createConnection({
     app.use(express.json());
 
     app.post("/users/signup", async (req, res) => {
+        console.log('req');
       const token = await createUser(
         req.body.email,
         req.body.password,
@@ -139,14 +140,16 @@ createConnection({
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getIncomingConnectionRequests(req.params.userId);
-      return res.send(s);
+        //@ts-expect-error thinks userId is not a param
+        const s = await getIncomingConnectionRequests(req.params.userId);
+        return res.send(s);
     });
 
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getOutgoingConnectionRequests(req.params.userId);
-      return res.send(s);
+        //@ts-expect-error thinks userId is not a param
+        const s = await getOutgoingConnectionRequests(req.params.userId);
+        return res.send(s);
     });
 
 
