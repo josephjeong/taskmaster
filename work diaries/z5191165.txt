@@ -21,6 +21,7 @@ Next week I will continue working on connections
 Week 5. 
 This week I wrote the functions for deleting requsts, viewing outgoing and incoming requests, checking if two users are connected, and wrote tests for these functions.
 I also created a google form for the team to fill out for our retro so that we can go through responses next meeting.
+Next week we will delegate user stories for the next sprint.
 
 Week 6.
 This week I conducted the retro meeting and compiled a shared google doc for the team to edit and contribute with additional thoughts to submit for week 7. 
