@@ -1,5 +1,5 @@
-import { FC } from 'react'
-import moment from 'moment';
+import { FC } from "react";
+import moment from "moment";
 
 export type User = {
   id: string;
@@ -17,19 +17,19 @@ export enum ConnectionStatus {
 }
 
 export type Task = {
-  id: string,
-  title: string,
-  description: string,
-  deadline: moment.Moment,
-  status: TaskStatus,
-  estimatedDays: number
+  id: string;
+  title: string;
+  description: string;
+  deadline: moment.Moment;
+  status: TaskStatus;
+  estimated_days: number;
 };
 
 export enum TaskStatus {
-  TO_DO = 'to do',
-  IN_PROGRESS = 'in progress',
-  BLOCKED = 'blocked',
-  DONE = 'done'
+  TO_DO = "TO_DO",
+  IN_PROGRESS = "IN_PROGRESS",
+  BLOCKED = "BLOCKED",
+  DONE = "DONE",
 }
 
 export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0];
