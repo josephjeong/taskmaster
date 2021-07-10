@@ -42,7 +42,6 @@ createConnection({
     app.use(express.json());
 
     app.post("/users/signup", async (req, res) => {
-        console.log('req');
       const token = await createUser(
         req.body.email,
         req.body.password,
@@ -152,14 +151,18 @@ createConnection({
         return res.send(s);
     });
 
-
-    app.listen(PORT, () =>
-      // tslint:disable-next-line:no-console
-      console.log(`App listening on port ${PORT}!`)
-    );
   })
   .catch((err) => {
     console.log("Could not connect to database", err);
   });
 
-  export default app;
+// listen delcared outside of connection to handle open handles in tests
+var server = app.listen(PORT, () =>
+  // tslint:disable-next-line:no-console
+  console.log(`App listening on port ${PORT}!`)
+);
+
+export default {
+    app: app,
+    server: server
+};
