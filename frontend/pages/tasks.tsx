@@ -3,16 +3,17 @@ import { makeStyles, Container, Button } from '@material-ui/core';
 import moment from 'moment';
 
 import { api } from '../api/utils';
-import { useTasks, useCreateTask, useEditTask } from '../api/tasks';
+import { useMyTasks, useCreateTask, useEditTask } from '../api/tasks';
 import { Task, TaskStatus } from '../types';
 import TaskModal from '../components/task/TaskModal';
 
 const DEFAULT_TASK_ATTRIBUTES = {
+  id: '0',
   title: '',
   description: '',
   deadline: moment(),
   status: TaskStatus.NOT_STARTED,
-  estimatedDays: 1
+  estimated_days: 1
 } as Task;
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const TasksPage = () => {
-  const { data: tasks } = useTasks();
+  const { data: tasks } = useMyTasks();
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = React.useState<string | null>(null);
 

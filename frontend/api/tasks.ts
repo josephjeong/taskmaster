@@ -23,10 +23,6 @@ export const useMyTasks = () => {
   return useSWR<Task[]>("/tasks");
 };
 
-export const useTasks = () => {
-  return useSWR<Task[]>('/tasks');
-};
-
 export const useCreateTask = () => {
   return useCallback(async (task: Task) => {
     await api.post('/tasks/create', task);
