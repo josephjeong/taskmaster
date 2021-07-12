@@ -3,6 +3,7 @@ import { makeStyles, Container, Button } from '@material-ui/core';
 import moment from 'moment';
 
 import { api } from '../api/utils';
+import { useTasks, useCreateTask, useEditTask } from '../api/tasks';
 import { Task, TaskStatus } from '../types';
 import TaskModal from '../components/task/TaskModal';
 
@@ -24,38 +25,31 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const TasksPage = () => {
-  const [tasks, setTasks] = React.useState<Task[]>([]);
+  const { data: tasks } = useTasks();
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = React.useState<string | null>(null);
 
   const classes = useStyles();
 
+  const createTaskCallback = useCreateTask();
+  const editTaskCallback = useEditTask();
+
   const getDefaultTask = () => {
     return {
       ...DEFAULT_TASK_ATTRIBUTES,
-      id: tasks.length.toString()
+      id: tasks?.length.toString() ?? 0
     } as Task;
   };
 
   const createTask = async (task: Task) => {
-    await api.post('/tasks/create', task);
-    await reload();
+    await createTaskCallback(task);
     setShowCreateTaskModal(false);
   };
 
   const editTask = async (taskUpdates: Partial<Task>) => {
-    await api.post('/tasks/edit', taskUpdates);
-    await reload();
+    await editTaskCallback(taskUpdates);
     setShowEditTaskModal(null);
   };
-
-  const reload = async () => {
-    setTasks((await api.get('/tasks')).data);
-  };
-
-  React.useEffect(() => {
-    reload();
-  }, []);
 
   return (
     <Container className={classes.root}>
@@ -69,7 +63,7 @@ const TasksPage = () => {
         onClose={() => setShowCreateTaskModal(false)}
         onSubmit={(taskUpdates) => createTask(Object.assign({} as Task, getDefaultTask(), taskUpdates))}
       />
-      {tasks.map((task) => (
+      {tasks ? tasks.map((task) => (
         <Button
           key={task.id}
           size='large'
@@ -79,11 +73,11 @@ const TasksPage = () => {
         >
           {`Edit Task "${task.title}"`}
         </Button>
-      ))}
+      )) : null}
       <TaskModal
         mode='edit'
         open={showEditTaskModal != null}
-        taskInit={tasks.find((task) => task.id === showEditTaskModal) ?? {} as Task}
+        taskInit={tasks?.find((task) => task.id === showEditTaskModal) ?? {} as Task}
         onClose={() => setShowEditTaskModal(null)}
         onSubmit={(taskUpdates) => editTask(taskUpdates)}
       />
