@@ -125,7 +125,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           <Typography>{profile.email}</Typography>
         </div>
         <div>
-          {isProfileOfLoggedInUser ? (
+          {isProfileOfLoggedInUser && (
             <Button
               onClick={() => setShowUpdateModal((p) => !p)}
               color="primary"
@@ -133,7 +133,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
             >
               Edit Profile
             </Button>
-          ) : (
+          )}
+          {user && !isProfileOfLoggedInUser && (
             <ConnectionButton
               status={connectionStatus ?? ConnectionStatus.UNCONNECTED}
               onClick={handleConnectionButtonClick}
@@ -165,7 +166,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           <Link href="/login">
             <a>Log in</a>
           </Link>{" "}
-          and connect to see this user&apos;s tasks.
+          and connect to see this user&apos;s tasks and connect.
         </Typography>
       )}
 
