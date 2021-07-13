@@ -27,6 +27,7 @@ import {
   getOutgoingConnectionRequests,
 } from "./connection";
 import { ApiError } from "./errors";
+import { getStatsForUser } from "./users/users-stats";
 
 const PORT = 8080;
 
@@ -85,6 +86,12 @@ createConnection({
     app.post("/users/update", async (req, res) => {
       await updateUser(res.locals.session.id, req.body.changes);
       return res.send("updated successfully!");
+    });
+
+    app.get("/users/:userId/stats", async (req, res) => {
+      return res.json({
+        data: await getStatsForUser(res.locals.session.id),
+      });
     });
 
     app.get("/tasks", async (req, res) => {
