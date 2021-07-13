@@ -10,6 +10,13 @@ export type User = {
   bio?: string;
 };
 
+export type ProfileStats = {
+  businessThisWeek: number;
+  tasksThisWeek: number;
+  businessLastWeek: number;
+  tasksLastWeek: number;
+};
+
 export enum ConnectionStatus {
   UNCONNECTED = "unconnected",
   REQUESTED = "requested",

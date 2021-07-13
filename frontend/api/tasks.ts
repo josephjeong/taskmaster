@@ -6,7 +6,7 @@ export const useUserTasks = (userId: string) => {
   const { user } = useAuthContext();
   let key = null;
 
-  if (user) {
+  if (user?.id) {
     if (user.id === userId) {
       key = "/tasks";
     } else {

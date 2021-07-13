@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
-import { User } from "../types";
+import { ProfileStats, User } from "../types";
 import { api } from "./utils";
 
 export const fetchProfile = async (userId: string): Promise<User> => {
@@ -38,4 +38,11 @@ export const useUserProfile = (userId: string, initialProfile?: User) => {
   return useSWR<User>(`/users/details/${userId}`, {
     initialData: initialProfile,
   });
+};
+
+export const useProfileStats = (userId: string) => {
+  return useSWR<ProfileStats>(`/users/${userId}/stats`, (url) =>
+    // TODO Remove this when backend error handling stuff is done
+    api.get(url).then((res) => res.data.data)
+  );
 };

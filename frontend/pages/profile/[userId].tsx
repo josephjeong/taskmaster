@@ -18,6 +18,7 @@ import {
   UpdateProfileInput,
   useConnectionStatus,
   useMyTasks,
+  useProfileStats,
   useRequestConnection,
   useUpdateProfile,
   useUserProfile,
@@ -28,6 +29,7 @@ import TaskListItem from "../../components/task/TaskListItem";
 import Stack from "../../components/shared/Stack";
 import Spacing from "../../components/shared/Spacing";
 import { useRouter } from "next/router";
+import ProfileStatsSection from "../../components/profile/ProfileStatsSection";
 
 // const EXAMPLE_USER: User = {
 //   id: "b59aa143-5e1c-46af-b05c-85908324e097",
@@ -139,6 +141,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           )}
         </div>
       </div>
+
+      <Spacing y={6} />
+
+      {user && <ProfileStatsSection user={profile} />}
 
       <Spacing y={6} />
 
