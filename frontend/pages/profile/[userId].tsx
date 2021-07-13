@@ -65,6 +65,9 @@ const useStyles = makeStyles((theme) => ({
   textCenter: {
     textAlign: "center",
   },
+  tasksHeading: {
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -150,15 +153,24 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
       <Spacing y={6} />
 
       {user && (
-        <Stack spacing={2}>
-          {tasks?.map((task) => (
-            <TaskListItem
-              task={task}
-              key={task.id}
-              isEditable={isProfileOfLoggedInUser}
-            />
-          ))}
-        </Stack>
+        <>
+          <Typography
+            variant="h5"
+            component="h2"
+            className={classes.tasksHeading}
+          >
+            {user.first_name}&apos;s Tasks
+          </Typography>
+          <Stack spacing={2}>
+            {tasks?.map((task) => (
+              <TaskListItem
+                task={task}
+                key={task.id}
+                isEditable={isProfileOfLoggedInUser}
+              />
+            ))}
+          </Stack>
+        </>
       )}
 
       {!user && (
