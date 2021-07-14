@@ -8,7 +8,9 @@ export const api = axios.create({
 // Automatically add jwt header to request
 api.interceptors.request.use((request) => {
   if (!request.headers.jwt && typeof window !== "undefined") {
-    request.headers.jwt = localStorage.getItem(LOCALSTORAGE_TOKEN_KEY);
+    request.headers.jwt = JSON.parse(
+      localStorage.getItem(LOCALSTORAGE_TOKEN_KEY) ?? "null"
+    );
   }
   return request;
 });
