@@ -1,7 +1,10 @@
 import "reflect-metadata";
 import "dotenv/config";
 
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
+// Probably needs to be imported after express
+import "express-async-errors";
+
 import { createConnection } from "typeorm";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
@@ -17,8 +20,15 @@ import { User } from "./entity/User";
 import { Task } from "./entity/Task";
 import { TaskAssignment } from "./entity/TaskAssignment";
 import { Connection } from "./entity/Connection";
-import { acceptRequest, createUserConnection, declineRequest, isConnected, getIncomingConnectionRequests, getOutgoingConnectionRequests } from "./connection";
-
+import {
+  acceptRequest,
+  createUserConnection,
+  declineRequest,
+  isConnected,
+  getIncomingConnectionRequests,
+  getOutgoingConnectionRequests,
+} from "./connection";
+import { ApiError } from "./errors";
 
 const PORT = 8080;
 
@@ -78,20 +88,23 @@ createConnection({
       await updateUser(res.locals.session.id, req.body.changes);
       return res.send("updated successfully!");
     });
-    
+  
     // the two routes below return an array of tasks sorted by deadline, closer deadlines first
     app.get("/tasks", async (req, res) => {
-      return res.send(await getProfileTasks(res.locals.session.id, res.locals.session.id));
+      return res.send(
+        await getProfileTasks(res.locals.session.id, res.locals.session.id)
+      );
     });
-    
+
     app.get("/users/tasks/:id", async (req, res) => {
-      const tasks = await getProfileTasks(res.locals.sessions.id, req.params.id);
+      const tasks = await getProfileTasks(res.locals.session.id, req.params.id);
       return res.send(tasks);
     });
-    
+
     app.post("/tasks/create", async (req, res) => {
       const deadlineTime = new Date(req.body.deadline);
-      await createTask(res.locals.session.id,
+      await createTask(
+        res.locals.session.id,
         req.body.title,
         deadlineTime,
         req.body.status,
@@ -102,13 +115,14 @@ createConnection({
       );
       return res.send("create task success");
     });
-    
+
     app.post("/tasks/edit", async (req, res) => {
       let deadlineTime = null;
       if (req.body.deadline) {
         deadlineTime = new Date(req.body.deadline);
       }
-      await editTask(req.body.task_id,
+      await editTask(
+        req.body.task_id,
         res.locals.session.id,
         // must specify at least one of the following, rest can be null
         req.body.title,
@@ -150,16 +164,45 @@ createConnection({
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getIncomingConnectionRequests(req.params.userId);
+      const s = await getIncomingConnectionRequests(res.locals.session.id);
       return res.send(s);
     });
-
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getOutgoingConnectionRequests(req.params.userId);
+      const s = await getOutgoingConnectionRequests(res.locals.session.id);
       return res.send(s);
     });
 
+    if (process.env.NODE_ENV !== "production") {
+      app.get("/this-route-will-error", async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        throw new Error("This is a test error that should not show up in prod");
+      });
+    }
+
+    app.use(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+        console.error(err);
+        if (res.headersSent) {
+          return;
+        } else if (err instanceof ApiError) {
+          res.json({
+            error: {
+              code: err.code,
+              message: err.message,
+            },
+          });
+        } else {
+          res.json({
+            error: {
+              code: "UNKNOWN_ERROR",
+              message: "An unknown error occurred on the server",
+            },
+          });
+        }
+      }
+    );
 
     app.listen(PORT, () =>
       // tslint:disable-next-line:no-console
