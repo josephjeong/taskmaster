@@ -1,14 +1,18 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn} from "typeorm";
+import { Task } from "./Task";
+import { User } from "./User";
 
 @Entity("TaskAssignment")
 export class TaskAssignment {
   @PrimaryColumn()
   id: string;
 
-  @Column()
+  @ManyToOne(() => Task, task => task.id, { eager: true })
+  @JoinColumn({ name: "task" })
   task: string;
   
-  @Column({ nullable: true })
+  @ManyToOne(() => User, user => user.id, { nullable: true, eager: true })
+  @JoinColumn({ name: "user_assignee" })
   user_assignee: string;
 
   @Column({ nullable: true })

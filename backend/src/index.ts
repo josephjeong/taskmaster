@@ -108,7 +108,7 @@ createConnection({
         req.body.title,
         deadlineTime,
         req.body.status,
-        req.body.assignees, // string[] containing at least one id. later on it can be null to only set group when groups are implemented
+        req.body.assignees, // string[] containing ids, can be null
         req.body.project, // can be null
         req.body.description, // can be null
         req.body.estimated_days // can be null

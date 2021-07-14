@@ -23,14 +23,9 @@ test('empty string param of editTask test', async () => {
 
 test('correct task edit', async () => {
     await createUser(
-        "asd@gmail.com","badpassword","bob","dob","asd"
-    )
-    await createUser(
         "bas@gmail.com","badpassword","bob","dob","asd"
     )
-    const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
     const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
-    const task_creator = user[0].id;
     const user2_id = user2[0].id;
     const task_project: string = null;
     const task_title = "title";
@@ -43,7 +38,7 @@ test('correct task edit', async () => {
         user2_id, task_title, task_deadline, 
         task_status, [user2_id], task_project, task_description, task_estimated_days
     )
-    
+
     const new_deadline = new Date();
     new_deadline.setMinutes(new_deadline.getMinutes() + 10);
     await editTask(
@@ -51,10 +46,10 @@ test('correct task edit', async () => {
         new_deadline, null, null, null
     )
     expect.assertions(8);
-    const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
+    const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}, relations: ["creator"]}) as any;
     expect(tasks.length).toBe(1);
-    expect(tasks[0].project).toBe(task_project);
-    expect(tasks[0].creator).toBe(user2_id);
+    expect(tasks[0].project).toBe(null);
+    expect(tasks[0].creator.id).toBe(user2_id);
     expect(tasks[0].title).toBe(task_title);
     expect(tasks[0].deadline).toStrictEqual(new_deadline);
     expect(tasks[0].status).toBe(task_status);
@@ -87,7 +82,7 @@ test('invalid status test', async () => {
     )).rejects.toEqual("invalid task status");
 });
 
-test('correct task edit', async () => {
+test('correct task edit connected user assignee', async () => {
     await createUser(
         "asd@gmail.com","badpassword","bob","dob","asd"
     )
@@ -97,7 +92,7 @@ test('correct task edit', async () => {
     const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
     const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
     const task_creator = user[0].id;
-    const user2_id = user[0].id;
+    const user2_id = user2[0].id;
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
@@ -105,6 +100,8 @@ test('correct task edit', async () => {
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
+    await createUserConnection(user2_id, task_creator);
+    await acceptRequest(user2_id, task_creator);
     const task_id = await createTask(
         user2_id, task_title, task_deadline, 
         task_status, [task_creator], task_project, task_description, task_estimated_days
@@ -117,10 +114,10 @@ test('correct task edit', async () => {
         new_deadline, null, null, null
     )
     expect.assertions(8);
-    const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
+    const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}, relations: ["creator"]}) as any;
     expect(tasks.length).toBe(1);
-    expect(tasks[0].project).toBe(task_project);
-    expect(tasks[0].creator).toBe(task_creator);
+    expect(tasks[0].project).toBe(null);
+    expect(tasks[0].creator.id).toBe(user2_id);
     expect(tasks[0].title).toBe(task_title);
     expect(tasks[0].deadline).toStrictEqual(new_deadline);
     expect(tasks[0].status).toBe(task_status);

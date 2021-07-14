@@ -3,8 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Task, Status } from "../entity/Task";
 import { TaskAssignment } from "../entity/TaskAssignment";
-import { isConnected } from "../connection";
-import { validAssignees } from "./task-helpers"
+import { validAssignees } from "./task-helpers";
 
 /** function to create and store task in database */
 export async function createTask(
@@ -12,7 +11,7 @@ export async function createTask(
     title : string,
     deadline : Date,
     status : Status,
-    assignees : string[], // change to null
+    assignees? : string[] | null,
     project? : string | null,
     description? : string | null,
     estimated_days? : number | null
@@ -21,11 +20,6 @@ export async function createTask(
     // check values are not empty strings, null/undefined etc.
     if (!(creator && title && deadline && status)) {
         throw "error creating task with given params, ensure they are defined, not empty strings etc.";
-    }
-
-    // check either assignee or group_assignee is not null
-    if ((!assignees || assignees.length == 0)) {// && !group_assignee, change to either group or assignees
-        throw "either assignees or group_assignee has to be not null or empty"
     }
     
     // check valid status
@@ -55,8 +49,9 @@ export async function createTask(
     // task id as uuid
     task.id = uuidv4();
 
-    // save task
-    await getConnection().manager.save(task);
+    // neither assignees or group_assignee
+    if (!assignees) // && !group_assignee
+        await getConnection().manager.save(task);
     
     // if (!assignees && group_assignee && check creator and assignees in group/project) {
     //     set group assignee
@@ -64,7 +59,8 @@ export async function createTask(
     
     // save assignment in database if specified, 
     // change validAssignees to check same group/project as well
-    if (assignees && (await validAssignees(creator, assignees))) {
+    if (assignees && assignees.length > 0 && (await validAssignees(creator, assignees))) {
+        await getConnection().manager.save(task); // may need to move this line for group
         for (const assignee of assignees) {
             const assignment = new TaskAssignment();
             assignment.id = uuidv4();

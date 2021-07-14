@@ -1,4 +1,5 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { User } from "./User";
 
 export enum Status {
   NOT_STARTED = "TO_DO",
@@ -15,7 +16,8 @@ export class Task {
   @Column({ nullable: true })
   project: string;
 
-  @Column()
+  @ManyToOne(() => User, user => user.id, { eager: true })
+  @JoinColumn({ name: "creator" })
   creator: string;
 
   @Column()

@@ -41,14 +41,14 @@ export async function editTask(
     }
     
     // get task
-    let tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
+    let tasks = await getConnection().getRepository(Task).find({where : {id : task_id}, relations: ["creator"]}) as any;
     
     if (tasks.length != 1) {
         throw "either task does not exist or duplicate task ids exist";
     }
     
     // check editor is creator of task
-    if (tasks[0].creator != editor) {
+    if (tasks[0].creator.id != editor) {
         throw "this user cannot edit this task, only it's creator"
     }
     

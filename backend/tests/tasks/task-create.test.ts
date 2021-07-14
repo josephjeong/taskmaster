@@ -14,14 +14,6 @@ test('empty string param of createTask test', async () => {
         "error creating task with given params, ensure they are defined, not empty strings etc.");
 });
 
-test('empty or null assignees test', async () => {
-    expect.assertions(2);
-    await expect(createTask("s","title",new Date(),Status.NOT_STARTED,[])).rejects.toEqual(
-        "either assignees or group_assignee has to be not null or empty");
-    await expect(createTask("s","title",new Date(),Status.NOT_STARTED, null)).rejects.toEqual(
-        "either assignees or group_assignee has to be not null or empty");
-});
-
 test('not connected assignees test', async () => {
     expect.assertions(7);
     await createUser(
@@ -104,13 +96,14 @@ test('correct task creation', async () => {
     expect.assertions(8);
     const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
     expect(tasks.length).toBe(1);
-    expect(tasks[0].project).toBe(task_project);
-    expect(tasks[0].creator).toBe(task_creator);
+    expect(tasks[0].project).toBe(null);
     expect(tasks[0].title).toBe(task_title);
     expect(tasks[0].deadline).toStrictEqual(task_deadline);
     expect(tasks[0].status).toBe(task_status);
     expect(tasks[0].description).toBe(task_description);
     expect(tasks[0].estimated_days).toBe(task_estimated_days);
+    const obj = await getConnection().getRepository(Task).find({where : {id : task_id}, relations: ["creator"]}) as any;
+    expect(obj[0].creator.id).toBe(task_creator);
 });
 
 test('invalid status test', async () => {

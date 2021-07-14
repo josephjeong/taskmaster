@@ -56,7 +56,7 @@ test('connected test', async () => {
     const tasks = await getProfileTasks(task_creator, task_creator2);
     expect(tasks.length).toBe(1);
     expect(tasks[0].project).toBe(task_project2);
-    expect(tasks[0].creator).toBe(task_creator2);
+    expect(tasks[0].creator.id).toBe(task_creator2);
     expect(tasks[0].title).toBe(task_title2);
     expect(tasks[0].deadline).toStrictEqual(task_deadline2);
     expect(tasks[0].status).toBe(task_status2);
@@ -66,7 +66,7 @@ test('connected test', async () => {
     const tasks2 = await getProfileTasks(task_creator2, task_creator);
     expect(tasks2.length).toBe(1);
     expect(tasks2[0].project).toBe(task_project);
-    expect(tasks2[0].creator).toBe(task_creator);
+    expect(tasks2[0].creator.id).toBe(task_creator);
     expect(tasks2[0].title).toBe(task_title);
     expect(tasks2[0].deadline).toStrictEqual(task_deadline);
     expect(tasks2[0].status).toBe(task_status);
@@ -194,7 +194,7 @@ test('get own tasks test', async () => {
     const tasks = await getProfileTasks(task_creator, task_creator);
     expect(tasks.length).toBe(2);
     expect(tasks[0].project).toBe(task_project);
-    expect(tasks[0].creator).toBe(task_creator);
+    expect(tasks[0].creator.id).toBe(task_creator);
     expect(tasks[0].title).toBe(task_title);
     expect(tasks[0].deadline).toStrictEqual(task_deadline);
     expect(tasks[0].status).toBe(task_status);
@@ -202,7 +202,7 @@ test('get own tasks test', async () => {
     expect(tasks[0].estimated_days).toBe(task_estimated_days);
     
     expect(tasks[1].project).toBe(task_project);
-    expect(tasks[1].creator).toBe(task_creator);
+    expect(tasks[1].creator.id).toBe(task_creator);
     expect(tasks[1].title).toBe(task_title);
     expect(tasks[1].deadline).toStrictEqual(task_deadline);
     expect(tasks[1].status).toBe(task_status);
