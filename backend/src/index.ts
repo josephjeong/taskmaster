@@ -9,11 +9,13 @@ import { decodeJWTPayload } from "./users/users-helpers";
 import { fetchUserDetails } from "./users/users-details";
 import { updateUser } from "./users/users-update";
 import { createTask } from "./tasks/task-create";
+import { deleteTask } from "./tasks/task-delete";
 import { editTask } from "./tasks/task-edit";
 import { getProfileTasks } from "./tasks/get-profile-tasks";
 import cors from "cors";
 import { User } from "./entity/User";
 import { Task } from "./entity/Task";
+import { TaskAssignment } from "./entity/TaskAssignment";
 import { Connection } from "./entity/Connection";
 import { acceptRequest, createUserConnection, declineRequest, isConnected, getIncomingConnectionRequests, getOutgoingConnectionRequests } from "./connection";
 
@@ -22,7 +24,7 @@ const PORT = 8080;
 
 // create typeorm connection
 createConnection({
-  entities: [User, Task, Connection],
+  entities: [User, Task, Connection, TaskAssignment],
   type: "postgres",
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
@@ -93,10 +95,10 @@ createConnection({
         req.body.title,
         deadlineTime,
         req.body.status,
+        req.body.assignees, // string[] containing at least one id. later on it can be null to only set group when groups are implemented
         req.body.project, // can be null
         req.body.description, // can be null
-        req.body.estimated_days, // can be null
-        req.body.assignee // can be null
+        req.body.estimated_days // can be null
       );
       return res.send("create task success");
     });
@@ -112,11 +114,19 @@ createConnection({
         req.body.title,
         deadlineTime,
         req.body.status,
+        req.body.assignees, // string[] containing ids of the task's new assignees, 
+                            // pass in [] (empty array) here to set task to zero assignees, only possible if task is part of a group
+                            // otherwise pass null for no changes
         req.body.description,
-        req.body.estimated_days,
-        req.body.assignee // pass in the string "None" here to remove assignee from task
+        req.body.estimated_days
       );
       return res.send("edit task success");
+    });
+    
+    app.delete("/tasks/delete", async (req, res) => {
+      if (await deleteTask(req.body.id))
+        res.send("delete task success");
+      else res.send("task does not exist");
     });
 
     app.post("/connection/create", async (req, res) => {

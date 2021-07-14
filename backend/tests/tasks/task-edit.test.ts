@@ -31,7 +31,7 @@ test('correct task edit', async () => {
     const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
     const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
     const task_creator = user[0].id;
-    const user2_id = user[0].id;
+    const user2_id = user2[0].id;
     const task_project: string = null;
     const task_title = "title";
     const task_deadline = new Date();
@@ -41,7 +41,7 @@ test('correct task edit', async () => {
     const task_estimated_days = 2.5;
     const task_id = await createTask(
         user2_id, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days, task_creator
+        task_status, [user2_id], task_project, task_description, task_estimated_days
     )
     
     const new_deadline = new Date();
@@ -54,7 +54,7 @@ test('correct task edit', async () => {
     const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
     expect(tasks.length).toBe(1);
     expect(tasks[0].project).toBe(task_project);
-    expect(tasks[0].creator).toBe(task_creator);
+    expect(tasks[0].creator).toBe(user2_id);
     expect(tasks[0].title).toBe(task_title);
     expect(tasks[0].deadline).toStrictEqual(new_deadline);
     expect(tasks[0].status).toBe(task_status);
@@ -78,13 +78,92 @@ test('invalid status test', async () => {
     const task_estimated_days = 2.5;
     const task_id = await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     )
     const bad_status = "b";
     return expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, bad_status as any, task_description, task_estimated_days
+        task_deadline, bad_status as any, [], task_description, task_estimated_days
     )).rejects.toEqual("invalid task status");
+});
+
+test('correct task edit', async () => {
+    await createUser(
+        "asd@gmail.com","badpassword","bob","dob","asd"
+    )
+    await createUser(
+        "bas@gmail.com","badpassword","bob","dob","asd"
+    )
+    const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
+    const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
+    const task_creator = user[0].id;
+    const user2_id = user[0].id;
+    const task_project: string = null;
+    const task_title = "title";
+    const task_deadline = new Date();
+    task_deadline.setMinutes(task_deadline.getMinutes() + 1);
+    const task_status = Status.NOT_STARTED;
+    const task_description = "description\n";
+    const task_estimated_days = 2.5;
+    const task_id = await createTask(
+        user2_id, task_title, task_deadline, 
+        task_status, [task_creator], task_project, task_description, task_estimated_days
+    )
+    
+    const new_deadline = new Date();
+    new_deadline.setMinutes(new_deadline.getMinutes() + 10);
+    await editTask(
+        task_id, user2_id, null, 
+        new_deadline, null, null, null
+    )
+    expect.assertions(8);
+    const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}});
+    expect(tasks.length).toBe(1);
+    expect(tasks[0].project).toBe(task_project);
+    expect(tasks[0].creator).toBe(task_creator);
+    expect(tasks[0].title).toBe(task_title);
+    expect(tasks[0].deadline).toStrictEqual(new_deadline);
+    expect(tasks[0].status).toBe(task_status);
+    expect(tasks[0].description).toBe(task_description);
+    expect(tasks[0].estimated_days).toBe(task_estimated_days);
+});
+
+test('not connected assignee test', async () => {
+    await createUser(
+        "asd@gmail.com","badpassword","bob","dob","asd"
+    )
+    await createUser(
+        "bas@gmail.com","badpassword","bob","dob","asd"
+    )
+    const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
+    const task_creator = user[0].id;
+    const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
+    const task_creator2 = user2[0].id;
+    const task_project: string = null;
+    const task_title = "title";
+    const task_deadline = new Date();
+    task_deadline.setMinutes(task_deadline.getMinutes() + 1);
+    const task_status = Status.NOT_STARTED;
+    const task_description = "description\n";
+    const task_estimated_days = 2.5;
+    const task_id = await createTask(
+        task_creator, task_title, task_deadline, 
+        task_status, [task_creator], task_project, task_description, task_estimated_days
+    )
+    await expect(editTask(
+        task_id, task_creator, task_title, 
+        task_deadline, Status.NOT_STARTED, [task_creator2], task_description, task_estimated_days
+    )).rejects.toEqual("invalid assignees, they must be connected or in same group");
+    await createUserConnection(task_creator2, task_creator);
+    await expect(editTask(
+        task_id, task_creator, task_title, 
+        task_deadline, Status.NOT_STARTED, [task_creator2], task_description, task_estimated_days
+    )).rejects.toEqual("invalid assignees, they must be connected or in same group");
+    await acceptRequest(task_creator2, task_creator);
+    await expect(editTask(
+        task_id, task_creator, task_title, 
+        task_deadline, Status.NOT_STARTED, [task_creator2], task_description, task_estimated_days
+    )).resolves.not.toThrow();
 });
 
 test('invalid deadline test', async () => {
@@ -103,12 +182,12 @@ test('invalid deadline test', async () => {
     const task_estimated_days = 2.5;
     const task_id = await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     );
     const new_task_deadline = new Date(); // sets time to now;
     return expect(editTask(
         task_id, task_creator, task_title, 
-        new_task_deadline, task_status, task_description, task_estimated_days
+        new_task_deadline, task_status, null, task_description, task_estimated_days
     )).rejects.toEqual("deadline must be in the future");
 });
 
@@ -128,12 +207,12 @@ test('invalid estimated_days test', async () => {
     const task_estimated_days = 2.5;
     const task_id = await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     );
     const new_estimated_days = 0.00000;
     return expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, task_status, task_description, new_estimated_days
+        task_deadline, task_status, [], task_description, new_estimated_days
     )).rejects.toEqual("estimated_days must be >= 0");
 });
 
@@ -161,11 +240,11 @@ test('editor is not creator test', async () => {
     
     const task_id = await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days, user2_id
+        task_status, [user2_id], task_project, task_description, task_estimated_days
     );
     const task_id2 = await createTask(
         user2_id, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days, task_creator
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     );
     expect.assertions(3);
     await expect(editTask(

@@ -8,7 +8,7 @@ export class TaskAssignment {
   @Column()
   task: string;
   
-  @Column()
+  @Column({ nullable: true })
   user_assignee: string;
 
   @Column({ nullable: true })

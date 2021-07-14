@@ -35,7 +35,7 @@ test('connected test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days, task_creator
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     )
     const task_project2: string = null;
     const task_title2 = "title2";
@@ -48,7 +48,7 @@ test('connected test', async () => {
     const task_creator2 = user2[0].id;
     await createTask(
         task_creator2, task_title2, task_deadline2, 
-        task_status2, task_project2, task_description2, task_estimated_days2, task_creator2
+        task_status2, [task_creator2], task_project2, task_description2, task_estimated_days2
     ) 
     await createUserConnection(task_creator, task_creator2);
     await acceptRequest(task_creator, task_creator2);
@@ -75,7 +75,7 @@ test('connected test', async () => {
     
     await createTask(
         task_creator2, task_title2, task_deadline2, 
-        task_status2, task_project2, task_description2, task_estimated_days2, task_creator
+        task_status2, [task_creator], task_project2, task_description2, task_estimated_days2
     ) 
     const tasks3 = await getProfileTasks(task_creator2, task_creator);
     expect(tasks3.length).toBe(2);
@@ -99,7 +99,7 @@ test('not accepted connection test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days, task_creator
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     )
     const task_project2: string = null;
     const task_title2 = "title2";
@@ -110,12 +110,13 @@ test('not accepted connection test', async () => {
     const task_estimated_days2 = 3;
     const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
     const task_creator2 = user2[0].id;
-    await createTask(
+    await expect(createTask(
         task_creator2, task_title2, task_deadline2, 
-        task_status2, task_project2, task_description2, task_estimated_days2
-    ) 
+        task_status2, [task_creator], task_project2, task_description2, task_estimated_days2
+    )).rejects.toEqual(
+        "invalid assignees, they must be connected or in same group");
     await createUserConnection(task_creator, task_creator2);
-    expect.assertions(2);
+    expect.assertions(3);
     const tasks = await getProfileTasks(task_creator, task_creator2);
     expect(tasks.length).toBe(0);
     
@@ -141,7 +142,7 @@ test('declined connection test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     )
     const task_project2: string = null;
     const task_title2 = "title2";
@@ -152,13 +153,14 @@ test('declined connection test', async () => {
     const task_estimated_days2 = 3;
     const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
     const task_creator2 = user2[0].id;
-    await createTask(
+    await expect(createTask(
         task_creator2, task_title2, task_deadline2, 
-        task_status2, task_project2, task_description2, task_estimated_days2
-    ) 
+        task_status2, [task_creator], task_project2, task_description2, task_estimated_days2
+    )).rejects.toEqual(
+        "invalid assignees, they must be connected or in same group");
     await createUserConnection(task_creator, task_creator2);
     await declineRequest(task_creator, task_creator2);
-    expect.assertions(2);
+    expect.assertions(3);
     const tasks = await getProfileTasks(task_creator, task_creator2);
     expect(tasks.length).toBe(0);
     
@@ -181,11 +183,11 @@ test('get own tasks test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days, task_creator
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     )
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days, task_creator
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     )
     
     expect.assertions(15);
@@ -226,16 +228,17 @@ test('not connected test', async () => {
     const task_estimated_days = 2.5;
     await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
+        task_status, [task_creator], task_project, task_description, task_estimated_days
     )
     const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
     const task_creator2 = user2[0].id;
-    await createTask(
+    await expect(createTask(
         task_creator2, task_title, task_deadline, 
-        task_status, task_project, task_description, task_estimated_days
-    )
+        task_status, [task_creator], task_project, task_description, task_estimated_days
+    )).rejects.toEqual(
+        "invalid assignees, they must be connected or in same group");
     
-    expect.assertions(2);
+    expect.assertions(3);
     const tasks = await getProfileTasks(task_creator,task_creator2);
     const tasks2 = await getProfileTasks(task_creator2,task_creator);
     expect(tasks.length).toBe(0);
