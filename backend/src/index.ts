@@ -25,6 +25,7 @@ import {
   isConnected,
   getIncomingConnectionRequests,
   getOutgoingConnectionRequests,
+  getAcceptedConnections
 } from "./connection";
 import { ApiError } from "./errors";
 
@@ -157,6 +158,11 @@ createConnection({
 
     app.get("/connection/incomingRequests", async (req, res) => {
       const s = await getOutgoingConnectionRequests(res.locals.session.id);
+      return res.send(s);
+    });
+
+    app.get("/connection/acceptedConnections", async (req, res) => {
+      const s = await getAcceptedConnections(res.locals.session.id);
       return res.send(s);
     });
 
