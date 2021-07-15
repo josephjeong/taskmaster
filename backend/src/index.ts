@@ -90,6 +90,10 @@ createConnection({
     });
   
     // the two routes below return an array of tasks sorted by deadline, closer deadlines first
+    // they return Task[] of the form: [ Task { creator: User { id: , 
+    //                                                          email: , etc. }, 
+    //                                          id: , 
+    //                                          deadline: , etc.} ]
     app.get("/tasks", async (req, res) => {
       return res.send(
         await getProfileTasks(res.locals.session.id, res.locals.session.id)
@@ -108,8 +112,8 @@ createConnection({
         req.body.title,
         deadlineTime,
         req.body.status,
-        req.body.assignees, // string[] containing ids, can be null
-        req.body.project, // can be null
+        req.body.assignees, // string[] containing ids, can be empty/null/undefined to implicitly assign to creator
+        req.body.project, // can be null/undefined, sets to null in db
         req.body.description, // can be null
         req.body.estimated_days // can be null
       );
@@ -129,8 +133,8 @@ createConnection({
         deadlineTime,
         req.body.status,
         req.body.assignees, // string[] containing ids of the task's new assignees, 
-                            // pass in [] (empty array) here to set task to zero assignees, only possible if task is part of a group
-                            // otherwise pass null for no changes
+                            // pass in [] (empty array) here to set task to no assignee which implicity assigns to creator
+                            // otherwise pass null/undefined for no changes
         req.body.description,
         req.body.estimated_days
       );
@@ -138,9 +142,8 @@ createConnection({
     });
     
     app.delete("/tasks/delete", async (req, res) => {
-      if (await deleteTask(req.body.id))
-        res.send("delete task success");
-      else res.send("task does not exist");
+      await deleteTask(res.locals.session.id, req.body.id);
+      return res.send("delete task success");
     });
 
     app.post("/connection/create", async (req, res) => {

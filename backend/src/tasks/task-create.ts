@@ -18,7 +18,7 @@ export async function createTask(
 ) : Promise<string> {
 
     // check values are not empty strings, null/undefined etc.
-    if (!(creator && title && deadline && status)) {
+    if (!(creator && (title && title.trim().length > 0) && deadline && status)) {
         throw "error creating task with given params, ensure they are defined, not empty strings etc.";
     }
     
@@ -33,7 +33,7 @@ export async function createTask(
     }
     
     // ensure estimated_days is positive
-    if (estimated_days != null && estimated_days <= 0) {
+    if (estimated_days !== null && estimated_days !== undefined && estimated_days < 0) {
         throw "estimated_days must be >= 0"
     }
 
@@ -50,8 +50,17 @@ export async function createTask(
     task.id = uuidv4();
 
     // neither assignees or group_assignee
-    if (!assignees) // && !group_assignee
+    if (!assignees || assignees.length == 0) {// && !group_assignee 
+        // implicitly assign to creator 
+        const assignment = new TaskAssignment();
+        assignment.id = uuidv4();
+        assignment.task = task.id;
+        assignment.user_assignee = creator;
+        // set assignment.group_assignee if specified after checking in group
         await getConnection().manager.save(task);
+        await getConnection().manager.save(assignment);
+        return task.id;
+    }
     
     // if (!assignees && group_assignee && check creator and assignees in group/project) {
     //     set group assignee
@@ -66,7 +75,7 @@ export async function createTask(
             assignment.id = uuidv4();
             assignment.task = task.id;
             assignment.user_assignee = assignee;
-            // set assignment.group_assignee if specified
+            // set assignment.group_assignee if specified after checking in group
             await getConnection().manager.save(assignment);
         }
     } else {

@@ -7,7 +7,7 @@ export class TaskAssignment {
   @PrimaryColumn()
   id: string;
 
-  @ManyToOne(() => Task, task => task.id, { eager: true })
+  @ManyToOne(() => Task, task => task.id, { eager: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "task" })
   task: string;
   

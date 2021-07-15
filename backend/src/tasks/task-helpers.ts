@@ -15,12 +15,9 @@ export async function validAssignees(
 
 export async function deleteAssignment(
     id : string
-) : Promise<boolean> {
-    const assignment_repo = await getConnection().getRepository(TaskAssignment);
-    const to_remove = await assignment_repo.findOne({where : {id : id}});
-    if (!to_remove) return false;
-    await assignment_repo.remove(to_remove);
-    return true;
+) : Promise<void> {
+    const assignment_repo = getConnection().getRepository(TaskAssignment);
+    await assignment_repo.delete(id);
 }
 
 // delete assignments by task id

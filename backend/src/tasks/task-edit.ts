@@ -21,7 +21,8 @@ export async function editTask(
     }
 
     // check at least one of the other params are defined
-    if (!(title || deadline || status || description || estimated_days || assignees)) { // && group
+    if (!((title && title.trim().length > 0) || deadline || status || (description !== undefined && description !== null) || 
+        (estimated_days !== undefined && estimated_days !== null) || assignees)) { // && group
         throw "error editing task with given params, ensure at least one field is defined or not empty";
     }
     
@@ -36,19 +37,19 @@ export async function editTask(
     }
     
     // ensure estimated_days is positive
-    if (estimated_days != null && estimated_days <= 0) {
+    if (estimated_days !== null && estimated_days !== undefined && estimated_days < 0) {
         throw "estimated_days must be >= 0"
     }
     
     // get task
     let tasks = await getConnection().getRepository(Task).find({where : {id : task_id}, relations: ["creator"]}) as any;
     
-    if (tasks.length != 1) {
+    if (tasks.length !== 1) {
         throw "either task does not exist or duplicate task ids exist";
     }
     
     // check editor is creator of task
-    if (tasks[0].creator.id != editor) {
+    if (tasks[0].creator.id !== editor) {
         throw "this user cannot edit this task, only it's creator"
     }
     
@@ -63,7 +64,7 @@ export async function editTask(
     if (estimated_days)
         tasks[0].estimated_days = estimated_days;
     
-    // if (assignees && assignees.length == 0 && task has a group) {
+    // if (assignees && assignees.length === 0 && task has a group) {
     //     remove assignees and return
     //     const assignments = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}});
     //     assignment[0].user_assignee = null;
@@ -71,6 +72,18 @@ export async function editTask(
     
     if (!assignees) {
         await getConnection().manager.save(tasks[0]);
+        return;
+    }
+    
+    // if assignees [], implicit assign task to creator
+    if (assignees.length === 0) {
+        updateAssignments(assignees, task_id); // remove current assignees
+        const assignment = new TaskAssignment();
+        assignment.id = uuidv4();
+        assignment.task = tasks[0].id;
+        assignment.user_assignee = tasks[0].creator.id;
+        await getConnection().manager.save(tasks[0]);
+        await getConnection().manager.save(assignment);
         return;
     }
     
