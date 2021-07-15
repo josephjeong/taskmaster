@@ -150,3 +150,32 @@ export async function getOutgoingConnectionRequests(
         return ('Error showing outgoing connection requests: ' + e);
     }
 }
+
+export async function getAcceptedConnections(
+    user : String,
+): Promise<any> {
+    const connRepo = getConnection().getRepository(Connection);
+    const connUserIsRequestee = await connRepo.find({where : {requestee: user}});
+    const connUserIsRequester = await connRepo.find({where : {requester: user}});
+    let acceptedConnections: Connection[] = []; 
+
+    for (let i = 0; i < connUserIsRequestee.length; i++) {
+        if (connUserIsRequestee[i].accepted) {
+            acceptedConnections.push(connUserIsRequestee[i]);
+        }
+    }
+
+    for (let i = 0; i < connUserIsRequester.length; i++) {
+        if (connUserIsRequester[i].accepted) {
+            acceptedConnections.push(connUserIsRequester[i]);
+        }
+    }
+
+    try {
+        return acceptedConnections;
+    } catch (e) {
+        console.error(e);
+        return ('Error showing connections: ' + e);
+    }
+}
+
