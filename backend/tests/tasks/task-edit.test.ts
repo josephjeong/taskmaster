@@ -111,9 +111,8 @@ test('correct task edit connected user assignee', async () => {
     new_deadline.setMinutes(new_deadline.getMinutes() + 10);
     await editTask(
         task_id, user2_id, null, 
-        new_deadline, null, null, null
+        new_deadline, null, [task_creator, user2_id], null
     )
-    expect.assertions(8);
     const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}, relations: ["creator"]}) as any;
     expect(tasks.length).toBe(1);
     expect(tasks[0].project).toBe(null);
@@ -123,6 +122,10 @@ test('correct task edit connected user assignee', async () => {
     expect(tasks[0].status).toBe(task_status);
     expect(tasks[0].description).toBe(task_description);
     expect(tasks[0].estimated_days).toBe(task_estimated_days);
+    const assigns = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}}) as any;
+    expect(assigns.length).toBe(2);
+    expect(assigns[0].user_assignee.id).toBe(task_creator);
+    expect(assigns[1].user_assignee.id).toBe(user2_id);
 });
 
 test('not connected assignee test', async () => {
@@ -311,9 +314,16 @@ test('implicit edit assignees test', async () => {
     )
     await expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [], task_description, task_estimated_days
+        task_deadline, Status.NOT_STARTED, [task_creator2], task_description, task_estimated_days
     )).resolves.not.toThrow();
     let assigns = await getConnection().getRepository(TaskAssignment).find({where : {task: task_id}}) as any;
+    expect(assigns.length).toBe(1);
+    expect(assigns[0].user_assignee.id).toBe(task_creator2);
+    await expect(editTask(
+        task_id, task_creator, task_title, 
+        task_deadline, Status.NOT_STARTED, [], task_description, task_estimated_days
+    )).resolves.not.toThrow();
+    assigns = await getConnection().getRepository(TaskAssignment).find({where : {task: task_id}}) as any;
     expect(assigns.length).toBe(1);
     expect(assigns[0].user_assignee.id).toBe(task_creator);
     await expect(editTask(
@@ -322,8 +332,8 @@ test('implicit edit assignees test', async () => {
     )).resolves.not.toThrow();
     assigns = await getConnection().getRepository(TaskAssignment).find({where : {task: task_id}}) as any;
     expect(assigns.length).toBe(2);
-    expect(assigns[0].user_assignee.id).toBe(task_creator2);
-    expect(assigns[1].user_assignee.id).toBe(task_creator);
+    expect(assigns[0].user_assignee.id).toBe(task_creator);
+    expect(assigns[1].user_assignee.id).toBe(task_creator2);
 });
     
 beforeAll(async () => {

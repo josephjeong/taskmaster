@@ -75,9 +75,13 @@ export async function editTask(
         return;
     }
     
-    // if assignees [], implicit assign task to creator
+    // if assignees [], implicit assign task to creator/editor
     if (assignees.length === 0) {
-        updateAssignments(assignees, task_id); // remove current assignees
+        assignees.push(editor);
+        if (!updateAssignments(assignees, task_id)) { // remove current assignees
+            await getConnection().manager.save(tasks[0]); // if assignees not changed, just save task
+            return;
+        }
         const assignment = new TaskAssignment();
         assignment.id = uuidv4();
         assignment.task = tasks[0].id;
@@ -101,14 +105,15 @@ export async function editTask(
 async function updateAssignments(
     assignees: string[],
     task_id: string
-) : Promise<void> {
-    const assignments = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}});
+) : Promise<boolean> {
+    const assignments = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}, loadRelationIds: true});
+    const current_assignees = assignments.map(a => a.user_assignee);
+    if (sameArrayValues(assignees, current_assignees)) return false;
     for (const curr of assignments) {
         if (!assignees.includes(curr.user_assignee)) {
             deleteAssignment(curr.id);
         }
     }
-    const current_assignees = assignments.map(a => a.user_assignee);
     for (const new_assignee of assignees) {
         if (!current_assignees.includes(new_assignee)) {
             const new_assignment = new TaskAssignment();
@@ -118,5 +123,21 @@ async function updateAssignments(
             await getConnection().manager.save(new_assignment);
         }
     }
+    return true;
+}
+
+function sameArrayValues(
+    array1 : string[],
+    array2 : string[]
+    ) : boolean {
+    for (const e of array1) {
+        if (!array2.includes(e))
+            return false;
+    }
+    for (const e of array2) {
+        if (!array1.includes(e))
+            return false;
+    }
+    return true;
 }
 
