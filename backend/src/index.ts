@@ -118,7 +118,7 @@ createConnection({
         deadlineTime = new Date(req.body.deadline);
       }
       await editTask(
-        req.body.task_id,
+        req.body.id,
         res.locals.session.id,
         // must specify at least one of the following
         req.body.title,
@@ -155,8 +155,18 @@ createConnection({
       return res.send(s);
     });
 
+    app.get("/connection/incomingRequests/:userId", async (req, res) => {
+      const s = await getIncomingConnectionRequests(req.params.userId);
+      return res.send(s);
+    });
+
     app.get("/connection/incomingRequests", async (req, res) => {
       const s = await getOutgoingConnectionRequests(res.locals.session.id);
+      return res.send(s);
+    });
+
+    app.get("/connection/outgoingRequests/:userId", async (req, res) => {
+      const s = await getOutgoingConnectionRequests(req.params.userId);
       return res.send(s);
     });
 
