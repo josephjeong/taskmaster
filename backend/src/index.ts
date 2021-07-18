@@ -153,7 +153,6 @@ createConnection({
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-        //@ts-expect-error thinks userId is not a param
         const s = await getIncomingConnectionRequests(res.locals.session.id);
         return res.send(s);
     });
@@ -164,7 +163,6 @@ createConnection({
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-        //@ts-expect-error thinks userId is not a param
         const s = await getOutgoingConnectionRequests(res.locals.session.id);
         return res.send(s);
     });
