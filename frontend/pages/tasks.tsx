@@ -2,15 +2,18 @@ import React from 'react';
 import { makeStyles, Container, Button } from '@material-ui/core';
 import moment from 'moment';
 
+import { api } from '../api/utils';
+import { useMyTasks, useCreateTask, useEditTask } from '../api/tasks';
 import { Task, TaskStatus } from '../types';
 import TaskModal from '../components/task/TaskModal';
 
 const DEFAULT_TASK_ATTRIBUTES = {
+  id: '0',
   title: '',
   description: '',
   deadline: moment(),
-  status: TaskStatus.TO_DO,
-  estimatedDays: 1
+  status: TaskStatus.NOT_STARTED,
+  estimated_days: 1
 } as Task;
 
 const useStyles = makeStyles((theme) => ({
@@ -23,22 +26,30 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const TasksPage = () => {
-  const [tasks, setTasks] = React.useState<Task[]>([]);
+  const { data: tasks } = useMyTasks();
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
   const [showEditTaskModal, setShowEditTaskModal] = React.useState<string | null>(null);
 
   const classes = useStyles();
 
+  const createTaskCallback = useCreateTask();
+  const editTaskCallback = useEditTask();
+
   const getDefaultTask = () => {
     return {
       ...DEFAULT_TASK_ATTRIBUTES,
-      id: tasks.length.toString()
+      id: tasks?.length.toString() ?? 0
     } as Task;
   };
 
-  const createTask = (task: Task) => {
-    setTasks([...tasks, task]);
+  const createTask = async (task: Task) => {
+    await createTaskCallback(task);
     setShowCreateTaskModal(false);
+  };
+
+  const editTask = async (taskUpdates: Partial<Task>) => {
+    await editTaskCallback(taskUpdates);
+    setShowEditTaskModal(null);
   };
 
   return (
@@ -51,9 +62,9 @@ const TasksPage = () => {
         open={showCreateTaskModal}
         taskInit={getDefaultTask()}
         onClose={() => setShowCreateTaskModal(false)}
-        onSubmit={(task) => createTask(task)}
+        onSubmit={(taskUpdates) => createTask(Object.assign({} as Task, getDefaultTask(), taskUpdates))}
       />
-      {tasks.map((task) => (
+      {tasks ? tasks.map((task) => (
         <Button
           key={task.id}
           size='large'
@@ -63,17 +74,14 @@ const TasksPage = () => {
         >
           {`Edit Task "${task.title}"`}
         </Button>
-      ))}
-      {tasks.map((task) => (
-        <TaskModal
-          key={task.id}
-          mode='edit'
-          open={showEditTaskModal === task.id}
-          taskInit={task}
-          onClose={() => setShowEditTaskModal(null)}
-          onSubmit={(task) => console.log(task)}
-        />
-      ))}
+      )) : null}
+      <TaskModal
+        mode='edit'
+        open={showEditTaskModal != null}
+        taskInit={tasks?.find((task) => task.id === showEditTaskModal) ?? {} as Task}
+        onClose={() => setShowEditTaskModal(null)}
+        onSubmit={(taskUpdates) => editTask(taskUpdates)}
+      />
     </Container>
   )
 }
