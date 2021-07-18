@@ -154,15 +154,45 @@ createConnection({
 
     app.get("/connection/incomingRequests", async (req, res) => {
         //@ts-expect-error thinks userId is not a param
-        const s = await getIncomingConnectionRequests(req.params.userId);
+        const s = await getIncomingConnectionRequests(res.locals.session.id);
         return res.send(s);
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
         //@ts-expect-error thinks userId is not a param
-        const s = await getOutgoingConnectionRequests(req.params.userId);
+        const s = await getOutgoingConnectionRequests(res.locals.session.id);
         return res.send(s);
     });
+
+    if (process.env.NODE_ENV !== "production") {
+        app.get("/this-route-will-error", async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          throw new Error("This is a test error that should not show up in prod");
+        });
+    }
+
+    app.use(// eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+          console.error(err);
+          if (res.headersSent) {
+            return;
+          } else if (err instanceof ApiError) {
+            res.json({
+              error: {
+                code: err.code,
+                message: err.message,
+              },
+            });
+          } else {
+            res.json({
+              error: {
+                code: "UNKNOWN_ERROR",
+                message: "An unknown error occurred on the server",
+              },
+            });
+          }
+        }
+      );
 
   })
   .catch((err) => {
