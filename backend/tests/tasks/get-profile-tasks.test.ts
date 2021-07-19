@@ -141,12 +141,15 @@ test('not accepted connection test', async () => {
         task_status2, [task_creator], task_project2, task_description2, task_estimated_days2
     )).rejects.toThrow();
     await createUserConnection(task_creator, task_creator2);
-    expect.assertions(3);
-    const tasks = await getProfileTasks(task_creator, task_creator2);
-    expect(tasks.length).toBe(0);
-    
-    const tasks2 = await getProfileTasks(task_creator2, task_creator);
-    expect(tasks2.length).toBe(0);
+    expect.assertions(5);
+    try {await (getProfileTasks(task_creator, task_creator2))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
+    try {await (getProfileTasks(task_creator2, task_creator))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
 });
 
 test('declined connection test', async () => {
@@ -184,12 +187,15 @@ test('declined connection test', async () => {
     )).rejects.toThrow();
     await createUserConnection(task_creator, task_creator2);
     await declineRequest(task_creator, task_creator2);
-    expect.assertions(3);
-    const tasks = await getProfileTasks(task_creator, task_creator2);
-    expect(tasks.length).toBe(0);
-    
-    const tasks2 = await getProfileTasks(task_creator2, task_creator);
-    expect(tasks2.length).toBe(0);
+    expect.assertions(5);
+    try {await (getProfileTasks(task_creator, task_creator2))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
+    try {await (getProfileTasks(task_creator2, task_creator))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
 });
 
 test('get own tasks test', async () => {
@@ -263,12 +269,15 @@ test('not connected test', async () => {
         task_status, [task_creator], task_project, task_description, task_estimated_days
     )).rejects.toThrow();
     
-    expect.assertions(3);
-    const tasks = await getProfileTasks(task_creator,task_creator2);
-    const tasks2 = await getProfileTasks(task_creator2,task_creator);
-    expect(tasks.length).toBe(0);
-    
-    expect(tasks2.length).toBe(0);
+    expect.assertions(5);
+    try {await (getProfileTasks(task_creator, task_creator2))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
+    try {await (getProfileTasks(task_creator2, task_creator))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
 });
 
 test('get no profile tasks test', async () => {
@@ -286,23 +295,30 @@ test('get no profile tasks test', async () => {
     expect(t.length).toBe(0);
     t = await getProfileTasks(task_creator2, task_creator2);
     expect(t.length).toBe(0);
-    t = await getProfileTasks(task_creator, task_creator2);
-    expect(t.length).toBe(0);
-    t = await getProfileTasks(task_creator2, task_creator);
-    expect(t.length).toBe(0);
+    try {await (getProfileTasks(task_creator, task_creator2))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
+    try {await (getProfileTasks(task_creator2, task_creator))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
     await createUserConnection(task_creator, task_creator2);
     t = await getProfileTasks(task_creator2, task_creator2);
     expect(t.length).toBe(0);
-    t = await getProfileTasks(task_creator, task_creator2);
-    expect(t.length).toBe(0);
-    t = await getProfileTasks(task_creator2, task_creator);
-    expect(t.length).toBe(0);
+    try {await (getProfileTasks(task_creator, task_creator2))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
+    try {await (getProfileTasks(task_creator2, task_creator))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/no_perm");
+        expect(e.message).toBe("You are unauthorised, as you aren't connected to this user");
+    }
     await acceptRequest(task_creator, task_creator2);
     t = await getProfileTasks(task_creator, task_creator2);
     expect(t.length).toBe(0);
     t = await getProfileTasks(task_creator2, task_creator);
     expect(t.length).toBe(0);
-    
 }); 
     
 beforeAll(async () => {

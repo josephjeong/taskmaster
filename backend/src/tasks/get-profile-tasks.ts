@@ -18,9 +18,9 @@ export async function getProfileTasks(
     
     // for later: show common group/project tasks even if not connected?
     
-    // if users are not connected, return empty
+    // if users are not connected, throw error
     if (user_id !== profile_user_id && !(await isConnected(user_id, profile_user_id) === "connected")) {
-        return [];
+        throw new ApiError("getProfileTasks/no_perm", "You are unauthorised, as you aren't connected to this user");
     }
     
     // get task assignments
