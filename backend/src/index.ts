@@ -15,6 +15,7 @@ import { createTask } from "./tasks/task-create";
 import { deleteTask } from "./tasks/task-delete";
 import { editTask } from "./tasks/task-edit";
 import { getProfileTasks } from "./tasks/get-profile-tasks";
+import { getTask } from "./tasks/get-task";
 import cors from "cors";
 import { User } from "./entity/User";
 import { Task } from "./entity/Task";
@@ -90,22 +91,32 @@ createConnection({
     });
   
     // the two routes below return an array of tasks sorted by deadline, closer deadlines first
-    // they return Task[] of the form: [ Task { creator: User { id: , 
-    //                                                          email: , etc. }, 
+    // data is Task[] of the form: [ Task { creator: User { id: , 
+    //                                                          email: , etc. 
+    //                                                        }, 
+    //                                          assignees: [ User{id: , email: , etc.}, ...],
     //                                          id: , 
     //                                          deadline: , etc.} ]
     app.get("/tasks", async (req, res) => {
-      return res.send(
-        await getProfileTasks(res.locals.session.id, res.locals.session.id)
-      );
+      return res.json({
+        data: await getProfileTasks(res.locals.session.id, res.locals.session.id)
+      });
     });
-
+    
+    // :id is user_id
     app.get("/users/tasks/:id", async (req, res) => {
-      const tasks = await getProfileTasks(res.locals.session.id, req.params.id);
-      return res.send(tasks);
+      return res.json({
+        data: await getProfileTasks(res.locals.session.id, req.params.id)
+      });
+    });
+    
+    app.get("/task/:id", async (req, res) => {
+      return res.json({
+        data: await getTask(res.locals.session.id, req.params.id)
+      });
     });
 
-    app.post("/tasks/create", async (req, res) => {
+    app.post("/task/create", async (req, res) => {
       const deadlineTime = new Date(req.body.deadline);
       await createTask(
         res.locals.session.id,
@@ -120,29 +131,29 @@ createConnection({
       return res.send("create task success");
     });
 
-    app.post("/tasks/edit", async (req, res) => {
+    app.post("/task/edit/:id", async (req, res) => {
       let deadlineTime = null;
       if (req.body.deadline) {
         deadlineTime = new Date(req.body.deadline);
       }
       await editTask(
-        req.body.task_id,
+        req.params.id,
         res.locals.session.id,
         // must specify at least one of the following, rest can be null
         req.body.title,
         deadlineTime,
         req.body.status,
-        req.body.assignees, // string[] containing ids of the task's new assignees, 
-                            // pass in [] (empty array) here to set task to no assignee which implicity assigns to creator
-                            // otherwise pass null/undefined for no changes
+        req.body.add_assignees, // string[] containing ids assignees to add, or null/undefined/[] for no changes
+        req.body.remove_assignees, // string[] containing ids assignees to remove, or null/undefined/[] for no changes
+        //                            removing all assignees will set creator/editor as only assignee
         req.body.description,
         req.body.estimated_days
       );
       return res.send("edit task success");
     });
     
-    app.delete("/tasks/delete", async (req, res) => {
-      await deleteTask(res.locals.session.id, req.body.id);
+    app.delete("/task/delete/:id", async (req, res) => {
+      await deleteTask(res.locals.session.id, req.params.id);
       return res.send("delete task success");
     });
 

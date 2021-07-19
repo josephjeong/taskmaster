@@ -9,18 +9,64 @@ import { createUser } from "../../src/users/users-create";
 import { createUserConnection, declineRequest, acceptRequest } from "../../src/connection";
 
 test('bad string param of createTask test', async () => {
-    await expect(createTask("","title",new Date(),Status.NOT_STARTED,[])).rejects.toEqual(
-        "error creating task with given params, ensure they are defined, not empty strings etc.");
-    await expect(createTask("","title",new Date(),Status.NOT_STARTED,[],null,"")).rejects.toEqual(
-        "error creating task with given params, ensure they are defined, not empty strings etc.");
-    await expect(createTask("","title",new Date(),Status.NOT_STARTED,[],null,undefined)).rejects.toEqual(
-        "error creating task with given params, ensure they are defined, not empty strings etc.");
-    await expect(createTask("","title",new Date(),Status.NOT_STARTED,[],null,null)).rejects.toEqual(
-        "error creating task with given params, ensure they are defined, not empty strings etc.");
+    try {await (createTask("","title",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_creator");
+        expect(e.message).toBe("creator is null/undefined or empty string");
+    }
+    try {await (createTask(null,"title",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_creator");
+        expect(e.message).toBe("creator is null/undefined or empty string");
+    }
+    try {await (createTask(undefined,"title",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_creator");
+        expect(e.message).toBe("creator is null/undefined or empty string");
+    }
+    try {await (createTask("asd","",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_title");
+        expect(e.message).toBe("title is null/undefined or empty string");
+    }
+    try {await (createTask("asd",null,new Date(),Status.NOT_STARTED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_title");
+        expect(e.message).toBe("title is null/undefined or empty string");
+    }
+    try {await (createTask("asd",undefined,new Date(),Status.NOT_STARTED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_title");
+        expect(e.message).toBe("title is null/undefined or empty string");
+    }
+    const d = new Date();
+    d.setMinutes(d.getMinutes()+1);
+    try {await (createTask("asd","asd",d,null,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_status");
+        expect(e.message).toBe("status is null/undefined or empty string");
+    }
+    try {await (createTask("asd","asd",d,undefined,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_status");
+        expect(e.message).toBe("status is null/undefined or empty string");
+    }
+    try {await (createTask("asd","asd",d,"" as any,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_status");
+        expect(e.message).toBe("status is null/undefined or empty string");
+    }
+    try {await (createTask("asd","asd",null,Status.COMPLETED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_deadline");
+        expect(e.message).toBe("deadline is not a Date, or is null/undefined");
+    }
+    try {await (createTask("asd","asd",undefined,Status.COMPLETED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_deadline");
+        expect(e.message).toBe("deadline is not a Date, or is null/undefined");
+    }
+    try {await (createTask("asd","asd","asd" as any,Status.COMPLETED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_deadline");
+        expect(e.message).toBe("deadline is not a Date, or is null/undefined");
+    }
+    try {await (createTask("asd","asd",1 as any,Status.COMPLETED,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_deadline");
+        expect(e.message).toBe("deadline is not a Date, or is null/undefined");
+    }
 });
 
 test('not connected assignees test', async () => {
-    expect.assertions(7);
+    expect.assertions(13);
     await createUser(
         "asd@gmail.com","badpassword","bob","dob","asd"
     )
@@ -38,42 +84,54 @@ test('not connected assignees test', async () => {
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
-    await expect(createTask(
+    try {await createTask(
         task_creator, task_title, task_deadline, 
         task_status, [task_creator2], task_project, task_description, task_estimated_days
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )} catch (e) {
+        expect(e.code).toBe("createTask/invalid_assignees");
+        expect(e.message).toBe("invalid assignees, they must be connected or in same group");
+    }
     await createUserConnection(task_creator, task_creator2);
-    await expect(createTask(
+    try {await createTask(
         task_creator, task_title, task_deadline, 
         task_status, [task_creator2], task_project, task_description, task_estimated_days
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )} catch (e) {
+        expect(e.code).toBe("createTask/invalid_assignees");
+        expect(e.message).toBe("invalid assignees, they must be connected or in same group");
+    }
     await declineRequest(task_creator, task_creator2);
-    await expect(createTask(
+    try {await createTask(
         task_creator, task_title, task_deadline, 
         task_status, [task_creator2], task_project, task_description, task_estimated_days
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )} catch (e) {
+        expect(e.code).toBe("createTask/invalid_assignees");
+        expect(e.message).toBe("invalid assignees, they must be connected or in same group");
+    }
     await createUserConnection(task_creator2, task_creator);
-    await expect(createTask(
+    try {await createTask(
         task_creator, task_title, task_deadline, 
         task_status, [task_creator2], task_project, task_description, task_estimated_days
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )} catch (e) {
+        expect(e.code).toBe("createTask/invalid_assignees");
+        expect(e.message).toBe("invalid assignees, they must be connected or in same group");
+    }
     await declineRequest(task_creator2, task_creator);
-    await expect(createTask(
+    try {await createTask(
         task_creator, task_title, task_deadline, 
         task_status, [task_creator2], task_project, task_description, task_estimated_days
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )} catch (e) {
+        expect(e.code).toBe("createTask/invalid_assignees");
+        expect(e.message).toBe("invalid assignees, they must be connected or in same group");
+    }
     await createUserConnection(task_creator2, task_creator);
-    await expect(createTask(
+    try {await createTask(
         task_creator, task_title, task_deadline, 
         task_status, [task_creator2], task_project, task_description, task_estimated_days
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
-    await acceptRequest(task_creator2, task_creator)
+    )} catch (e) {
+        expect(e.code).toBe("createTask/invalid_assignees");
+        expect(e.message).toBe("invalid assignees, they must be connected or in same group");
+    }
+    await acceptRequest(task_creator2, task_creator);
     await expect(createTask(
         task_creator, task_title, task_deadline, 
         task_status, [task_creator2], task_project, task_description, task_estimated_days
@@ -205,48 +263,47 @@ test('implicit creator task creation', async () => {
 });
 
 test('invalid status test', async () => {
-    expect.assertions(1);
-    await createUser(
-        "asd@gmail.com","badpassword","bob","dob","asd"
-    )
-    const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
-    const task_creator = user[0].id;
-    const task_project: string = null;
-    const task_title = "title";
-    const task_deadline = new Date();
-    const task_status = "bad status";
-    const task_description = "description\n";
-    const task_estimated_days = 2.5;
-    return expect(createTask(
-        task_creator, task_title, task_deadline, 
-        task_status as any, [task_creator],task_project, task_description, task_estimated_days
-    )).rejects.toEqual("invalid task status");
+    expect.assertions(2);
+    const d=new Date();
+    d.setMinutes(d.getMinutes()+1);
+    try {await (createTask("asd","asd",d,"a" as any,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_status");
+        expect(e.message).toBe('Status enum is {NOT_STARTED = "TO_DO", IN_PROGRESS = "IN_PROGRESS", BLOCKED = "BLOCKED", COMPLETED = "DONE"}');
+    }
 });
 
 test('invalid deadline test', async () => {
-    expect.assertions(1);
-    await createUser(
-        "asd@gmail.com","badpassword","bob","dob","asd"
-    )
-    const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
-    const task_creator = user[0].id;
-    const task_project: string = null;
-    const task_title = "title";
-    const task_deadline = new Date(); // sets time to now
-    const task_status = Status.NOT_STARTED;
-    const task_description = "description\n";
-    const task_estimated_days = 2.5;
-    return expect(createTask(
-        task_creator, task_title, task_deadline, 
-        task_status, [task_creator], task_project, task_description, task_estimated_days
-    )).rejects.toEqual("deadline must be in the future");
+    expect.assertions(2);
+    try {await (createTask("asd","asd",new Date(),undefined,[]))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_deadline");
+        expect(e.message).toBe("deadline must be in the future");
+    }
 });
 
-test('invalid estimated_days test', async () => {
-    expect.assertions(1);
+test('invalid estimated_days and invalid creator test', async () => {
+    expect.assertions(4);
+    const d = new Date();
+    d.setMinutes(d.getMinutes() + 1);
+    try {await (createTask("asd","asd",d,Status.COMPLETED,null,null,null,-1))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_estimated_days");
+        expect(e.message).toBe("estimated_days must be >= 0");
+    }
+    try {await (createTask("asd","asd",d,Status.COMPLETED,null,null,null,0))} catch (e) {
+        expect(e.code).toBe("createTask/invalid_creator");
+        expect(e.message).toBe("user/creator with this id does not exist");
+    }
+});
+
+test('multiple assignee creation', async () => {
     await createUser(
         "asd@gmail.com","badpassword","bob","dob","asd"
     )
+    await createUser(
+        "bas@gmail.com","badpassword","bob","dob","asd"
+    )
+    const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
+    
+    const task_creator2 = user2[0].id;
     const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
     const task_creator = user[0].id;
     const task_project: string = null;
@@ -255,11 +312,19 @@ test('invalid estimated_days test', async () => {
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
     const task_status = Status.NOT_STARTED;
     const task_description = "description\n";
-    const task_estimated_days = -0.00001;
-    return expect(createTask(
+    const task_estimated_days = 2.5;
+    await createUserConnection(task_creator2, task_creator);
+    await acceptRequest(task_creator2, task_creator);
+    const task_id = await createTask(
         task_creator, task_title, task_deadline, 
-        task_status, [task_creator], task_project, task_description, task_estimated_days
-    )).rejects.toEqual("estimated_days must be >= 0");
+        task_status, [task_creator, task_creator2], task_project, task_description, task_estimated_days
+    )
+    let assigns = await getConnection().getRepository(TaskAssignment).find({where : {task: task_id}}) as any;
+    expect(assigns.length).toBe(2);
+    expect(assigns[0].user_assignee.id).toBe(task_creator);
+    expect(assigns[1].user_assignee.id).toBe(task_creator2);
+    const tasks = await getConnection().getRepository(Task).find({where : {id : task_id}, relations: ["creator"]}) as any;
+    expect(tasks.length).toBe(1);
 });
 
 beforeAll(async () => {

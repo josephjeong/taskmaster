@@ -5,7 +5,7 @@ export enum Status {
   NOT_STARTED = "TO_DO",
   IN_PROGRESS = "IN_PROGRESS",
   BLOCKED = "BLOCKED",
-  COMPLETED = "DONE",
+  COMPLETED = "DONE"
 }
 
 @Entity("Task")

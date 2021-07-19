@@ -37,10 +37,14 @@ test('bad task deletion', async () => {
     expect(tasks.length).toBe(1);
     let assigns = await getConnection().getRepository(TaskAssignment).find();
     expect(assigns.length).toBe(2);
-    await expect(deleteTask(user2_id, task_id)).rejects.toEqual(
-        "deletor must be task creator");
-    await expect(deleteTask(user2_id, 'a')).rejects.toEqual(
-        "task does not exist");
+    try {await (deleteTask(user2_id, task_id))} catch (e) {
+        expect(e.code).toBe("deleteTask/invalid_delete");
+        expect(e.message).toBe("deletor_id must match task creator's id to delete");
+    }
+    try {await (deleteTask(user2_id, "a"))} catch (e) {
+        expect(e.code).toBe("deleteTask/invalid_task_id");
+        expect(e.message).toBe("task with this id does not exist");
+    }
 });
     
 test('correct task deletion', async () => {

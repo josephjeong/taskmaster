@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Task, Status } from "../entity/Task";
 import { TaskAssignment } from "../entity/TaskAssignment";
-import { validAssignees } from "./task-helpers";
+import { validAssignees, userIdExists } from "./task-helpers";
+import { ApiError } from "../errors";
 
 /** function to create and store task in database */
 export async function createTask(
@@ -18,24 +19,32 @@ export async function createTask(
 ) : Promise<string> {
 
     // check values are not empty strings, null/undefined etc.
-    if (!(creator && (title && title.trim().length > 0) && deadline && status)) {
-        throw "error creating task with given params, ensure they are defined, not empty strings etc.";
-    }
+    if (!creator)
+        throw new ApiError("createTask/invalid_creator", "creator is null/undefined or empty string");
     
-    // check valid status
-    if (!Object.values(Status).includes(status)) {
-        throw "invalid task status"
-    }
+    if (!(title && title.trim().length > 0))
+        throw new ApiError("createTask/invalid_title", "title is null/undefined or empty string");
+    
+    if (!deadline || !(deadline instanceof Date))
+        throw new ApiError("createTask/invalid_deadline", "deadline is not a Date, or is null/undefined");
     
     // ensure deadline in the future
-    if (deadline.getTime() <= Date.now()) {
-        throw "deadline must be in the future"
-    }
+    if (deadline.getTime() <= Date.now())
+        throw new ApiError("createTask/invalid_deadline", "deadline must be in the future");
+    
+    if (!status)
+        throw new ApiError("createTask/invalid_status", "status is null/undefined or empty string");
+    
+    // check valid status
+    if (!Object.values(Status).includes(status))
+        throw new ApiError("createTask/invalid_status", 'Status enum is {NOT_STARTED = "TO_DO", IN_PROGRESS = "IN_PROGRESS", BLOCKED = "BLOCKED", COMPLETED = "DONE"}');
     
     // ensure estimated_days is positive
-    if (estimated_days !== null && estimated_days !== undefined && estimated_days < 0) {
-        throw "estimated_days must be >= 0"
-    }
+    if (estimated_days !== null && estimated_days !== undefined && estimated_days < 0)
+        throw new ApiError("createTask/invalid_estimated_days", "estimated_days must be >= 0");
+    
+    if (!(await userIdExists(creator)))
+        throw new ApiError("createTask/invalid_creator", "user/creator with this id does not exist");
 
     // new task
     const task = new Task();
@@ -79,7 +88,7 @@ export async function createTask(
             await getConnection().manager.save(assignment);
         }
     } else {
-        throw "invalid assignees, they must be connected or in same group";
+        throw new ApiError("createTask/invalid_assignees","invalid assignees, they must be connected or in same group");
     }
 
     // return task id

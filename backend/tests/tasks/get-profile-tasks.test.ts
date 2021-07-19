@@ -10,11 +10,30 @@ import { createUser } from "../../src/users/users-create";
 import { createUserConnection, declineRequest, acceptRequest } from "../../src/connection";
 
 test('invalid ids test', async () => {
-    expect.assertions(4);
-    await expect(getProfileTasks("",null)).rejects.toEqual("a user id provided is invalid");
-    await expect(getProfileTasks("","")).rejects.toEqual("a user id provided is invalid");
-    await expect(getProfileTasks(null,null)).rejects.toEqual("a user id provided is invalid");
-    return expect(getProfileTasks(null,"")).rejects.toEqual("a user id provided is invalid");
+    try {await (getProfileTasks("","asd"))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/invalid_user_id");
+        expect(e.message).toBe("user id provided is null/undefined or empty string");
+    }
+    try {await (getProfileTasks(null,"asd"))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/invalid_user_id");
+        expect(e.message).toBe("user id provided is null/undefined or empty string");
+    }
+    try {await (getProfileTasks(undefined,"asd"))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/invalid_user_id");
+        expect(e.message).toBe("user id provided is null/undefined or empty string");
+    }
+    try {await (getProfileTasks("asd",null))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/invalid_profile_user_id");
+        expect(e.message).toBe("profile id provided is null/undefined or empty string");
+    }
+    try {await (getProfileTasks("asd",""))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/invalid_profile_user_id");
+        expect(e.message).toBe("profile id provided is null/undefined or empty string");
+    }
+    try {await (getProfileTasks("asd",undefined))} catch (e) {
+        expect(e.code).toBe("getProfileTasks/invalid_profile_user_id");
+        expect(e.message).toBe("profile id provided is null/undefined or empty string");
+    }
 });
 
 test('connected test', async () => {
@@ -52,7 +71,6 @@ test('connected test', async () => {
     ) 
     await createUserConnection(task_creator, task_creator2);
     await acceptRequest(task_creator, task_creator2);
-    expect.assertions(17);
     const tasks = await getProfileTasks(task_creator, task_creator2) as any;
     expect(tasks.length).toBe(1);
     expect(tasks[0].project).toBe(task_project2);
@@ -62,6 +80,8 @@ test('connected test', async () => {
     expect(tasks[0].status).toBe(task_status2);
     expect(tasks[0].description).toBe(task_description2);
     expect(tasks[0].estimated_days).toBe(task_estimated_days2);
+    expect(tasks[0].assignees.length).toBe(1);
+    expect(tasks[0].assignees[0].id).toBe(task_creator2);
     
     const tasks2 = await getProfileTasks(task_creator2, task_creator) as any;
     expect(tasks2.length).toBe(1);
@@ -72,13 +92,19 @@ test('connected test', async () => {
     expect(tasks2[0].status).toBe(task_status);
     expect(tasks2[0].description).toBe(task_description);
     expect(tasks2[0].estimated_days).toBe(task_estimated_days);
+    expect(tasks2[0].assignees.length).toBe(1);
+    expect(tasks2[0].assignees[0].id).toBe(task_creator);
     
-    await createTask(
-        task_creator2, task_title2, task_deadline2, 
-        task_status2, [task_creator], task_project2, task_description2, task_estimated_days2
-    ) 
-    const tasks3 = await getProfileTasks(task_creator2, task_creator);
+    await expect(createTask(
+        task_creator2, "two assignee", task_deadline2, 
+        task_status2, [task_creator, task_creator2], task_project2, task_description2, task_estimated_days2
+    )).resolves.not.toThrow();
+    const tasks3 = await getProfileTasks(task_creator2, task_creator2) as any;
     expect(tasks3.length).toBe(2);
+    expect(tasks3[1].creator.id).toBe(task_creator2);
+    expect(tasks3[1].assignees.length).toBe(2);
+    expect(tasks3[1].assignees[0].id).toBe(task_creator);
+    expect(tasks3[1].assignees[1].id).toBe(task_creator2);
 });
 
 test('not accepted connection test', async () => {
@@ -113,8 +139,7 @@ test('not accepted connection test', async () => {
     await expect(createTask(
         task_creator2, task_title2, task_deadline2, 
         task_status2, [task_creator], task_project2, task_description2, task_estimated_days2
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )).rejects.toThrow();
     await createUserConnection(task_creator, task_creator2);
     expect.assertions(3);
     const tasks = await getProfileTasks(task_creator, task_creator2);
@@ -156,8 +181,7 @@ test('declined connection test', async () => {
     await expect(createTask(
         task_creator2, task_title2, task_deadline2, 
         task_status2, [task_creator], task_project2, task_description2, task_estimated_days2
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )).rejects.toThrow();
     await createUserConnection(task_creator, task_creator2);
     await declineRequest(task_creator, task_creator2);
     expect.assertions(3);
@@ -189,8 +213,6 @@ test('get own tasks test', async () => {
         task_creator, task_title, task_deadline, 
         task_status, [task_creator], task_project, task_description, task_estimated_days
     )
-    
-    expect.assertions(15);
     const tasks = await getProfileTasks(task_creator, task_creator) as any;
     expect(tasks.length).toBe(2);
     expect(tasks[0].project).toBe(task_project);
@@ -200,6 +222,8 @@ test('get own tasks test', async () => {
     expect(tasks[0].status).toBe(task_status);
     expect(tasks[0].description).toBe(task_description);
     expect(tasks[0].estimated_days).toBe(task_estimated_days);
+    expect(tasks[0].assignees.length).toBe(1);
+    expect(tasks[0].assignees[0].id).toBe(task_creator);
     
     expect(tasks[1].project).toBe(task_project);
     expect(tasks[1].creator.id).toBe(task_creator);
@@ -208,6 +232,8 @@ test('get own tasks test', async () => {
     expect(tasks[1].status).toBe(task_status);
     expect(tasks[1].description).toBe(task_description);
     expect(tasks[1].estimated_days).toBe(task_estimated_days);
+    expect(tasks[1].assignees.length).toBe(1);
+    expect(tasks[1].assignees[0].id).toBe(task_creator);
 });
 
 test('not connected test', async () => {
@@ -235,8 +261,7 @@ test('not connected test', async () => {
     await expect(createTask(
         task_creator2, task_title, task_deadline, 
         task_status, [task_creator], task_project, task_description, task_estimated_days
-    )).rejects.toEqual(
-        "invalid assignees, they must be connected or in same group");
+    )).rejects.toThrow();
     
     expect.assertions(3);
     const tasks = await getProfileTasks(task_creator,task_creator2);
@@ -246,6 +271,40 @@ test('not connected test', async () => {
     expect(tasks2.length).toBe(0);
 });
 
+test('get no profile tasks test', async () => {
+    await createUser(
+        "asd@gmail.com","badpassword","bob","dob","asd"
+    )
+    await createUser(
+        "bas@gmail.com","badpassword","bob","dob","asd"
+    )
+    const user = await getConnection().getRepository(User).find({where : {email : "asd@gmail.com"}});
+    const task_creator = user[0].id;
+    const user2 = await getConnection().getRepository(User).find({where : {email : "bas@gmail.com"}});
+    const task_creator2 = user2[0].id;
+    let t = await getProfileTasks(task_creator, task_creator);
+    expect(t.length).toBe(0);
+    t = await getProfileTasks(task_creator2, task_creator2);
+    expect(t.length).toBe(0);
+    t = await getProfileTasks(task_creator, task_creator2);
+    expect(t.length).toBe(0);
+    t = await getProfileTasks(task_creator2, task_creator);
+    expect(t.length).toBe(0);
+    await createUserConnection(task_creator, task_creator2);
+    t = await getProfileTasks(task_creator2, task_creator2);
+    expect(t.length).toBe(0);
+    t = await getProfileTasks(task_creator, task_creator2);
+    expect(t.length).toBe(0);
+    t = await getProfileTasks(task_creator2, task_creator);
+    expect(t.length).toBe(0);
+    await acceptRequest(task_creator, task_creator2);
+    t = await getProfileTasks(task_creator, task_creator2);
+    expect(t.length).toBe(0);
+    t = await getProfileTasks(task_creator2, task_creator);
+    expect(t.length).toBe(0);
+    
+}); 
+    
 beforeAll(async () => {
     await createConnection();
 });
