@@ -103,16 +103,15 @@ createConnection({
       });
     });
     
-    // :id is user_id
-    app.get("/users/tasks/:id", async (req, res) => {
+    app.get("/users/tasks/:user_id", async (req, res) => {
       return res.json({
-        data: await getProfileTasks(res.locals.session.id, req.params.id)
+        data: await getProfileTasks(res.locals.session.id, req.params.user_id)
       });
     });
     
-    app.get("/task/:id", async (req, res) => {
+    app.get("/task/:task_id", async (req, res) => {
       return res.json({
-        data: await getTask(res.locals.session.id, req.params.id)
+        data: await getTask(res.locals.session.id, req.params.task_id)
       });
     });
 
@@ -131,13 +130,13 @@ createConnection({
       return res.send("create task success");
     });
 
-    app.post("/task/edit/:id", async (req, res) => {
+    app.post("/task/edit/:task_id", async (req, res) => {
       let deadlineTime = null;
       if (req.body.deadline) {
         deadlineTime = new Date(req.body.deadline);
       }
       await editTask(
-        req.params.id,
+        req.params.task_id,
         res.locals.session.id,
         // must specify at least one of the following, rest can be null
         req.body.title,
@@ -152,8 +151,8 @@ createConnection({
       return res.send("edit task success");
     });
     
-    app.delete("/task/delete/:id", async (req, res) => {
-      await deleteTask(res.locals.session.id, req.params.id);
+    app.delete("/task/delete/:task_id", async (req, res) => {
+      await deleteTask(res.locals.session.id, req.params.task_id);
       return res.send("delete task success");
     });
 
