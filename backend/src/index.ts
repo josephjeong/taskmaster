@@ -182,8 +182,18 @@ createConnection({
       return res.send(s);
     });
 
+    app.get("/connection/incomingRequests/:userId", async (req, res) => {
+      const s = await getIncomingConnectionRequests(req.params.userId);
+      return res.send(s);
+    });
+
     app.get("/connection/incomingRequests", async (req, res) => {
       const s = await getOutgoingConnectionRequests(res.locals.session.id);
+      return res.send(s);
+    });
+
+    app.get("/connection/outgoingRequests/:userId", async (req, res) => {
+      const s = await getOutgoingConnectionRequests(req.params.userId);
       return res.send(s);
     });
 
