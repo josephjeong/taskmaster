@@ -31,8 +31,8 @@ export const useCreateTask = () => {
 };
 
 export const useEditTask = () => {
-  return useCallback(async (taskUpdates: Partial<Task>) => {
-    await api.post('/task/edit', taskUpdates);
+  return useCallback(async (taskId: string, taskUpdates: Partial<Task>) => {
+    await api.post(`/task/edit/${taskId}`, taskUpdates);
     mutate('/tasks');
   }, []);
 };

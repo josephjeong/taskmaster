@@ -2,8 +2,10 @@ import React from 'react';
 import { makeStyles, Container, Button } from '@material-ui/core';
 import moment from 'moment';
 
-import { useMyTasks, useCreateTask, useEditTask } from '../api/tasks';
+import { useMyTasks, useCreateTask } from '../api/tasks';
 import { Task, TaskStatus } from '../types';
+import Stack from '../components/shared/Stack';
+import TaskListItem from '../components/task/TaskListItem';
 import TaskModal from '../components/task/TaskModal';
 
 const DEFAULT_TASK_ATTRIBUTES = {
@@ -32,16 +34,10 @@ const TasksPage = () => {
   const classes = useStyles();
 
   const createTaskCallback = useCreateTask();
-  const editTaskCallback = useEditTask();
 
   const createTask = async (task: Task) => {
     await createTaskCallback(task);
     setShowCreateTaskModal(false);
-  };
-
-  const editTask = async (taskUpdates: Partial<Task>) => {
-    await editTaskCallback(taskUpdates);
-    setShowEditTaskModal(null);
   };
 
   if (!tasks || !tasks.data) {
@@ -60,24 +56,15 @@ const TasksPage = () => {
         onClose={() => setShowCreateTaskModal(false)}
         onSubmit={(taskUpdates) => createTask(Object.assign({} as Task, DEFAULT_TASK_ATTRIBUTES, taskUpdates))}
       />
-      {tasks.data.map((task) => (
-        <Button
-          key={task.id}
-          size='large'
-          color='primary'
-          variant='contained'
-          onClick={() => setShowEditTaskModal(task.id)}
-        >
-          {`Edit Task "${task.title}"`}
-        </Button>
-      ))}
-      <TaskModal
-        mode='edit'
-        open={showEditTaskModal != null}
-        taskInit={tasks.data.find((task) => task.id === showEditTaskModal) ?? {} as Task}
-        onClose={() => setShowEditTaskModal(null)}
-        onSubmit={(taskUpdates) => editTask(taskUpdates)}
-      />
+      <Stack spacing={2}>
+        {tasks.data.map((task) => (
+          <TaskListItem
+            key={task.id}
+            task={task}
+            isEditable
+          />
+        ))}
+      </Stack>
     </Container>
   )
 }
