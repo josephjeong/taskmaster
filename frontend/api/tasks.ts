@@ -36,3 +36,10 @@ export const useEditTask = () => {
     mutate('/tasks');
   }, []);
 };
+
+export const useDeleteTask = () => {
+  return useCallback(async (taskId: string) => {
+    await api.delete(`/task/delete/${taskId}`);
+    mutate('/tasks');
+  }, []);
+};
