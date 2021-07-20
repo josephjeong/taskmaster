@@ -169,7 +169,7 @@ const TaskModal = ({
                 value={task.estimated_days}
                 onChange={(value) => {
                   const taskUpdates_ = { ...taskUpdates };
-                  taskUpdates_.estimatedDays = value;
+                  taskUpdates_.estimated_days = value;
                   setTaskUpdates(taskUpdates_);
                 }}
               />
