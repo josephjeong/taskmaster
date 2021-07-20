@@ -33,6 +33,10 @@ import { ApiError } from "./errors";
 
 const PORT = 8080;
 
+// start express server
+// initiated outside of connection to export it
+const app = express();
+
 // create typeorm connection
 createConnection({
   entities: [User, Task, Connection, TaskAssignment],
@@ -46,8 +50,6 @@ createConnection({
   logging: true,
 })
   .then((connection) => {
-    // start express server
-    const app = express();
 
     app.use(cors());
     app.use(express.json());
@@ -177,8 +179,8 @@ createConnection({
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getIncomingConnectionRequests(res.locals.session.id);
-      return res.send(s);
+        const s = await getIncomingConnectionRequests(res.locals.session.id);
+        return res.send(s);
     });
 
     app.get("/connection/incomingRequests/:userId", async (req, res) => {
@@ -187,8 +189,8 @@ createConnection({
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-      const s = await getOutgoingConnectionRequests(res.locals.session.id);
-      return res.send(s);
+        const s = await getOutgoingConnectionRequests(res.locals.session.id);
+        return res.send(s);
     });
 
     app.get("/connection/outgoingRequests/:userId", async (req, res) => {
@@ -197,41 +199,47 @@ createConnection({
     });
 
     if (process.env.NODE_ENV !== "production") {
-      app.get("/this-route-will-error", async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        throw new Error("This is a test error that should not show up in prod");
-      });
+        app.get("/this-route-will-error", async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          throw new Error("This is a test error that should not show up in prod");
+        });
     }
 
-    app.use(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-        console.error(err);
-        if (res.headersSent) {
-          return;
-        } else if (err instanceof ApiError) {
-          res.json({
-            error: {
-              code: err.code,
-              message: err.message,
-            },
-          });
-        } else {
-          res.json({
-            error: {
-              code: "UNKNOWN_ERROR",
-              message: "An unknown error occurred on the server",
-            },
-          });
+    app.use(// eslint-disable-next-line @typescript-eslint/no-unused-vars
+        (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+          console.error(err);
+          if (res.headersSent) {
+            return;
+          } else if (err instanceof ApiError) {
+            res.json({
+              error: {
+                code: err.code,
+                message: err.message,
+              },
+            });
+          } else {
+            res.json({
+              error: {
+                code: "UNKNOWN_ERROR",
+                message: "An unknown error occurred on the server",
+              },
+            });
+          }
         }
-      }
-    );
+      );
 
-    app.listen(PORT, () =>
-      // tslint:disable-next-line:no-console
-      console.log(`App listening on port ${PORT}!`)
-    );
   })
   .catch((err) => {
     console.log("Could not connect to database", err);
   });
+
+// listen delcared outside of connection to handle open handles in tests
+var server = app.listen(PORT, () =>
+  // tslint:disable-next-line:no-console
+  console.log(`App listening on port ${PORT}!`)
+);
+
+export default {
+    app: app,
+    server: server
+};
