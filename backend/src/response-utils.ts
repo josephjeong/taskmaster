@@ -6,7 +6,7 @@ export const sendData = (res: Response, data: unknown): void => {
 
 export const sendError = (
   res: Response,
-  data: { code: string; message: string }
+  error: { code: string; message: string }
 ): void => {
-  res.json({ data });
+  res.json({ error });
 };
