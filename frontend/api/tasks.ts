@@ -1,6 +1,6 @@
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
-import { Task } from "../types";
+import { ApiResponse, Task } from "../types";
 import { useCallback } from "react";
 import { api } from "./utils";
 
@@ -16,11 +16,11 @@ export const useUserTasks = (userId: string) => {
     }
   }
 
-  return useSWR<Task[]>(key);
+  return useSWR<ApiResponse<Task[]>>(key);
 };
 
 export const useMyTasks = () => {
-  return useSWR<Task[]>("/tasks");
+  return useSWR<ApiResponse<Task[]>>("/tasks");
 };
 
 export const useCreateTask = () => {
