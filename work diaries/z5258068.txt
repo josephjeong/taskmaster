@@ -54,6 +54,8 @@ Week 06
 
 Week 07
 
+- Add UI to display a user's "business" & other stats
+- Start on the backend for user profile stats
 
 
 ---
