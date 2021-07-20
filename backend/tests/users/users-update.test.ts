@@ -28,7 +28,7 @@ afterAll(async () => {
 
 // throw error if trying to update to invalid email address
 test("invalid email to update", async () => {
-  let nonexistent_users = [
+  const nonexistent_users = [
     {
       id: "3d45abc1-f475-475d-896a-32018a032ce8",
       changes: { email: "helloshbaail.com" },
@@ -42,8 +42,8 @@ test("invalid email to update", async () => {
   await Promise.all(
     nonexistent_users.map(
       async (user) =>
-        await expect(updateUser(user.id, user.changes)).rejects.toEqual(
-          "Please Provide a Valid Email"
+        await expect(updateUser(user.id, user.changes)).rejects.toThrowError(
+          "Please enter a valid email"
         )
     )
   );
@@ -51,7 +51,7 @@ test("invalid email to update", async () => {
 
 // throw error if email address is already assigned to other user
 test("email already assigned to another user", async () => {
-  let valid_emails = ["validemail@website.com", "hello@platter.io"];
+  const valid_emails = ["validemail@website.com", "hello@platter.io"];
   // create the emails of the users
   await Promise.all(
     valid_emails.map(
@@ -64,8 +64,10 @@ test("email already assigned to another user", async () => {
   await Promise.all(
     valid_emails.map(
       async (email) =>
-        await expect(updateUser(uuidv4(), { email: email })).rejects.toEqual(
-          "This email already has an account! Please log in."
+        await expect(
+          updateUser(uuidv4(), { email: email })
+        ).rejects.toThrowError(
+          "This email already belongs to a Tasker account."
         )
     )
   );
@@ -73,7 +75,7 @@ test("email already assigned to another user", async () => {
 
 // 1. no such user exists update
 test("no such user exists for update", async () => {
-  let nonexistent_users = [
+  const nonexistent_users = [
     {
       id: "3d45abc1-f475-475d-896a-32018a032ce8",
       changes: { email: "helloshbam@gmail.com" },
@@ -87,8 +89,8 @@ test("no such user exists for update", async () => {
   await Promise.all(
     nonexistent_users.map(
       async (user) =>
-        await expect(updateUser(user.id, user.changes)).rejects.toEqual(
-          "No Such User Exists to Update"
+        await expect(updateUser(user.id, user.changes)).rejects.toThrowError(
+          "No such user exists"
         )
     )
   );
@@ -96,7 +98,7 @@ test("no such user exists for update", async () => {
 
 // 2. throw error if unknown attributes passed
 test("unknown property error", async () => {
-  let nonexistent_attributes = [
+  const nonexistent_attributes = [
     {
       id: "3d45abc1-f475-475d-896a-32018a032ce8",
       changes: { hello: "helloshbam@gmail.com" },
@@ -111,9 +113,8 @@ test("unknown property error", async () => {
     nonexistent_attributes.map(
       async (user) =>
         await expect(
-          //@ts-ignore: intentionally deviating from standard to test
-          updateUser(user.id, user.changes)
-        ).rejects.toEqual("Cannot Modify Nonexistent Properties of User")
+          updateUser(user.id, user.changes as any)
+        ).rejects.toThrowError("Cannot Modify Nonexistent Properties of User")
     )
   );
 });
