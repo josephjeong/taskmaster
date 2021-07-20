@@ -1,6 +1,6 @@
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
-import { Task } from "../types";
+import { ApiResponse, Task } from "../types";
 import { useCallback } from "react";
 import { api } from "./utils";
 
@@ -16,23 +16,23 @@ export const useUserTasks = (userId: string) => {
     }
   }
 
-  return useSWR<Task[]>(key);
+  return useSWR<ApiResponse<Task[]>>(key);
 };
 
 export const useMyTasks = () => {
-  return useSWR<Task[]>("/tasks");
+  return useSWR<ApiResponse<Task[]>>('/tasks');
 };
 
 export const useCreateTask = () => {
   return useCallback(async (task: Task) => {
-    await api.post('/tasks/create', task);
+    await api.post('/task/create', task);
     mutate('/tasks');
   }, []);
 };
 
 export const useEditTask = () => {
   return useCallback(async (taskUpdates: Partial<Task>) => {
-    await api.post('/tasks/edit', taskUpdates);
+    await api.post('/task/edit', taskUpdates);
     mutate('/tasks');
   }, []);
 };
