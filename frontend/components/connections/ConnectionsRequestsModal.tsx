@@ -95,7 +95,7 @@ const ConnectionsModal = ({
             </Button>
           </div>
           {incoming.map((request) => (
-            <div className={classes.user}>
+            <div key={request.id} className={classes.user}>
               <div className={classes.userProfileShort}>
                 <Avatar
                   alt={request.email}
@@ -123,7 +123,7 @@ const ConnectionsModal = ({
             </div>
           ))}
           {outgoing.map((request) => (
-            <div className={classes.user}>
+            <div key={request.id} className={classes.user}>
               <div className={classes.userProfileShort}>
                 <Avatar
                   alt={request.email}
