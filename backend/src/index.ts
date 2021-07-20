@@ -49,7 +49,7 @@ createConnection({
   port: Number(process.env.TYPEORM_PORT),
   host: process.env.TYPEORM_HOST,
   synchronize: process.env.TYPEORM_SYNCHRONIZE === "true",
-  logging: false,
+  logging: process.env.TYPEORM_LOGGING === "true",
 })
   .then(() => {
     app.use(cors());
