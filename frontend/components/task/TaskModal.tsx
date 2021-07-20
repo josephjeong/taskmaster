@@ -47,16 +47,18 @@ type TaskModalProps = {
   mode?: "view" | "create" | "edit";
   open: boolean;
   taskInit: Task;
-  onClose: () => void;
-  onSubmit: (task: Task) => any;
+  onClose?: () => void;
+  onDelete?: () => void;
+  onSubmit?: (task: Task) => void;
 };
 
 const TaskModal = ({
   mode = "view",
   open,
   taskInit,
-  onClose,
-  onSubmit,
+  onClose = () => {},
+  onDelete = () => {},
+  onSubmit = () => {},
 }: TaskModalProps) => {
   const [taskUpdates, setTaskUpdates] = React.useState<Partial<Task>>({});
   const task = React.useMemo(() => Object.assign({} as Task, taskInit, taskUpdates), [taskInit, taskUpdates]);
@@ -180,6 +182,11 @@ const TaskModal = ({
           <Button size="large" onClick={() => onClose()}>
             Cancel
           </Button>
+          {mode === "edit" ? (
+            <Button size="large" onClick={() => onDelete()}>
+              Delete
+            </Button>
+          ) : null}
           <Button
             size="large"
             color="primary"
