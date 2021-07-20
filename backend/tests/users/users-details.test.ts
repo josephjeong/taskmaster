@@ -28,19 +28,17 @@ afterAll(async () => {
 
 // test when id does not exist
 test("id does not exist for user", async () => {
-  let nonexistent_ids = [
+  const nonexistent_ids = [
     "3d45abc1-f475-475d-896a-32018a032ce8",
     "c5b930f3-eed3-4f07-9dbd-a0466a763b49",
   ];
   expect.assertions(nonexistent_ids.length);
-  await Promise.all(
-    nonexistent_ids.map(
-      async (id) =>
-        await expect(fetchUserDetails(id)).rejects.toEqual(
-          "This Account does not exist"
-        )
-    )
-  );
+  await expect(
+    fetchUserDetails(nonexistent_ids[0])
+  ).rejects.toThrowErrorMatchingInlineSnapshot();
+  await expect(
+    fetchUserDetails(nonexistent_ids[1])
+  ).rejects.toThrowErrorMatchingInlineSnapshot();
 });
 
 // test when avatar_url does not exist

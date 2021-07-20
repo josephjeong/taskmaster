@@ -6,7 +6,7 @@ import { api } from "./utils";
 
 export const fetchProfile = async (userId: string): Promise<User> => {
   const response = await api.get(`/users/details/${userId}`);
-  return response.data;
+  return response.data.data;
 };
 
 export type UpdateProfileInput = Partial<Omit<User, "id">>;

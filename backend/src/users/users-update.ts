@@ -7,13 +7,14 @@ import { getConnection } from "typeorm";
 import { InputUpdateUser, UpdateUser } from "./users-interface";
 import { passwordHash } from "./users-helpers";
 import { existingEmailCheck, regexEmailCheck } from "./users-helpers";
+import { ApiError } from "../errors";
 
 /** update user details from InputUpdateUser object and id */
 export async function updateUser(
   id: string,
   input_changes: InputUpdateUser
 ): Promise<void> {
-  let changes: UpdateUser = {};
+  const changes: UpdateUser = {};
   await Promise.all(
     Object.keys(input_changes).map(async (key) => {
       // if the password changes, hash the password
@@ -22,10 +23,20 @@ export async function updateUser(
         return;
       } else if (key === "email") {
         // check if valid email
-        regexEmailCheck(input_changes.email);
+        if (!regexEmailCheck(input_changes.email)) {
+          throw new ApiError(
+            "user_update/invalid_email",
+            "Please enter a valid email"
+          );
+        }
 
         // check if email already exists in database
-        await existingEmailCheck(input_changes.email);
+        if (await existingEmailCheck(input_changes.email)) {
+          throw new ApiError(
+            "user_update/email_exists",
+            "This email already belongs to a Tasker account."
+          );
+        }
 
         changes.email = input_changes.email;
         return;
@@ -42,16 +53,23 @@ export async function updateUser(
         return;
       }
       // if they're not a correct key, don't update
-      throw "Cannot Modify Nonexistent Properties of User";
+      throw new ApiError(
+        "user_update/invalid_change",
+        "Cannot Modify Nonexistent Properties of User"
+      );
     })
   );
 
   // attempt to update user
-  let status = await getConnection().manager.update(User, { id: id }, changes);
+  const status = await getConnection().manager.update(
+    User,
+    { id: id },
+    changes
+  );
 
   // if user to update doesn't exist, throw error
   if (status.affected == 0) {
-    throw "No Such User Exists to Update";
+    throw new ApiError("user_update/no_user", "No such user exists");
   }
 
   return;

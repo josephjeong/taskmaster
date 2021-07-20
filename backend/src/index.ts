@@ -31,6 +31,7 @@ import {
 } from "./connection";
 import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
+import { sendData, sendError } from "./response-utils";
 
 const PORT = 8080;
 
@@ -48,10 +49,9 @@ createConnection({
   port: Number(process.env.TYPEORM_PORT),
   host: process.env.TYPEORM_HOST,
   synchronize: process.env.TYPEORM_SYNCHRONIZE === "true",
-  logging: true,
+  logging: false,
 })
-  .then((connection) => {
-
+  .then(() => {
     app.use(cors());
     app.use(express.json());
 
@@ -64,18 +64,20 @@ createConnection({
         req.body.bio
       );
 
-      return res.send({ token: token });
+      // return res.send({ token: token });
+      sendData(res, { token });
     });
 
     app.post("/users/login", async (req, res) => {
       const token = await loginUser(req.body.email, req.body.password);
 
-      return res.send({ token: token });
+      // return res.send({ token: token });
+      sendData(res, { token });
     });
 
     app.get("/users/details/:id", async (req, res) => {
       const details = await fetchUserDetails(req.params.id);
-      return res.send(details);
+      sendData(res, details);
     });
 
     app.use(async (req, res, next) => {
@@ -85,12 +87,12 @@ createConnection({
 
     app.get("/users/me", async (req, res) => {
       const details = await fetchUserDetails(res.locals.session.id);
-      return res.send(details);
+      sendData(res, details);
     });
 
     app.post("/users/update", async (req, res) => {
       await updateUser(res.locals.session.id, req.body.changes);
-      return res.send("updated successfully!");
+      sendData(res, "updated successfully!");
     });
 
     app.get("/users/:userId/stats", async (req, res) => {
@@ -99,29 +101,29 @@ createConnection({
       });
     });
 
-  
     // the two routes below return an array of tasks sorted by deadline, closer deadlines first
-    // data is Task[] of the form: [ Task { creator: User { id: , 
-    //                                                          email: , etc. 
-    //                                                        }, 
+    // data is Task[] of the form: [ Task { creator: User { id: ,
+    //                                                          email: , etc.
+    //                                                        },
     //                                          assignees: [ User{id: , email: , etc.}, ...],
-    //                                          id: , 
+    //                                          id: ,
     //                                          deadline: , etc.} ]
     app.get("/tasks", async (req, res) => {
-      return res.json({
-        data: await getProfileTasks(res.locals.session.id, res.locals.session.id)
-      });
+      sendData(
+        res,
+        await getProfileTasks(res.locals.session.id, res.locals.session.id)
+      );
     });
-    
+
     app.get("/users/tasks/:user_id", async (req, res) => {
-      return res.json({
-        data: await getProfileTasks(res.locals.session.id, req.params.user_id)
+      sendData(res, {
+        data: await getProfileTasks(res.locals.session.id, req.params.user_id),
       });
     });
-    
+
     app.get("/task/:task_id", async (req, res) => {
-      return res.json({
-        data: await getTask(res.locals.session.id, req.params.task_id)
+      sendData(res, {
+        data: await getTask(res.locals.session.id, req.params.task_id),
       });
     });
 
@@ -137,7 +139,7 @@ createConnection({
         req.body.description, // can be null
         req.body.estimated_days // can be null
       );
-      return res.send("create task success");
+      sendData(res, "create task success");
     });
 
     app.post("/task/edit/:task_id", async (req, res) => {
@@ -158,84 +160,79 @@ createConnection({
         req.body.description,
         req.body.estimated_days
       );
-      return res.send("edit task success");
+      sendData(res, "edit task success");
     });
-    
+
     app.delete("/task/delete/:task_id", async (req, res) => {
       await deleteTask(res.locals.session.id, req.params.task_id);
-      return res.send("delete task success");
+      sendData(res, "delete task success");
     });
 
     app.post("/connection/create", async (req, res) => {
       await createUserConnection(res.locals.session.id, req.body.id);
-      return res.send("updated succesfully!");
+      sendData(res, "updated succesfully!");
     });
 
     app.post("/connection/accept", async (req, res) => {
       await acceptRequest(res.locals.session.id, req.body.id);
-      return res.send("updated succesfully!");
+      sendData(res, "updated succesfully!");
     });
 
     app.post("/connection/decline", async (req, res) => {
       await declineRequest(res.locals.session.id, req.body.id);
-      return res.send("updated succesfully!");
+      sendData(res, "updated succesfully!");
     });
 
     app.get("/connection/status/:userId", async (req, res) => {
       const s = await isConnected(res.locals.session.id, req.params.userId);
-      return res.send(s);
+      sendData(res, s);
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-        const s = await getIncomingConnectionRequests(res.locals.session.id);
-        return res.send(s);
+      const s = await getIncomingConnectionRequests(res.locals.session.id);
+      sendData(res, s);
     });
 
     app.get("/connection/incomingRequests/:userId", async (req, res) => {
       const s = await getIncomingConnectionRequests(req.params.userId);
-      return res.send(s);
+      sendData(res, s);
     });
 
     app.get("/connection/incomingRequests", async (req, res) => {
-        const s = await getOutgoingConnectionRequests(res.locals.session.id);
-        return res.send(s);
+      const s = await getOutgoingConnectionRequests(res.locals.session.id);
+      sendData(res, s);
     });
 
     app.get("/connection/outgoingRequests/:userId", async (req, res) => {
       const s = await getOutgoingConnectionRequests(req.params.userId);
-      return res.send(s);
+      sendData(res, s);
     });
 
     if (process.env.NODE_ENV !== "production") {
-        app.get("/this-route-will-error", async () => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          throw new Error("This is a test error that should not show up in prod");
-        });
+      app.get("/this-route-will-error", async () => {
+        throw new Error("This is a test error that should not show up in prod");
+      });
     }
 
-    app.use(// eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-          console.error(err);
-          if (res.headersSent) {
-            return;
-          } else if (err instanceof ApiError) {
-            res.json({
-              error: {
-                code: err.code,
-                message: err.message,
-              },
-            });
-          } else {
-            res.json({
-              error: {
-                code: "UNKNOWN_ERROR",
-                message: "An unknown error occurred on the server",
-              },
-            });
-          }
+    app.use(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+        console.error(err);
+        if (res.headersSent) {
+          return;
+        } else if (err instanceof ApiError) {
+          sendError(res, {
+            code: err.code,
+            message: err.message,
+          });
+        } else {
+          sendError(res, {
+            code: "UNKNOWN_ERROR",
+            message: "An unknown error occurred on the server",
+          });
         }
-      );
-
+      }
+    );
   })
   .catch((err) => {
     console.log("Could not connect to database", err);
@@ -248,6 +245,6 @@ const server = app.listen(PORT, () =>
 );
 
 export default {
-    app: app,
-    server: server
+  app: app,
+  server: server,
 };
