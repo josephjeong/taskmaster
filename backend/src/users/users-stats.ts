@@ -31,7 +31,7 @@ const getTasksInRange = async (
     });
 
   if (typeof options.status === "string") {
-    query.where("task.status = :status", { status: options.status });
+    query.andWhere("task.status = :status", { status: options.status });
   }
 
   const assignments = await query.getMany();
