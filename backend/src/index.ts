@@ -116,15 +116,14 @@ createConnection({
     });
 
     app.get("/users/tasks/:user_id", async (req, res) => {
-      sendData(res, {
-        data: await getProfileTasks(res.locals.session.id, req.params.user_id),
-      });
+      sendData(
+        res,
+        await getProfileTasks(res.locals.session.id, req.params.user_id)
+      );
     });
 
     app.get("/task/:task_id", async (req, res) => {
-      sendData(res, {
-        data: await getTask(res.locals.session.id, req.params.task_id),
-      });
+      sendData(res, await getTask(res.locals.session.id, req.params.task_id));
     });
 
     app.post("/task/create", async (req, res) => {
