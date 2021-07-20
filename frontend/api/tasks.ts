@@ -8,7 +8,7 @@ export const useUserTasks = (userId: string) => {
   const { user } = useAuthContext();
   let key = null;
 
-  if (user) {
+  if (user?.id) {
     if (user.id === userId) {
       key = "/tasks";
     } else {
@@ -25,14 +25,14 @@ export const useMyTasks = () => {
 
 export const useCreateTask = () => {
   return useCallback(async (task: Task) => {
-    await api.post('/tasks/create', task);
-    mutate('/tasks');
+    await api.post("/task/create", task);
+    mutate("/tasks");
   }, []);
 };
 
 export const useEditTask = () => {
   return useCallback(async (taskUpdates: Partial<Task>) => {
-    await api.post('/tasks/edit', taskUpdates);
-    mutate('/tasks');
+    await api.post("/task/edit", taskUpdates);
+    mutate("/tasks");
   }, []);
 };
