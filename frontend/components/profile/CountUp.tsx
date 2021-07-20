@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const STEP = 2;
+const STEP = 1;
 const CountUp = ({ to }: { to: number }) => {
   const classes = useStyles();
   const [current, setCurrent] = useState(0);
