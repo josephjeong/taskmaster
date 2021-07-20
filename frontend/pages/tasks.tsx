@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import { useMyTasks, useCreateTask } from '../api/tasks';
 import { Task, TaskStatus } from '../types';
+import Spacing from '../components/shared/Spacing';
 import Stack from '../components/shared/Stack';
 import TaskListItem from '../components/task/TaskListItem';
 import TaskModal from '../components/task/TaskModal';
@@ -22,14 +23,14 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start'
+    alignItems: 'center',
+    padding: 20
   }
 }))
 
 const TasksPage = () => {
   const { data: tasks } = useMyTasks();
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
-  const [showEditTaskModal, setShowEditTaskModal] = React.useState<string | null>(null);
 
   const classes = useStyles();
 
@@ -46,9 +47,15 @@ const TasksPage = () => {
 
   return (
     <Container className={classes.root}>
-      <Button onClick={() => setShowCreateTaskModal(showCreateTaskModal => !showCreateTaskModal)}>
-        Toggle Create Task Modal
+      <Button
+        variant='contained'
+        size='large'
+        color='primary'
+        onClick={() => setShowCreateTaskModal(showCreateTaskModal => !showCreateTaskModal)}
+      >
+        Create Task
       </Button>
+      <Spacing y={3} />
       <TaskModal
         mode='create'
         open={showCreateTaskModal}
