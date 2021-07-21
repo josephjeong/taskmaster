@@ -172,6 +172,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
                 isEditable={isProfileOfLoggedInUser}
               />
             ))}
+            {tasks?.length === 0 && (
+              <Typography className={classes.textCenter}>
+                {profile.first_name} hasn&apos;t been assigned any tasks yet.
+              </Typography>
+            )}
           </Stack>
         </>
       )}
