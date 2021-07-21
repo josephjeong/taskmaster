@@ -80,9 +80,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   const { data: profile } = useUserProfile(initialProfile.id, initialProfile);
 
   const profileId = profile!.id;
-  const { data: tasks } = useUserTasks(profileId);
-
   const { data: connectionStatus } = useConnectionStatus(profileId);
+
+  const isConnected = connectionStatus === ConnectionStatus.CONNECTED;
+  const isProfileOfLoggedInUser = !!user && user.id === profileId;
+  const showTasksAndStats = isProfileOfLoggedInUser || isConnected;
+
+  const { data: tasks } = useUserTasks(
+    showTasksAndStats ? profileId : undefined
+  );
+
   const requestConnection = useRequestConnection();
 
   const updateProfile = useUpdateProfile();
@@ -105,12 +112,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   // * NB: This shouldn't happen since we should be getting a profile on the server
   if (!profile) return null;
 
-  const isProfileOfLoggedInUser = !!user && user.id === profile.id;
-
   const userName = `${profile.first_name} ${profile.last_name}`;
-
-  const showTasks =
-    isProfileOfLoggedInUser || connectionStatus == ConnectionStatus.CONNECTED;
 
   return (
     <Container>
@@ -151,18 +153,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
 
       <Spacing y={6} />
 
-      {user && <ProfileStatsSection user={profile} />}
-
-      <Spacing y={6} />
-
-      {user && showTasks && (
+      {user && showTasksAndStats && (
         <>
+          <ProfileStatsSection user={profile} />
+          <Spacing y={6} />
           <Typography
             variant="h5"
             component="h2"
             className={classes.tasksHeading}
           >
-            {user.first_name}&apos;s Tasks
+            {profile.first_name}&apos;s Tasks
           </Typography>
           <Stack spacing={2}>
             {tasks?.map((task) => (
@@ -176,12 +176,18 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
         </>
       )}
 
+      {user && !showTasksAndStats && (
+        <Typography className={classes.textCenter}>
+          Connect to see this user&apos;s tasks and stats.
+        </Typography>
+      )}
+
       {!user && (
         <Typography className={classes.textCenter}>
           <Link href="/login">
             <a>Log in</a>
           </Link>{" "}
-          and connect to see this user&apos;s tasks and connect.
+          and connect to see this user&apos;s tasks and stats.
         </Typography>
       )}
 

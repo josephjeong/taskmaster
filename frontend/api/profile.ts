@@ -41,8 +41,5 @@ export const useUserProfile = (userId: string, initialProfile?: User) => {
 };
 
 export const useProfileStats = (userId: string) => {
-  return useSWR<ProfileStats>(`/users/${userId}/stats`, (url) =>
-    // TODO Remove this when backend error handling stuff is done
-    api.get(url).then((res) => res.data.data)
-  );
+  return useSWR<ProfileStats>(`/users/${userId}/stats`);
 };

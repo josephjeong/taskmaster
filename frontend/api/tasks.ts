@@ -4,11 +4,11 @@ import { Task } from "../types";
 import { useCallback } from "react";
 import { api } from "./utils";
 
-export const useUserTasks = (userId: string) => {
+export const useUserTasks = (userId?: string) => {
   const { user } = useAuthContext();
   let key = null;
 
-  if (user?.id) {
+  if (user?.id && userId) {
     if (user.id === userId) {
       key = "/tasks";
     } else {

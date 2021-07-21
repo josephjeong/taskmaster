@@ -105,6 +105,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
             label="Bio"
             rows={3}
             autoComplete="on"
+            defaultValue={currentProfile.bio}
           />
         </DialogContent>
         <DialogActions>
