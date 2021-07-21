@@ -1,14 +1,14 @@
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
-import { ApiResponse, Task } from "../types";
+import { Task } from "../types";
 import { useCallback } from "react";
 import { api } from "./utils";
 
-export const useUserTasks = (userId: string) => {
+export const useUserTasks = (userId?: string) => {
   const { user } = useAuthContext();
   let key = null;
 
-  if (user) {
+  if (user?.id && userId) {
     if (user.id === userId) {
       key = "/tasks";
     } else {
@@ -16,23 +16,23 @@ export const useUserTasks = (userId: string) => {
     }
   }
 
-  return useSWR<ApiResponse<Task[]>>(key);
+  return useSWR<Task[]>(key);
 };
 
 export const useMyTasks = () => {
-  return useSWR<ApiResponse<Task[]>>('/tasks');
+  return useSWR<Task[]>("/tasks");
 };
 
 export const useCreateTask = () => {
   return useCallback(async (task: Task) => {
-    await api.post('/task/create', task);
-    mutate('/tasks');
+    await api.post("/task/create", task);
+    mutate("/tasks");
   }, []);
 };
 
 export const useEditTask = () => {
   return useCallback(async (taskUpdates: Partial<Task>) => {
-    await api.post('/task/edit', taskUpdates);
-    mutate('/tasks');
+    await api.post("/task/edit", taskUpdates);
+    mutate("/tasks");
   }, []);
 };

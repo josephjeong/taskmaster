@@ -1,12 +1,12 @@
 import { useCallback } from "react";
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
-import { User } from "../types";
+import { ProfileStats, User } from "../types";
 import { api } from "./utils";
 
 export const fetchProfile = async (userId: string): Promise<User> => {
   const response = await api.get(`/users/details/${userId}`);
-  return response.data;
+  return response.data.data;
 };
 
 export type UpdateProfileInput = Partial<Omit<User, "id">>;
@@ -38,4 +38,8 @@ export const useUserProfile = (userId: string, initialProfile?: User) => {
   return useSWR<User>(`/users/details/${userId}`, {
     initialData: initialProfile,
   });
+};
+
+export const useProfileStats = (userId: string) => {
+  return useSWR<ProfileStats>(`/users/${userId}/stats`);
 };
