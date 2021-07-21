@@ -25,7 +25,6 @@ const SignUpPage: React.FC = () => {
   const classes = useStyles();
 
   const { setToken } = useAuthContext();
-  const router = useRouter();
 
   useLoggedInRedirect();
 
@@ -40,9 +39,6 @@ const SignUpPage: React.FC = () => {
     const newToken = await signup(signupArgs);
 
     setToken(newToken);
-
-    // redirect to main app
-    router.push("/profile/me");
   };
 
   return (
