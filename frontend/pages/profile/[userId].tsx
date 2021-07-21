@@ -109,6 +109,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
 
   const userName = `${profile.first_name} ${profile.last_name}`;
 
+  const showTasks =
+    isProfileOfLoggedInUser || connectionStatus == ConnectionStatus.CONNECTED;
+
   return (
     <Container>
       <Title>{`${userName}'s Profile`}</Title>
@@ -152,7 +155,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
 
       <Spacing y={6} />
 
-      {user && (
+      {user && showTasks && (
         <>
           <Typography
             variant="h5"
