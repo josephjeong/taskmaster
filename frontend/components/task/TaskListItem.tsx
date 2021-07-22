@@ -4,6 +4,7 @@ import { Task } from "../../types";
 import { formatDate } from "../../utils";
 import TaskModal from "./TaskModal";
 import TaskStatusPill from "./TaskStatusPill";
+import { useDeleteTask, useEditTask } from '../../api/tasks';
 
 interface TaskListItemProps {
   task: Task;
@@ -46,6 +47,10 @@ const useStyles = makeStyles((theme) => ({
 const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
   const [showModal, setShowModal] = useState(false);
   const classes = useStyles();
+
+  const deleteTaskCallback = useDeleteTask();
+  const editTaskCallback = useEditTask();
+
   return (
     <>
       <Paper
@@ -79,9 +84,19 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
         open={showModal}
         onClose={() => setShowModal(false)}
         taskInit={task}
-        onSubmit={() => {
-          if (!isEditable) return;
-          // TODO: handle edit
+        onDelete={async () => {
+          if (!isEditable) {
+            return;
+          }
+          await deleteTaskCallback(task.id);
+          setShowModal(false);
+        }}
+        onSubmit={async (taskUpdates) => {
+          if (!isEditable) {
+            return;
+          }
+          await editTaskCallback(task.id, taskUpdates);
+          setShowModal(false);
         }}
       />
     </>
