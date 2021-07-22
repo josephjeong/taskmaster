@@ -78,7 +78,10 @@ const TaskModal = ({
 
   const submit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    onSubmit(task);
+    if (mode === 'edit')
+        onSubmit(taskUpdates);
+    else
+        onSubmit(task)
   };
 
   return (
