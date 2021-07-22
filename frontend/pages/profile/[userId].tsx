@@ -7,6 +7,7 @@ import {
   Avatar,
   Typography,
   Button,
+  Paper,
 } from "@material-ui/core";
 
 import { ConnectionStatus, User } from "../../types";
@@ -17,8 +18,6 @@ import {
   fetchProfile,
   UpdateProfileInput,
   useConnectionStatus,
-  useMyTasks,
-  useProfileStats,
   useRequestConnection,
   useUpdateProfile,
   useUserProfile,
@@ -67,6 +66,12 @@ const useStyles = makeStyles((theme) => ({
   },
   tasksHeading: {
     marginBottom: theme.spacing(3),
+  },
+  bioText: {
+    whiteSpace: "pre",
+  },
+  bioWrapper: {
+    padding: theme.spacing(3),
   },
 }));
 
@@ -150,6 +155,22 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           )}
         </div>
       </div>
+
+      {profile?.bio?.trim() && (
+        <>
+          <Spacing y={6} />
+          <Typography
+            variant="h5"
+            component="h2"
+            className={classes.tasksHeading}
+          >
+            About {profile.first_name}
+          </Typography>
+          <Paper elevation={3} className={classes.bioWrapper}>
+            <Typography className={classes.bioText}>{profile.bio}</Typography>
+          </Paper>
+        </>
+      )}
 
       <Spacing y={6} />
 
