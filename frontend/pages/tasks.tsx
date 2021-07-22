@@ -41,7 +41,7 @@ const TasksPage = () => {
     setShowCreateTaskModal(false);
   };
 
-  if (!tasks || !tasks.data) {
+  if (!tasks) {
     return null;
   }
 
@@ -64,7 +64,7 @@ const TasksPage = () => {
         onSubmit={(taskUpdates) => createTask(Object.assign({} as Task, DEFAULT_TASK_ATTRIBUTES, taskUpdates))}
       />
       <Stack spacing={2}>
-        {tasks.data.map((task) => (
+        {tasks.map((task) => (
           <TaskListItem
             key={task.id}
             task={task}
