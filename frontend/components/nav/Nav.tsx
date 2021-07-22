@@ -20,6 +20,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import ConnectionRequestsModal from "../connections/ConnectionsRequestsModal";
 import { Button } from "@material-ui/core";
 import { useLogout } from "../../api";
+import UserSearch from "./UserSearch";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -84,18 +85,16 @@ const Nav = ({}: NavProps) => {
           <div className={classes.grow} />
           {user ? (
             <>
+              <UserSearch />
+
               <Link href={`/tasks`} passHref>
                 <Tooltip title="Your Tasks">
-                  <IconButton
-                    href={`/tasks`}
-                    component="a"
-                    color="inherit"
-                  >
+                  <IconButton href={`/tasks`} component="a" color="inherit">
                     <TasksIcon />
                   </IconButton>
                 </Tooltip>
               </Link>
-            
+
               <Tooltip title="Connection Requests">
                 <IconButton
                   color="inherit"
