@@ -32,7 +32,7 @@ import {
 import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
 import { sendData, sendError } from "./response-utils";
-import { getUserIdByEmail } from "./users/users-search";
+import { getUserByEmail } from "./users/users-search";
 
 const PORT = 8080;
 
@@ -101,7 +101,7 @@ createConnection({
     });
 
     app.post("/users/by-email", async (req, res) => {
-      sendData(res, await getUserIdByEmail(req.body.email));
+      sendData(res, await getUserByEmail(req.body.email));
     });
 
     // the two routes below return an array of tasks sorted by deadline, closer deadlines first

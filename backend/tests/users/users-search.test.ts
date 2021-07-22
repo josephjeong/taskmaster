@@ -2,7 +2,7 @@ import { createConnection, getConnection } from "typeorm";
 import { clearEntity } from "../test-helpers/clear";
 import { User } from "../../src/entity/User";
 import { createUser } from "../../src/users/users-create";
-import { getUserIdByEmail } from "../../src/users/users-search";
+import { getUserByEmail } from "../../src/users/users-search";
 
 beforeAll(async () => {
   await createConnection();
@@ -39,20 +39,21 @@ describe("getUserIdByEmail", () => {
       .getRepository<User>(User)
       .find({ where: { email: details.email } });
 
-    const expectedUserId = userInDb.id;
+    const expectedUser = userInDb;
+    delete expectedUser.password_hash;
 
-    const foundId = await getUserIdByEmail(details.email);
+    const user = await getUserByEmail(details.email);
 
-    expect(foundId).toBe(expectedUserId);
+    expect(user).toMatchObject(expectedUser);
   });
 
   it("Should return null when the no user has the email", async () => {
-    const id = await getUserIdByEmail("soorria.ss@gmail.com");
-    expect(id).toBeNull();
+    const user = await getUserByEmail("soorria.ss@gmail.com");
+    expect(user).toBeNull();
   });
 
   it("Should throw when the email in not valid", async () => {
-    const id = await getUserIdByEmail("not a valid email");
+    const id = await getUserByEmail("not a valid email");
     expect(id).toBeNull();
   });
 });

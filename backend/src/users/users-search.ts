@@ -2,9 +2,9 @@ import { User } from "../entity/User";
 import { getConnection } from "typeorm";
 import { regexEmailCheck } from "./users-helpers";
 
-export const getUserIdByEmail = async (
+export const getUserByEmail = async (
   maybeEmail: unknown
-): Promise<string | null> => {
+): Promise<Omit<User, "password_hash"> | null> => {
   if (typeof maybeEmail !== "string" || !regexEmailCheck(maybeEmail)) {
     return null;
   }
@@ -13,12 +13,12 @@ export const getUserIdByEmail = async (
 
   const [user] = await userRepo.find({
     where: { email: maybeEmail },
-    select: ["id"],
+    select: ["id", "avatar_url", "email", "bio", "first_name", "last_name"],
     take: 1,
   });
 
   // User not found
   if (!user) return null;
 
-  return user.id;
+  return user;
 };
