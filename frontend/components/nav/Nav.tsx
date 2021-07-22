@@ -13,6 +13,7 @@ import {
 import LinkIcon from "@material-ui/icons/Link";
 import PersonIcon from "@material-ui/icons/Person";
 import DoneAllIcon from "@material-ui/icons/DoneAll";
+import TasksIcon from "@material-ui/icons/EventNote";
 
 import { User } from "../../types";
 import { useAuthContext } from "../../context/AuthContext";
@@ -83,6 +84,18 @@ const Nav = ({}: NavProps) => {
           <div className={classes.grow} />
           {user ? (
             <>
+              <Link href={`/tasks`} passHref>
+                <Tooltip title="Your Tasks">
+                  <IconButton
+                    href={`/tasks`}
+                    component="a"
+                    color="inherit"
+                  >
+                    <TasksIcon />
+                  </IconButton>
+                </Tooltip>
+              </Link>
+            
               <Tooltip title="Connection Requests">
                 <IconButton
                   color="inherit"
