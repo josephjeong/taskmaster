@@ -97,7 +97,7 @@ createConnection({
 
     app.get("/users/:userId/stats", async (req, res) => {
       return res.json({
-        data: await getStatsForUser(res.locals.session.id),
+        data: await getStatsForUser(req.params.userId),
       });
     });
 

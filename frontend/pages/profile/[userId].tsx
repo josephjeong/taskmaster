@@ -223,6 +223,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
         onSave={handleProfileSave}
         onClose={() => setShowUpdateModal(false)}
       />
+      <Spacing y={30} />
     </Container>
   );
 };
