@@ -45,12 +45,17 @@ describe("getUserIdByEmail", () => {
 
     expect(foundId).toBe(expectedUserId);
   });
+
   it("Should return null when the no user has the email", async () => {
     const id = await getUserIdByEmail("soorria.ss@gmail.com");
     expect(id).toBeNull();
   });
-  it("Should return null when email is invalid", async () => {
-    const id = await getUserIdByEmail("not a valid email");
-    expect(id).toBeNull();
+
+  it("Should throw when the email in not valid", async () => {
+    await expect(
+      getUserIdByEmail("not a valid email")
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Please enter a valid email"`
+    );
   });
 });

@@ -1,9 +1,18 @@
 import { User } from "../entity/User";
 import { getConnection } from "typeorm";
+import { ApiError } from "../errors";
+import { regexEmailCheck } from "./users-helpers";
 
 export const getUserIdByEmail = async (
-  maybeEmail: string
+  maybeEmail: unknown
 ): Promise<string | null> => {
+  if (typeof maybeEmail !== "string" || !regexEmailCheck(maybeEmail)) {
+    throw new ApiError(
+      "user_search/invalid_email",
+      "Please enter a valid email"
+    );
+  }
+
   const userRepo = getConnection().getRepository<User>(User);
 
   const [user] = await userRepo.find({

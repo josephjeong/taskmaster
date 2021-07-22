@@ -100,8 +100,8 @@ createConnection({
       sendData(res, await getStatsForUser(req.params.userId));
     });
 
-    app.get("/users/by-email/:email", async (req, res) => {
-      sendData(res, await getUserIdByEmail(req.params.email));
+    app.post("/users/by-email", async (req, res) => {
+      sendData(res, await getUserIdByEmail(req.body.email));
     });
 
     // the two routes below return an array of tasks sorted by deadline, closer deadlines first
