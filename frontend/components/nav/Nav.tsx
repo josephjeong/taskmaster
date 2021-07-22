@@ -1,12 +1,18 @@
 import React from "react";
+import Link from "next/link";
 import {
   makeStyles,
   AppBar,
   Toolbar,
   IconButton,
   Badge,
+  Container,
+  Typography,
+  Tooltip,
 } from "@material-ui/core";
 import LinkIcon from "@material-ui/icons/Link";
+import PersonIcon from "@material-ui/icons/Person";
+import DoneAllIcon from "@material-ui/icons/DoneAll";
 
 import { User } from "../../types";
 import { useAuthContext } from "../../context/AuthContext";
@@ -18,6 +24,13 @@ const useStyles = makeStyles((theme) => ({
   toolbar: {
     "& > * + *": {
       marginLeft: theme.spacing(2),
+    },
+  },
+  logo: {
+    display: "flex",
+    alignItems: "center",
+    "& > * + *": {
+      marginLeft: theme.spacing(0.5),
     },
   },
   grow: {
@@ -57,44 +70,90 @@ const Nav = ({}: NavProps) => {
 
   const classes = useStyles();
 
-  if (!user) {
-    return null;
-  }
-
   return (
     <>
       <AppBar position="sticky">
-        <Toolbar className={classes.toolbar}>
+        <Toolbar component={Container} className={classes.toolbar}>
+          <div className={classes.logo}>
+            <DoneAllIcon />
+            <Typography component="p" variant="h5">
+              Tasker
+            </Typography>
+          </div>
           <div className={classes.grow} />
-          <IconButton
-            color="inherit"
-            onClick={() => setShowConnectionsModal(true)}
-          >
-            <Badge
-              badgeContent={incomingConnectionRequests.length}
-              color="secondary"
-            >
-              <LinkIcon />
-            </Badge>
-          </IconButton>
-          <Button
-            onClick={logout}
-            variant="contained"
-            color="primary"
-            disableElevation
-          >
-            Logout
-          </Button>
+          {user ? (
+            <>
+              <Tooltip title="Connection Requests">
+                <IconButton
+                  color="inherit"
+                  onClick={() => setShowConnectionsModal(true)}
+                >
+                  <Badge
+                    badgeContent={incomingConnectionRequests.length}
+                    color="secondary"
+                  >
+                    <LinkIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+
+              <Link href={`/profile/${user.id}`} passHref>
+                <Tooltip title="Your Profile">
+                  <IconButton
+                    href={`/profile/${user.id}`}
+                    component="a"
+                    color="inherit"
+                  >
+                    <PersonIcon />
+                  </IconButton>
+                </Tooltip>
+              </Link>
+
+              <Button
+                onClick={logout}
+                variant="contained"
+                color="primary"
+                disableElevation
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" passHref>
+                <Button
+                  component="a"
+                  variant="contained"
+                  color="primary"
+                  disableElevation
+                >
+                  Login
+                </Button>
+              </Link>
+              <Link href="/signup" passHref>
+                <Button
+                  component="a"
+                  variant="contained"
+                  color="secondary"
+                  disableElevation
+                >
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
         </Toolbar>
       </AppBar>
-      <ConnectionRequestsModal
-        open={showConnectionsModal}
-        incoming={incomingConnectionRequests}
-        setIncoming={(requests) => setIncomingConnectionRequests(requests)}
-        outgoing={outgoingConnectionRequests}
-        setOutgoing={(requests) => setOutgoingConnectionRequests(requests)}
-        onClose={() => setShowConnectionsModal(false)}
-      />
+      {user && (
+        <ConnectionRequestsModal
+          open={showConnectionsModal}
+          incoming={incomingConnectionRequests}
+          setIncoming={(requests) => setIncomingConnectionRequests(requests)}
+          outgoing={outgoingConnectionRequests}
+          setOutgoing={(requests) => setOutgoingConnectionRequests(requests)}
+          onClose={() => setShowConnectionsModal(false)}
+        />
+      )}
     </>
   );
 };

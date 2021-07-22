@@ -18,6 +18,7 @@ import {
   UpdateProfileInput,
   useConnectionStatus,
   useMyTasks,
+  useProfileStats,
   useRequestConnection,
   useUpdateProfile,
   useUserProfile,
@@ -28,6 +29,7 @@ import TaskListItem from "../../components/task/TaskListItem";
 import Stack from "../../components/shared/Stack";
 import Spacing from "../../components/shared/Spacing";
 import { useRouter } from "next/router";
+import ProfileStatsSection from "../../components/profile/ProfileStatsSection";
 
 // const EXAMPLE_USER: User = {
 //   id: "b59aa143-5e1c-46af-b05c-85908324e097",
@@ -63,6 +65,9 @@ const useStyles = makeStyles((theme) => ({
   textCenter: {
     textAlign: "center",
   },
+  tasksHeading: {
+    marginBottom: theme.spacing(3),
+  },
 }));
 
 const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -75,9 +80,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   const { data: profile } = useUserProfile(initialProfile.id, initialProfile);
 
   const profileId = profile!.id;
-  const { data: tasks } = useUserTasks(profileId);
-
   const { data: connectionStatus } = useConnectionStatus(profileId);
+
+  const isConnected = connectionStatus === ConnectionStatus.CONNECTED;
+  const isProfileOfLoggedInUser = !!user && user.id === profileId;
+  const showTasksAndStats = isProfileOfLoggedInUser || isConnected;
+
+  const { data: tasks } = useUserTasks(
+    showTasksAndStats ? profileId : undefined
+  );
+
   const requestConnection = useRequestConnection();
 
   const updateProfile = useUpdateProfile();
@@ -100,8 +112,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   // * NB: This shouldn't happen since we should be getting a profile on the server
   if (!profile) return null;
 
-  const isProfileOfLoggedInUser = !!user && user.id === profile.id;
-
   const userName = `${profile.first_name} ${profile.last_name}`;
 
   return (
@@ -123,7 +133,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           <Typography>{profile.email}</Typography>
         </div>
         <div>
-          {isProfileOfLoggedInUser ? (
+          {isProfileOfLoggedInUser && (
             <Button
               onClick={() => setShowUpdateModal((p) => !p)}
               color="primary"
@@ -131,7 +141,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
             >
               Edit Profile
             </Button>
-          ) : (
+          )}
+          {user && !isProfileOfLoggedInUser && (
             <ConnectionButton
               status={connectionStatus ?? ConnectionStatus.UNCONNECTED}
               onClick={handleConnectionButtonClick}
@@ -142,16 +153,38 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
 
       <Spacing y={6} />
 
-      {user && (
-        <Stack spacing={2}>
-          {tasks?.map((task) => (
-            <TaskListItem
-              task={task}
-              key={task.id}
-              isEditable={isProfileOfLoggedInUser}
-            />
-          ))}
-        </Stack>
+      {user && showTasksAndStats && (
+        <>
+          <ProfileStatsSection user={profile} />
+          <Spacing y={6} />
+          <Typography
+            variant="h5"
+            component="h2"
+            className={classes.tasksHeading}
+          >
+            {profile.first_name}&apos;s Tasks
+          </Typography>
+          <Stack spacing={2}>
+            {tasks?.map((task) => (
+              <TaskListItem
+                task={task}
+                key={task.id}
+                isEditable={isProfileOfLoggedInUser}
+              />
+            ))}
+            {tasks?.length === 0 && (
+              <Typography className={classes.textCenter}>
+                {profile.first_name} hasn&apos;t been assigned any tasks yet.
+              </Typography>
+            )}
+          </Stack>
+        </>
+      )}
+
+      {user && !showTasksAndStats && (
+        <Typography className={classes.textCenter}>
+          Connect to see this user&apos;s tasks and stats.
+        </Typography>
       )}
 
       {!user && (
@@ -159,7 +192,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           <Link href="/login">
             <a>Log in</a>
           </Link>{" "}
-          and connect to see this user&apos;s tasks.
+          and connect to see this user&apos;s tasks and stats.
         </Typography>
       )}
 

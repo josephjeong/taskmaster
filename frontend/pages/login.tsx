@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
 const LoginPage: React.FC = () => {
   const classes = useStyles();
   const { setToken } = useAuthContext();
-  const router = useRouter();
 
   useLoggedInRedirect();
 

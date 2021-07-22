@@ -25,25 +25,29 @@ afterAll(async () => {
 
 // 1. test email regex check
 test("incorrect email regex error", async () => {
-  let invalid_emails = [
+  const invalid_emails = [
     "not a valid email",
     "bob mcgee",
     "hello.com",
     "joe@com",
   ];
   expect.assertions(invalid_emails.length);
-  await Promise.all(
-    invalid_emails.map(
-      async (email) =>
-        await expect(
-          createUser(email, "password", "first_name", "last_name", "bio")
-        ).rejects.toEqual("Please Provide a Valid Email")
-    )
-  );
+  await expect(
+    createUser(invalid_emails[0], "password", "first_name", "last_name", "bio")
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"Please enter a valid email"`);
+  await expect(
+    createUser(invalid_emails[1], "password", "first_name", "last_name", "bio")
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"Please enter a valid email"`);
+  await expect(
+    createUser(invalid_emails[2], "password", "first_name", "last_name", "bio")
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"Please enter a valid email"`);
+  await expect(
+    createUser(invalid_emails[3], "password", "first_name", "last_name", "bio")
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"Please enter a valid email"`);
 });
 
 test("correct email regex working", async () => {
-  let valid_emails = ["validemail@website.com", "hello@platter.io"];
+  const valid_emails = ["validemail@website.com", "hello@platter.io"];
   await Promise.all(
     valid_emails.map(
       async (email) =>
@@ -56,7 +60,7 @@ test("correct email regex working", async () => {
 
 // 2. check existing email error
 test("existing email conflict error", async () => {
-  let valid_emails = ["validemail@website.com", "hello@platter.io"];
+  const valid_emails = ["validemail@website.com", "hello@platter.io"];
   // create the emails of the users
   await Promise.all(
     valid_emails.map(
@@ -66,13 +70,15 @@ test("existing email conflict error", async () => {
   );
   // the same emails should not be able to register
   expect.assertions(valid_emails.length);
-  await Promise.all(
-    valid_emails.map(
-      async (email) =>
-        await expect(
-          createUser(email, "password", "first_name", "last_name", "bio")
-        ).rejects.toEqual("This email already has an account! Please log in.")
-    )
+  await expect(
+    createUser(valid_emails[0], "password", "first_name", "last_name", "bio")
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"This email already belongs to a Tasker account."`
+  );
+  await expect(
+    createUser(valid_emails[1], "password", "first_name", "last_name", "bio")
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"This email already belongs to a Tasker account."`
   );
 });
 

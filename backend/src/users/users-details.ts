@@ -5,13 +5,14 @@
 import { User } from "../entity/User";
 import { getConnection } from "typeorm";
 import { UserDetails } from "./users-interface";
+import { ApiError } from "../errors";
 
 export async function fetchUserDetails(id: string): Promise<UserDetails> {
   const user = await getConnection()
     .getRepository(User)
     .find({ where: { id: id } });
   if (user.length != 1) {
-    throw "This Account does not exist";
+    throw new ApiError("user_details/no_user", "This user does not exist");
   }
 
   const details: UserDetails = {
