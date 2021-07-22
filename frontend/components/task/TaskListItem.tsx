@@ -1,10 +1,10 @@
 import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { useState } from "react";
-import { Task } from "../../types";
+import { Task, TaskStatus } from "../../types";
 import { formatDate } from "../../utils";
 import TaskModal from "./TaskModal";
 import TaskStatusPill from "./TaskStatusPill";
-import { useDeleteTask, useEditTask } from '../../api/tasks';
+import { useDeleteTask, useEditTask } from "../../api/tasks";
 
 interface TaskListItemProps {
   task: Task;
@@ -42,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
   },
+  textRed: {
+    color: theme.palette.error.main,
+  },
 }));
 
 const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
@@ -50,6 +53,10 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
 
   const deleteTaskCallback = useDeleteTask();
   const editTaskCallback = useEditTask();
+
+  const isOverdue =
+    (task.deadline as any) < new Date().toISOString() &&
+    task.status !== TaskStatus.COMPLETED;
 
   return (
     <>
@@ -65,7 +72,10 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
           <div className={classes.timeDetails}>
             {task.deadline && (
               <Typography component="span">
-                Deadline: {formatDate(task.deadline)}
+                Deadline:{" "}
+                <span className={isOverdue ? classes.textRed : undefined}>
+                  {formatDate(task.deadline)}
+                </span>
               </Typography>
             )}
             {task.deadline && task.estimated_days && <span>•</span>}

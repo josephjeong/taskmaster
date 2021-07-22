@@ -49,7 +49,7 @@ type TaskModalProps = {
   taskInit: Task;
   onClose?: () => void;
   onDelete?: () => void;
-  onSubmit?: (task: Task) => void;
+  onSubmit?: (task: Partial<Task>) => void;
 };
 
 const TaskModal = ({
@@ -61,7 +61,7 @@ const TaskModal = ({
   onSubmit = () => {},
 }: TaskModalProps) => {
   const [taskUpdates, setTaskUpdates] = React.useState<Partial<Task>>({});
-  const task = React.useMemo(() => Object.assign({} as Task, taskInit, taskUpdates), [taskInit, taskUpdates]);
+  // const task = React.useMemo(() => Object.assign({} as Task, taskInit, taskUpdates), [taskInit, taskUpdates]);
 
   const classes = useStyles();
 
@@ -78,7 +78,7 @@ const TaskModal = ({
 
   const submit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    onSubmit(task);
+    onSubmit(taskUpdates);
   };
 
   return (
@@ -91,7 +91,7 @@ const TaskModal = ({
             required
             disabled={mode === "view"}
             label="Title"
-            value={task.title}
+            defaultValue={taskInit.title}
             onChange={(event) => {
               const taskUpdates_ = { ...taskUpdates };
               taskUpdates_.title = event.target.value;
@@ -105,7 +105,7 @@ const TaskModal = ({
             multiline
             rows={10}
             label="Description"
-            value={task.description}
+            defaultValue={taskInit.description}
             onChange={(event) => {
               const taskUpdates_ = { ...taskUpdates };
               taskUpdates_.description = event.target.value;
@@ -122,7 +122,7 @@ const TaskModal = ({
                 format="DD/MM/yyyy"
                 margin="normal"
                 label="Due date"
-                value={task.deadline}
+                value={taskUpdates.deadline || taskInit.deadline}
                 onChange={(date) => {
                   const taskUpdates_ = { ...taskUpdates };
                   taskUpdates_.deadline = date!;
@@ -134,7 +134,7 @@ const TaskModal = ({
                 disabled={mode === "view"}
                 margin="normal"
                 label="Due time"
-                value={task.deadline}
+                value={taskUpdates.deadline || taskInit.deadline}
                 onChange={(date) => {
                   const taskUpdates_ = { ...taskUpdates };
                   taskUpdates_.deadline = date!;
@@ -147,7 +147,7 @@ const TaskModal = ({
             <FormControl variant="outlined" className={classes.rowInputLeft}>
               <Select
                 disabled={mode === "view"}
-                value={task.status}
+                defaultValue={taskInit.status}
                 onChange={(event) => {
                   const taskUpdates_ = { ...taskUpdates };
                   taskUpdates_.status = event.target.value as any as TaskStatus;
@@ -168,7 +168,7 @@ const TaskModal = ({
                 decimalSeparator="."
                 thousandSeparator=""
                 label="Estimated Days"
-                value={task.estimated_days}
+                value={taskUpdates.estimated_days || taskInit.estimated_days}
                 onChange={(value) => {
                   const taskUpdates_ = { ...taskUpdates };
                   taskUpdates_.estimated_days = value;
