@@ -41,5 +41,7 @@ export const useUserProfile = (userId: string, initialProfile?: User) => {
 };
 
 export const useProfileStats = (userId: string) => {
-  return useSWR<ProfileStats>(`/users/${userId}/stats`);
+  return useSWR<ProfileStats>(`/users/${userId}/stats`, {
+    refreshInterval: 10,
+  });
 };

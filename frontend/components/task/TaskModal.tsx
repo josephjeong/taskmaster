@@ -49,7 +49,7 @@ type TaskModalProps = {
   taskInit: Task;
   onClose?: () => void;
   onDelete?: () => void;
-  onSubmit?: (task: Task) => void;
+  onSubmit?: (task: Partial<Task>) => void;
 };
 
 const TaskModal = ({
@@ -61,7 +61,10 @@ const TaskModal = ({
   onSubmit = () => {},
 }: TaskModalProps) => {
   const [taskUpdates, setTaskUpdates] = React.useState<Partial<Task>>({});
-  const task = React.useMemo(() => Object.assign({} as Task, taskInit, taskUpdates), [taskInit, taskUpdates]);
+  const task = React.useMemo(
+    () => Object.assign({} as Task, taskInit, taskUpdates),
+    [taskInit, taskUpdates]
+  );
 
   const classes = useStyles();
 
@@ -78,10 +81,8 @@ const TaskModal = ({
 
   const submit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    if (mode === 'edit')
-        onSubmit(taskUpdates);
-    else
-        onSubmit(task)
+    if (mode === "edit") onSubmit(taskUpdates);
+    else onSubmit(task);
   };
 
   return (
