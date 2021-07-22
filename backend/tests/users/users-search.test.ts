@@ -52,10 +52,7 @@ describe("getUserIdByEmail", () => {
   });
 
   it("Should throw when the email in not valid", async () => {
-    await expect(
-      getUserIdByEmail("not a valid email")
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Please enter a valid email"`
-    );
+    const id = await getUserIdByEmail("not a valid email");
+    expect(id).toBeNull();
   });
 });
