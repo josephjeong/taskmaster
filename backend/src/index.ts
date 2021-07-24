@@ -6,6 +6,7 @@ import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
 
 import { createConnection } from "typeorm";
+import { generateAuthUrl, getOAuthToken } from "./googleOAuth/authenticate-oauth";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
 import { decodeJWTPayload } from "./users/users-helpers";
@@ -49,6 +50,14 @@ createConnection({
 
     app.use(cors());
     app.use(express.json());
+
+    app.get("/oauth2callback", async (req, res) => {
+      return getOAuthToken(req, res);
+    });
+
+    app.get("/autheticate/googlecal", async (req,res) => {
+      return generateAuthUrl();
+    });
 
     app.post("/users/signup", async (req, res) => {
       const token = await createUser(
