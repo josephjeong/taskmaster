@@ -14,6 +14,7 @@ import {
   passwordHash,
   regexEmailCheck,
 } from "./users-helpers";
+import { ApiError } from "../errors";
 
 /** function to create and store user in database with bcrypt password */
 export async function createUser(
@@ -24,10 +25,17 @@ export async function createUser(
   bio: string
 ): Promise<string> {
   // check if email is valid
-  regexEmailCheck(email);
+  if (!regexEmailCheck(email)) {
+    throw new ApiError("signup/invalid_email", "Please enter a valid email");
+  }
 
   // check if email is already in use
-  await existingEmailCheck(email);
+  if (await existingEmailCheck(email)) {
+    throw new ApiError(
+      "signup/email_exists",
+      "This email already belongs to a Tasker account."
+    );
+  }
 
   // create new user
   const user = new User();

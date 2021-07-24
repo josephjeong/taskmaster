@@ -47,18 +47,24 @@ type TaskModalProps = {
   mode?: "view" | "create" | "edit";
   open: boolean;
   taskInit: Task;
-  onClose: () => void;
-  onSubmit: (task: Task) => any;
+  onClose?: () => void;
+  onDelete?: () => void;
+  onSubmit?: (task: Partial<Task>) => void;
 };
 
 const TaskModal = ({
   mode = "view",
   open,
   taskInit,
-  onClose,
-  onSubmit,
+  onClose = () => {},
+  onDelete = () => {},
+  onSubmit = () => {},
 }: TaskModalProps) => {
-  const [task, setTask] = React.useState(taskInit);
+  const [taskUpdates, setTaskUpdates] = React.useState<Partial<Task>>({});
+  const task = React.useMemo(
+    () => Object.assign({} as Task, taskInit, taskUpdates),
+    [taskInit, taskUpdates]
+  );
 
   const classes = useStyles();
 
@@ -75,7 +81,9 @@ const TaskModal = ({
 
   const submit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    onSubmit(task);
+    if (mode === "edit") onSubmit(taskUpdates);
+    else onSubmit(task);
+    event.currentTarget.reset();
   };
 
   return (
@@ -90,9 +98,9 @@ const TaskModal = ({
             label="Title"
             value={task.title}
             onChange={(event) => {
-              const task_ = { ...task };
-              task_.title = event.target.value;
-              setTask(task_);
+              const taskUpdates_ = { ...taskUpdates };
+              taskUpdates_.title = event.target.value;
+              setTaskUpdates(taskUpdates_);
             }}
           />
           <TextField
@@ -104,9 +112,9 @@ const TaskModal = ({
             label="Description"
             value={task.description}
             onChange={(event) => {
-              const task_ = { ...task };
-              task_.description = event.target.value;
-              setTask(task_);
+              const taskUpdates_ = { ...taskUpdates };
+              taskUpdates_.description = event.target.value;
+              setTaskUpdates(taskUpdates_);
             }}
           />
           <div className={classes.row}>
@@ -121,9 +129,9 @@ const TaskModal = ({
                 label="Due date"
                 value={task.deadline}
                 onChange={(date) => {
-                  const task_ = { ...task };
-                  task_.deadline = date!;
-                  setTask(task_);
+                  const taskUpdates_ = { ...taskUpdates };
+                  taskUpdates_.deadline = date!;
+                  setTaskUpdates(taskUpdates_);
                 }}
               />
               <KeyboardTimePicker
@@ -133,9 +141,9 @@ const TaskModal = ({
                 label="Due time"
                 value={task.deadline}
                 onChange={(date) => {
-                  const task_ = { ...task };
-                  task_.deadline = date!;
-                  setTask(task_);
+                  const taskUpdates_ = { ...taskUpdates };
+                  taskUpdates_.deadline = date!;
+                  setTaskUpdates(taskUpdates_);
                 }}
               />
             </MuiPickersUtilsProvider>
@@ -146,15 +154,15 @@ const TaskModal = ({
                 disabled={mode === "view"}
                 value={task.status}
                 onChange={(event) => {
-                  const task_ = { ...task };
-                  task_.status = event.target.value as any as TaskStatus;
-                  setTask(task_);
+                  const taskUpdates_ = { ...taskUpdates };
+                  taskUpdates_.status = event.target.value as any as TaskStatus;
+                  setTaskUpdates(taskUpdates_);
                 }}
               >
-                <MenuItem value={TaskStatus.TO_DO}>To Do</MenuItem>
+                <MenuItem value={TaskStatus.NOT_STARTED}>To Do</MenuItem>
                 <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
                 <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
-                <MenuItem value={TaskStatus.DONE}>Done</MenuItem>
+                <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
               </Select>
             </FormControl>
             <div className={classes.rowInputRight}>
@@ -167,9 +175,9 @@ const TaskModal = ({
                 label="Estimated Days"
                 value={task.estimated_days}
                 onChange={(value) => {
-                  const task_ = { ...task };
-                  task_.estimated_days = value;
-                  setTask(task_);
+                  const taskUpdates_ = { ...taskUpdates };
+                  taskUpdates_.estimated_days = value;
+                  setTaskUpdates(taskUpdates_);
                 }}
               />
             </div>
@@ -179,6 +187,11 @@ const TaskModal = ({
           <Button size="large" onClick={() => onClose()}>
             Cancel
           </Button>
+          {mode === "edit" ? (
+            <Button size="large" onClick={() => onDelete()}>
+              Delete
+            </Button>
+          ) : null}
           <Button
             size="large"
             color="primary"
