@@ -136,7 +136,7 @@ export async function getOutgoingConnectionRequests(
 
 export async function getAcceptedConnections(
     user : String,
-): Promise<any> {
+): Promise<Connection[]> {
     const connRepo = getConnection().getRepository(Connection);
     const connUserIsRequestee = await connRepo.find({where : {requestee: user}});
     const connUserIsRequester = await connRepo.find({where : {requester: user}});
@@ -153,12 +153,19 @@ export async function getAcceptedConnections(
             acceptedConnections.push(connUserIsRequester[i]);
         }
     }
-
-    try {
-        return acceptedConnections;
-    } catch (e) {
-        console.error(e);
-        return ('Error showing connections: ' + e);
-    }
+  if (!isValidAcceptedConnections(acceptedConnections)) {
+    throw new ApiError("connections/accepted_connections_fail", "Failed to find accepted connections :( ");
+  }
+  else {
+    return acceptedConnections;
+  }
 }
 
+export function isValidAcceptedConnections(acceptedConnections: Connection[]): boolean {
+  if ((acceptedConnections == null) || (acceptedConnections.length == 0)) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
