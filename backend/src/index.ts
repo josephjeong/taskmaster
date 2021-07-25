@@ -32,6 +32,7 @@ import {
 import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
 import { sendData, sendError } from "./response-utils";
+import { taskSearch } from "./tasks/task-search";
 
 const PORT = 8080;
 
@@ -165,6 +166,18 @@ createConnection({
     app.delete("/task/delete/:task_id", async (req, res) => {
       await deleteTask(res.locals.session.id, req.params.task_id);
       sendData(res, "delete task success");
+    });
+
+    app.get("/task/search", async(req, res) => {
+        const tasks = await taskSearch(
+            String(req.query.title),
+            String(req.query.project),
+            String(req.query.creator),
+            String(req.query.deadline),
+            String(req.query.status),
+            String(req.query.estimated_days)
+        )
+        sendData(res, tasks)
     });
 
     app.post("/connection/create", async (req, res) => {
