@@ -24,6 +24,7 @@ import UserSearch from "./UserSearch";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
+    display: "flex",
     "& > * + *": {
       marginLeft: theme.spacing(2),
     },
