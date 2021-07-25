@@ -28,9 +28,9 @@ export async function createTask(
     if (!deadline || !(deadline instanceof Date))
         throw new ApiError("createTask/invalid_deadline", "deadline is not a Date, or is null/undefined");
     
-    // // ensure deadline in the future
-    // if (deadline.getTime() <= Date.now())
-    //     throw new ApiError("createTask/invalid_deadline", "deadline must be in the future");
+    // ensure deadline in the future
+    if (deadline.getTime() <= Date.now())
+        throw new ApiError("createTask/invalid_deadline", "deadline must be in the future");
     
     if (!status)
         throw new ApiError("createTask/invalid_status", "status is null/undefined or empty string");
