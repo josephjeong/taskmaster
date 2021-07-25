@@ -171,6 +171,7 @@ createConnection({
     app.get("/task/search", async(req, res) => {
         const tasks = await taskSearch(
             String(req.query.title),
+            String(req.query.description),
             String(req.query.project),
             String(req.query.creator),
             String(req.query.deadline),

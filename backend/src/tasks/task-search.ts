@@ -1,12 +1,11 @@
-import { FindOperator, getConnection, LessThan } from "typeorm";
+import { FindOperator, getConnection, ILike, LessThan } from "typeorm";
 import {Task, Status} from "../entity/Task";
 import { User } from "../entity/User";
 import { ApiError } from "../errors";
 
-// import {FindOperator} from ""
-
 interface Search {
-    title?: string;
+    title?: FindOperator<string>;
+    description?: FindOperator<string>;
     project?: string;
     creator?: any;
     deadline?: FindOperator<Date>;
@@ -16,6 +15,7 @@ interface Search {
 
 export async function taskSearch(
     title: string | null = null,
+    description: string | null = null,
     project: string | null = null,
     creator: string | null = null, // needs to be converted to User object
     // deadline assumes all events tasks before deadline
@@ -26,13 +26,13 @@ export async function taskSearch(
     let search : Search = {};
 
     // add values if they exist
-    if (title) {search["title"] = title}
+    if (title) {search["title"] = ILike(`%${title}%`)}
+    if (description) {search["description"] = ILike(`%${description}%`)}
     if (project) {search["project"] = project}
     if (creator) {
         let user = await getConnection()
         .getRepository(User)
         .find({ where: { id: creator } });
-        console.log(user); // get rid of this later pleaseeeeee
         search["creator"] = user;
     }
     if (deadline) {
