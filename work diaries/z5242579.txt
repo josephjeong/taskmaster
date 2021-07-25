@@ -12,3 +12,25 @@ Week 3.
 I wrote the Existing Solutions section of our proposal with Soorria and Joseph.
 I created the storyboards for the Kanban and Calendar views.
 I wrote up the frontend System Architecture stack with Soorria, as well as discussed the rest of the architecture with the team.
+
+Week 4.
+I set up the Amazon RDS Postgres database.
+I set up initial boilerplate for the frontend
+I set up initial boilerplate for the backend.
+
+Week 5.
+I implemented the create/edit task modals, unconnected to the backend.
+I implemented the connections modal, unconnected to the backend.
+I implemented the nav bar.
+I set up linting for the frontend.
+I set up linting for the backend.
+
+Week 6.
+I didn't do anything this week.
+
+Week 7.
+I connected the create/edit task frontend to the backend.
+
+Week 8.
+I implemented the tasks list view page.
+I connected the connections frontend to the backend.
