@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   makeStyles,
   Dialog,
@@ -18,20 +18,26 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import { Alert } from "@material-ui/lab";
 
 import { Task, TaskStatus } from "../../types";
+import { useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
+  content: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2),
+    },
+  },
   fullWidthInput: {
     width: "100%",
-    margin: "5px",
   },
   row: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    margin: "5px",
   },
   rowInputLeft: {
     marginRight: "2.5px",
@@ -45,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 type TaskModalProps = {
   mode?: "view" | "create" | "edit";
+  error?: string | null;
   open: boolean;
   taskInit: Task;
   onClose?: () => void;
@@ -56,6 +63,7 @@ const TaskModal = ({
   mode = "view",
   open,
   taskInit,
+  error,
   onClose = () => {},
   onDelete = () => {},
   onSubmit = () => {},
@@ -65,6 +73,12 @@ const TaskModal = ({
     () => Object.assign({} as Task, taskInit, taskUpdates),
     [taskInit, taskUpdates]
   );
+
+  useEffect(() => {
+    if (mode == "create" && open) {
+      setTaskUpdates({});
+    }
+  }, [open, mode]);
 
   const classes = useStyles();
 
@@ -83,14 +97,14 @@ const TaskModal = ({
     event.preventDefault();
     if (mode === "edit") onSubmit(taskUpdates);
     else onSubmit(task);
-    event.currentTarget.reset();
   };
 
   return (
     <Dialog open={open} onClose={() => onClose()}>
       <DialogTitle>{getTitle()}</DialogTitle>
       <form onSubmit={(event) => submit(event)}>
-        <DialogContent>
+        <DialogContent className={classes.content}>
+          {error && <Alert severity="error">{error}</Alert>}
           <TextField
             className={classes.fullWidthInput}
             required

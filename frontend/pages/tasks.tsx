@@ -24,6 +24,7 @@ const TasksPage = () => {
   const { data: tasks } = useMyTasks();
 
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const defaultTask = React.useMemo(
     () => ({
@@ -43,8 +44,13 @@ const TasksPage = () => {
   const createTaskCallback = useCreateTask();
 
   const createTask = async (task: Task) => {
-    await createTaskCallback(task);
-    setShowCreateTaskModal(false);
+    setError(null);
+    const { error } = await createTaskCallback(task);
+    if (error) {
+      setError(error.message);
+    } else {
+      setShowCreateTaskModal(false);
+    }
   };
 
   if (!tasks) {
@@ -67,6 +73,7 @@ const TasksPage = () => {
       <Spacing y={3} />
       <TaskModal
         mode="create"
+        error={error}
         open={showCreateTaskModal}
         taskInit={defaultTask}
         onClose={() => setShowCreateTaskModal(false)}

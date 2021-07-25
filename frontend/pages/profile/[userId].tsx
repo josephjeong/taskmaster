@@ -110,7 +110,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   };
 
   const handleProfileSave = async (changes: UpdateProfileInput) => {
-    updateProfile(changes);
+    const { error } = await updateProfile(changes);
+    if (error) {
+      throw new Error(error.message);
+    }
   };
 
   // TODO: Figure out a better way to handle this
