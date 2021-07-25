@@ -10,7 +10,7 @@ export const login = async (
 ): Promise<string> => {
   const response = await api.post("/users/login", { email, password });
   mutate("/users/me");
-  return response.data.token;
+  return response.data.data.token;
 };
 
 export type SignupInput = {
@@ -28,7 +28,7 @@ export const signup = async (args: SignupInput) => {
 
   const response = await api.post("/users/signup", args);
 
-  return response.data.token;
+  return response.data.data.token;
 };
 
 export const useMe = (runQuery: boolean) => {

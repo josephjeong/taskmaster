@@ -1,10 +1,11 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { User } from "./User";
 
 export enum Status {
   NOT_STARTED = "TO_DO",
   IN_PROGRESS = "IN_PROGRESS",
   BLOCKED = "BLOCKED",
-  COMPLETED = "DONE",
+  COMPLETED = "DONE"
 }
 
 @Entity("Task")
@@ -15,7 +16,8 @@ export class Task {
   @Column({ nullable: true })
   project: string;
 
-  @Column()
+  @ManyToOne(() => User, user => user.id, { eager: true })
+  @JoinColumn({ name: "creator" })
   creator: string;
 
   @Column()

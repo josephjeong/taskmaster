@@ -7,10 +7,10 @@ interface AuthWrapperProps {
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    flex: "1",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: "100vh",
     bgcolor: "#eee",
   },
   container: {
