@@ -58,10 +58,11 @@ createConnection({
     app.use(express.json());
 
     app.get("/oauth2callback", async (req, res) => {
-      return getOAuthToken(req, res);
+      const token = await getOAuthToken(req, res);
+      sendData(res, {token});
     });
 
-    app.get("/autheticate/googlecal", async (req,res) => {
+    app.get("/authenticate/googlecal", async (req,res) => {
       return generateAuthUrl();
     });
 
@@ -219,7 +220,7 @@ createConnection({
 
     app.get("/connection/acceptedConnections", async (req, res) => {
       const s = await getAcceptedConnections(res.locals.session.id);
-      return res.send(s);
+      sendData(res, s);
     });
 
     if (process.env.NODE_ENV !== "production") {

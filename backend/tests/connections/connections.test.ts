@@ -7,9 +7,6 @@ import { createConnection, getConnection } from "typeorm";
 import { User } from "../../src/entity/User";
 import { Connection } from "../../src/entity/Connection";
 import { createUser } from "../../src/users/users-create";
-<<<<<<< HEAD
-import { createUserConnection, acceptRequest, declineRequest, isConnected, getAcceptedConnections, getOutgoingConnectionRequests, getIncomingConnectionRequests } from "../../src/connection";
-=======
 import {
   createUserConnection,
   acceptRequest,
@@ -17,8 +14,8 @@ import {
   isConnected,
   getOutgoingConnectionRequests,
   getIncomingConnectionRequests,
+  getAcceptedConnections
 } from "../../src/connection";
->>>>>>> adb320ff7a4959d6146e7d549a87311f7701d5f9
 import { clearEntity } from "../test-helpers/clear";
 
 beforeAll(async () => {

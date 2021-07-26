@@ -33,13 +33,13 @@ export function getOAuthToken(request: any, resultCallback: any){
     if (request.query.error) {
       // For whatever reason, the OAuth request errorred out, ie user did not grant permissions
       // so redirect to '/'
-      return resultCallback.redirect('/');
+      return resultCallback.redirect('/login');
     } else {
       // Attempt to get the token from the response from the GCP OAuth provider
       oauth2Client.getToken(request.query.code, function(err: Error, token: string) {
         // If any error occurs, then redirect the user to '/'
         if (err){
-            return resultCallback.redirect('/');
+            return resultCallback.redirect('/login');
         }
 
         // The request was a success. store the credentials given by google into a jsonwebtoken in a cookie called 'jwt'
