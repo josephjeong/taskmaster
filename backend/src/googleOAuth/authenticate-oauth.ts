@@ -1,6 +1,10 @@
 const { google } = require('googleapis');
 const http = require('http');
 const jwt = require('jsonwebtoken');
+import { User } from "../entity/User";
+import { getConnection } from "typeorm";
+import { createCalendarCredential } from "../calendar-credentials";
+import { decodeJWTPayload } from "../users/users-helpers";
 
 // Google's OAuth2 client
 const OAuth2 = google.auth.OAuth2;
@@ -22,31 +26,34 @@ export function generateAuthUrl() {
     const url = oauth2Client.generateAuthUrl({
         // 'online' (default) or 'offline' (gets refresh_token)
         access_type: 'offline',
-
+        prompt: 'consent',
         // Only get GoogelCalendar scopes
         scope: 'https://www.googleapis.com/auth/calendar'
     });
+    return url;
 }
 
 //Handler for the /oauth2callback endpoint defined in index.ts
-export function getOAuthToken(request: any, resultCallback: any){
+export async function getOAuthToken(request: any, resultCallback: any){
     if (request.query.error) {
       // For whatever reason, the OAuth request errorred out, ie user did not grant permissions
       // so redirect to '/'
       return resultCallback.redirect('/login');
     } else {
       // Attempt to get the token from the response from the GCP OAuth provider
-      oauth2Client.getToken(request.query.code, function(err: Error, token: string) {
-        // If any error occurs, then redirect the user to '/'
-        if (err){
-            return resultCallback.redirect('/login');
-        }
-
-        // The request was a success. store the credentials given by google into a jsonwebtoken in a cookie called 'jwt'
-        resultCallback.cookie('jwt', jwt.sign(token, JWT_SECRET));
+        const tokens = await oauth2Client.getToken(request.query.code);
         
+        resultCallback.cookie('jwt', jwt.sign(tokens.tokens.access_token, JWT_SECRET));
+        // store the token 
+        const userRepo = getConnection().getRepository(User);
+
+        const decodedJWT = await decodeJWTPayload(request.headers.jwt);
+
+        const user = await userRepo.findOne({ where: { id: decodedJWT.id } });
+        
+        await createCalendarCredential(user, tokens.tokens.refresh_token);
+
         //redirect the user somewhere
         return resultCallback.redirect('/tasks');
-      });
     }
   }

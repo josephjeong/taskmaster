@@ -35,6 +35,7 @@ import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
 import { sendData, sendError } from "./response-utils";
 import { getUserByEmail } from "./users/users-search";
+import { CalendarCredential } from "./entity/CalendarCredential";
 
 const PORT = 8080;
 
@@ -44,7 +45,7 @@ const app = express();
 
 // create typeorm connection
 createConnection({
-  entities: [User, Task, Connection, TaskAssignment],
+  entities: [User, Task, Connection, TaskAssignment, CalendarCredential],
   type: "postgres",
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
@@ -60,11 +61,12 @@ createConnection({
 
     app.get("/oauth2callback", async (req, res) => {
       const token = await getOAuthToken(req, res);
-      sendData(res, {token});
+      //unneeded as headers are sent in getOAuthToken
+      // sendData(res, {token});
     });
 
     app.get("/authenticate/googlecal", async (req,res) => {
-      return generateAuthUrl();
+      sendData(res,generateAuthUrl());
     });
 
     app.post("/users/signup", async (req, res) => {
