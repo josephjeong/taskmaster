@@ -30,7 +30,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ email, id }) => {
 
   return (
     <Container>
-      <Title>{`Profile Not Found`}</Title>
+      <Title>Profile Not Found</Title>
       <Spacing y={4} />
       <Typography variant="h4" component="h1" className={classes.heading}>
         Profile Not Found
