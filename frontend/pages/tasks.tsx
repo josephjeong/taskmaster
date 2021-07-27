@@ -10,15 +10,6 @@ import TaskListItem from "../components/task/TaskListItem";
 import TaskModal from "../components/task/TaskModal";
 import Title from "../components/shared/Title";
 
-const DEFAULT_TASK_ATTRIBUTES = {
-  id: "0",
-  title: "",
-  description: "",
-  deadline: moment(),
-  status: TaskStatus.NOT_STARTED,
-  estimated_days: 1,
-} as Task;
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -31,7 +22,21 @@ const useStyles = makeStyles((theme) => ({
 
 const TasksPage = () => {
   const { data: tasks } = useMyTasks();
+
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
+
+  const defaultTask = React.useMemo(
+    () => ({
+      id: "0",
+      title: "",
+      description: "",
+      deadline: moment().add(1, "h"),
+      status: TaskStatus.NOT_STARTED,
+      estimated_days: 1,
+    }),
+    // eslint-disable-next-line
+    [showCreateTaskModal]
+  );
 
   const classes = useStyles();
 
@@ -63,12 +68,10 @@ const TasksPage = () => {
       <TaskModal
         mode="create"
         open={showCreateTaskModal}
-        taskInit={DEFAULT_TASK_ATTRIBUTES}
+        taskInit={defaultTask}
         onClose={() => setShowCreateTaskModal(false)}
         onSubmit={(taskUpdates) =>
-          createTask(
-            Object.assign({} as Task, DEFAULT_TASK_ATTRIBUTES, taskUpdates)
-          )
+          createTask(Object.assign({} as Task, defaultTask, taskUpdates))
         }
       />
       <Stack spacing={2}>

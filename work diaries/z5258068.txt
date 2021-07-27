@@ -62,6 +62,11 @@ Week 07
 
 Week 08
 
+- Add UI to conditionally show a user's bio
+- Add simple error handling on the frontend for profile updates & task actions
+- Improve frontend UI by adding profile button, Logo, Login, Signup ang Logout buttons to Nav
+- Implement searching users by email in frontend & backend with unit tests.
+- Create a not-found page for when a profile can't be found.
 
 
 ---
