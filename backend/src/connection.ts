@@ -156,7 +156,7 @@ export async function getAcceptedConnections(
     //         acceptedConnections.push(connUserIsRequester[i]);
     //     }
     // }
-  if (!isValidAcceptedConnections(acceptedConnections)) {
+  if (isValidAcceptedConnections(acceptedConnections)) {
     throw new ApiError("connections/accepted_connections_fail", "Failed to find accepted connections :( ");
   }
   else {
@@ -165,7 +165,7 @@ export async function getAcceptedConnections(
 }
 
 export function isValidAcceptedConnections(acceptedConnections: Connection[]): boolean {
-  if ((acceptedConnections == null) || (acceptedConnections.length == 0)) {
+  if (acceptedConnections == null)  {
     return true;
   }
   else {

@@ -5,7 +5,10 @@
 import { createConnection, getConnection } from "typeorm";
 
 import { User } from "../../src/entity/User";
+import { Task } from "../../src/entity/Task";
 import { Connection } from "../../src/entity/Connection";
+import { CalendarCredential } from "../../src/entity/CalendarCredential";
+
 import { createUser } from "../../src/users/users-create";
 import {
   createUserConnection,
@@ -24,12 +27,16 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await clearEntity(Connection);
+  await clearEntity(Task);
+  await clearEntity(CalendarCredential);
   await clearEntity(User);
 });
 
 /** clear out database after all tests run */
 afterAll(async () => {
   await clearEntity(Connection);
+  await clearEntity(Task);
+  await clearEntity(CalendarCredential);
   await clearEntity(User);
   return await getConnection().close();
 });
@@ -523,7 +530,6 @@ test('accepted connections ', async () => {
     const user3 = await userRepo.findOne({where : {email : user_email2}});
     const user4 = await userRepo.findOne({where : {email : user_email3}});
 
-
     await createUserConnection(user2.id, user1.id);
     await createUserConnection(user3.id, user1.id);
     await createUserConnection(user4.id, user1.id);
@@ -533,7 +539,7 @@ test('accepted connections ', async () => {
 
     const connList = await getAcceptedConnections(user1.id);
 
-    //console.log(connList);
+    console.log(connList);
     expect(connList.length).toBe(2);
 });
 // test if outgoing connections returns
