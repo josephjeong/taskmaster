@@ -33,6 +33,8 @@ import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
 import { sendData, sendError } from "./response-utils";
 import { taskSearch } from "./tasks/task-search";
+import { getUserByEmail } from "./users/users-search";
+
 
 const PORT = 8080;
 
@@ -97,9 +99,11 @@ createConnection({
     });
 
     app.get("/users/:userId/stats", async (req, res) => {
-      return res.json({
-        data: await getStatsForUser(req.params.userId),
-      });
+      sendData(res, await getStatsForUser(req.params.userId));
+    });
+
+    app.post("/users/by-email", async (req, res) => {
+      sendData(res, await getUserByEmail(req.body.email));
     });
 
     // the two routes below return an array of tasks sorted by deadline, closer deadlines first
