@@ -170,13 +170,16 @@ createConnection({
 
     app.get("/task/search", async(req, res) => {
         const tasks = await taskSearch(
+            res.locals.session.id,
             String(req.query.title),
             String(req.query.description),
             String(req.query.project),
             String(req.query.creator),
             String(req.query.deadline),
             String(req.query.status),
-            String(req.query.estimated_days)
+            String(req.query.estimated_days),
+            String(req.query.user_assignee),
+            String(req.query.group_assignee)
         )
         sendData(res, tasks)
     });

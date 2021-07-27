@@ -2,6 +2,7 @@ import { FindOperator, getConnection, ILike, LessThan } from "typeorm";
 import {Task, Status} from "../entity/Task";
 import { User } from "../entity/User";
 import { ApiError } from "../errors";
+import { TaskAssignment } from "../entity/TaskAssignment";
 
 interface Search {
     title?: FindOperator<string>;
@@ -14,6 +15,7 @@ interface Search {
 }
 
 export async function taskSearch(
+    me: string,
     title: string | null = null,
     description: string | null = null,
     project: string | null = null,
@@ -21,7 +23,9 @@ export async function taskSearch(
     // deadline assumes all events tasks before deadline
     deadline: string | null = null, // needs to be converted to date
     status: string | null = null, // needs to be converted to status
-    estimated_days: string | null = null // needs to be converted to number
+    estimated_days: string | null = null, // needs to be converted to number
+    user_assignee: string | null = null, // assuming this is their id
+    group_assignee: string | null = null // assuming this is their id
 ) : Promise<Task[]> {
     let search : Search = {};
 
@@ -48,11 +52,21 @@ export async function taskSearch(
             case "DONE": state = Status.COMPLETED; break;
             default: throw new ApiError("task_search/not_valid_status", "Not a valid Status");
         }
-        if (state) {search["status"] = state}
+        search["status"] = state
     }
     if (estimated_days){search["estimated_days"] = Number(estimated_days)}
 
-    let tasks = await getConnection().getRepository(Task).find({where : search})
+    let tasks = await getConnection().getRepository(TaskAssignment).find({
+        where : {user_assignee : me},
+        relations : ["task"]
+    });
+
+    console.log(tasks)
+
+    // let tasks = await getConnection().getRepository(Task).find({
+    //     where : search,
+    //     relations
+    // })
 
     return tasks
 }
