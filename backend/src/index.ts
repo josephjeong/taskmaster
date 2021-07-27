@@ -44,7 +44,6 @@ const PORT = 8080;
 // start express server
 // initiated outside of connection to export it
 const app = express();
-
 // create typeorm connection
 createConnection({
   entities: [User, Task, Connection, TaskAssignment, CalendarCredential],
@@ -62,13 +61,19 @@ createConnection({
     app.use(express.json());
 
     app.get("/oauth2callback", async (req, res) => {
+
       const token = await getOAuthToken(req, res);
       //unneeded as headers are sent in getOAuthToken
-      // sendData(res, {token});
+      sendData(res, {token});
     });
 
     app.get("/authenticate/googlecal", async (req,res) => {
-      sendData(res,generateAuthUrl());
+      res.cookie('jwt',req.headers.jwt);
+
+      const authUrl = generateAuthUrl();
+      console.log(authUrl);
+      // res.redirect(generateAuthUrl());
+      res.redirect(authUrl);
     });
 
     app.post("/users/signup", async (req, res) => {

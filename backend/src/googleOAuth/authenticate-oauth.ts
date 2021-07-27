@@ -43,17 +43,17 @@ export async function getOAuthToken(request: any, resultCallback: any){
       // Attempt to get the token from the response from the GCP OAuth provider
         const tokens = await oauth2Client.getToken(request.query.code);
         
-        resultCallback.cookie('jwt', jwt.sign(tokens.tokens.access_token, JWT_SECRET));
         // store the token 
         const userRepo = getConnection().getRepository(User);
 
-        const decodedJWT = await decodeJWTPayload(request.headers.jwt);
+        const jwt = request.headers.cookie.substring(4);
+
+        const decodedJWT = await decodeJWTPayload(request.headers.cookie.substring(4));
 
         const user = await userRepo.findOne({ where: { id: decodedJWT.id } });
         
-        await createCalendarCredential(user, tokens.tokens.refresh_token);
+        const calendarCredential = await createCalendarCredential(user, tokens.tokens.refresh_token);
 
-        //redirect the user somewhere
-        return resultCallback.redirect('/tasks');
+        return calendarCredential;
     }
   }
