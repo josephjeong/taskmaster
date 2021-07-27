@@ -24,6 +24,34 @@ export async function createTask(
       "creator is null/undefined or empty string"
     );
 
+    // check values are not empty strings, null/undefined etc.
+    if (!creator)
+        throw new ApiError("createTask/invalid_creator", "creator is null/undefined or empty string");
+    
+    if (!(title && title.trim().length > 0))
+        throw new ApiError("createTask/invalid_title", "title is null/undefined or empty string");
+    
+    if (!deadline || !(deadline instanceof Date))
+        throw new ApiError("createTask/invalid_deadline", "deadline is not a Date, or is null/undefined");
+    
+    // ensure deadline in the future
+    if (deadline.getTime() <= Date.now())
+        throw new ApiError("createTask/invalid_deadline", "deadline must be in the future");
+    
+    if (!status)
+        throw new ApiError("createTask/invalid_status", "status is null/undefined or empty string");
+    
+    // check valid status
+    if (!Object.values(Status).includes(status))
+        throw new ApiError("createTask/invalid_status", 'Status enum is {NOT_STARTED = "TO_DO", IN_PROGRESS = "IN_PROGRESS", BLOCKED = "BLOCKED", COMPLETED = "DONE"}');
+    
+    // ensure estimated_days is positive
+    if (estimated_days !== null && estimated_days !== undefined && estimated_days < 0)
+        throw new ApiError("createTask/invalid_estimated_days", "estimated_days must be >= 0");
+    
+    if (!(await userIdExists(creator)))
+        throw new ApiError("createTask/invalid_creator", "user/creator with this id does not exist");
+
   if (!(title && title.trim().length > 0))
     throw new ApiError(
       "createTask/invalid_title",
