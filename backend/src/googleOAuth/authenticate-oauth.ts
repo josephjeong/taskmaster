@@ -32,26 +32,16 @@ export function generateAuthUrl() {
 }
 
 //Handler for the /oauth2callback endpoint defined in index.ts
-export async function getOAuthToken(request: any, resultCallback: any){
-    if (request.query.error) {
-      // For whatever reason, the OAuth request errorred out, ie user did not grant permissions
-      // so redirect to '/'
-      return resultCallback.redirect('/login');
-    } else {
-      // Attempt to get the token from the response from the GCP OAuth provider
-        const tokens = await oauth2Client.getToken(request.query.code);
-        
+export async function saveOAuthToken(jwt: string, refreshToken: string, accessToken: string ){
+
         // store the token 
         const userRepo = getConnection().getRepository(User);
-
-        const jwt = request.headers.cookie.substring(4);
 
         const decodedJWT = await decodeJWTPayload(jwt);
 
         const user = await userRepo.findOne({ where: { id: decodedJWT.id } });
         
-        const calendarCredential = await createCalendarCredential(user, tokens.tokens.refresh_token);
+        const calendarCredential = await createCalendarCredential(user, refreshToken, accessToken);
 
-        return calendarCredential;
-    }
+        return;
   }

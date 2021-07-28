@@ -1,4 +1,4 @@
-import {Entity, PrimaryColumn, OneToOne, JoinColumn, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, PrimaryColumn, Column, OneToOne, JoinColumn, PrimaryGeneratedColumn} from "typeorm";
 import { User } from "./User";
 
 
@@ -8,8 +8,11 @@ export class CalendarCredential {
     @PrimaryGeneratedColumn('increment')
     public id: number;
 
-    @PrimaryColumn('text')
-    token: String;
+    @Column('text')
+    access_token: String;
+
+    @Column('text')
+    refresh_token: String;
 
     @OneToOne (() => User)
     @JoinColumn({ name: "user" })

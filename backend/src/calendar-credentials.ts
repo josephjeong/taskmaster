@@ -11,7 +11,8 @@ import { ApiError } from "./errors";
 /* function to create and store Connection in database*/
 export async function createCalendarCredential(
   user: User,
-  refreshToken: string
+  refreshToken: string,
+  accessToken: string
 ): Promise<any> {
   const calendarCredentialRepo = getConnection().getRepository(CalendarCredential);
 
@@ -30,8 +31,8 @@ export async function createCalendarCredential(
 
   const calendarCredential = new CalendarCredential();
   calendarCredential.user = user.id;
-  calendarCredential.token = refreshToken;
-
+  calendarCredential.refresh_token = refreshToken;
+  calendarCredential.access_token = accessToken;
   await getConnection().manager.save(calendarCredential);
   return true;
 }

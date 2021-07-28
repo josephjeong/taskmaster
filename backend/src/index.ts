@@ -6,7 +6,7 @@ import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
 
 import { createConnection } from "typeorm";
-import { generateAuthUrl, getOAuthToken } from "./googleOAuth/authenticate-oauth";
+import { generateAuthUrl, saveOAuthToken } from "./googleOAuth/authenticate-oauth";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
 import { decodeJWTPayload } from "./users/users-helpers";
@@ -60,20 +60,16 @@ createConnection({
     app.use(cors());
     app.use(express.json());
 
-    app.get("/oauth2callback", async (req, res) => {
-
-      const token = await getOAuthToken(req, res);
-      //unneeded as headers are sent in getOAuthToken
-      sendData(res, {token});
+    app.post("/oauthtokens/save", async (req, res) => {
+      await saveOAuthToken(
+        req.body.jwt, 
+        req.body.refresh_token, 
+        req.body.access_token);
     });
 
     app.get("/authenticate/googlecal", async (req,res) => {
-      res.cookie('jwt',req.headers.jwt);
-
       const authUrl = generateAuthUrl();
-      console.log(authUrl);
-      // res.redirect(generateAuthUrl());
-      res.redirect(authUrl);
+      sendData(res, authUrl);
     });
 
     app.post("/users/signup", async (req, res) => {
