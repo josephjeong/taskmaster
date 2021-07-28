@@ -12,3 +12,24 @@ I drafted initial ideas for novel functionality compared to existing systems
 # Week 3
 I helped create wireframes for storyboards
 We plan to submit the proposal on Week 4 Monday and start the first sprint
+
+# Week 4
+I created backend functions to create and edit a user's tasks and wrote tests for them
+
+# Week 5
+I created backend function to get a list of a user's tasks and wrote tests for it
+I added routes to view own tasks, another user's tasks, and create and edit tasks
+We presented Progressive Demo A
+
+# Week 6
+Fixed task create and edit to have multiple assignees
+Fixed function to get list of tasks to include assignees details
+
+# Week 7
+Added function and route to get an individual task, and its test in the backend
+Added function and route to delete a task, and its test in the backend
+Updated error throwing for tasks functions
+
+# Week 8
+Discovered minor bugs through manual testing of the app
+Added tasks anchor to nav bar
