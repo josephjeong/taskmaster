@@ -6,24 +6,49 @@ I got 10 people to fill our a survey so that we could find customer needs relate
 Next week I will work on JIRA set up.
 
 Week 2.
-This week I created a JIRA board for the team and created the GitHub repo.
+This week I completed all the tasks I was expected to do from last week.
+I created a JIRA board for the team and created the GitHub repo.
 I also wrote the start and end dates for the sprints and added them to the JIRA board.
 Next week I will work on the proposal. 
 
 Week 3. 
-This week I did the Systems Architecture diagram and wrote the backend and data base text for the proposal.
+This week I completed all the tasks I was expected to do from last week.
+I did the Systems Architecture diagram and wrote the backend and data base text for the proposal.
 Next week I will work on starting some code.
 
 Week 4. 
-This week I wrote the connections entity for the backend and wrote the create user, accept request and decline request functions in connections.ts and wrote tests for these functions.
+This week I completed all the tasks I expected to do from last week.
+I wrote the connections entity for the backend and wrote the create user, accept request and decline request functions in connections.ts and wrote tests for these functions.
 Next week I will continue working on connections
 
 Week 5. 
-This week I wrote the functions for deleting requsts, viewing outgoing and incoming requests, checking if two users are connected, and wrote tests for these functions.
+This week I completed all the tasks I expected to do from last week.
+I wrote the functions for deleting requsts, viewing outgoing and incoming requests, checking if two users are connected, and wrote tests for these functions.
 I also created a google form for the team to fill out for our retro so that we can go through responses next meeting.
 Next week we will delegate user stories for the next sprint.
 
 Week 6.
+This week I completed all the tasks I expected to do from last week.
 This week I conducted the retro meeting and compiled a shared google doc for the team to edit and contribute with additional thoughts to submit for week 7. 
 I added an if statement for connections to prevent users for adding themselves. 
 I also conducted the meeting to delegate JIRA tasks to the team. 
+Next week I will create an accepted connections function and debug some issues with previous functions the team have mentioned and add error handling to connections functions.
+
+Week 7.
+This week I completed all the tasks I expected to do from last week.
+I created an accepted connections function and debug some issues with previous functions the team have mentioned and add error handling to connections functions.
+Next week I will start on the Google Authentication. 
+
+Week 8.
+This week I was unable to complete the google authentication work, due to the workload of another subject. 
+However, I have made some head way. 
+Next week I will definitely finish the Google Authentication for users, start on google calendar event creation, as well as create and submit the retro B report.
+
+Week 9.
+This week I completed all the tasks I expected to do from last week.
+I created the retro b file and led the retro. This time I did not create a survey for the team as I wasn't sure if we saved time or it took longer to fill out, and I wanted to compare meetings. I feel like it took a similar amount of time, but we spent the first 10 minutes of the meeting brainstorming what to write in the retro columns. 
+I fixed some bugs in testing and allowed for CalendarCredentials to be saved within the database.
+I completed Google authentication. 
+Next week I will finish the calendar event creation and syncing as well as write about challenges in the report. 
+
+
