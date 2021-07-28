@@ -1,6 +1,4 @@
-const { google } = require('googleapis');
-const http = require('http');
-const jwt = require('jsonwebtoken');
+import { google } from "googleapis";
 import { User } from "../entity/User";
 import { getConnection } from "typeorm";
 import { createCalendarCredential } from "../calendar-credentials";
@@ -48,7 +46,7 @@ export async function getOAuthToken(request: any, resultCallback: any){
 
         const jwt = request.headers.cookie.substring(4);
 
-        const decodedJWT = await decodeJWTPayload(request.headers.cookie.substring(4));
+        const decodedJWT = await decodeJWTPayload(jwt);
 
         const user = await userRepo.findOne({ where: { id: decodedJWT.id } });
         
