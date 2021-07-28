@@ -1,10 +1,12 @@
-import { FindOperator, getConnection, ILike, LessThan } from "typeorm";
+import { FindOperator, getConnection, ILike, LessThan, In } from "typeorm";
+import _ from 'lodash';
 import {Task, Status} from "../entity/Task";
 import { User } from "../entity/User";
 import { ApiError } from "../errors";
 import { TaskAssignment } from "../entity/TaskAssignment";
 
 interface Search {
+    id? : FindOperator<string[]>;
     title?: FindOperator<string>;
     description?: FindOperator<string>;
     project?: string;
@@ -24,25 +26,24 @@ export async function taskSearch(
     deadline: string | null = null, // needs to be converted to date
     status: string | null = null, // needs to be converted to status
     estimated_days: string | null = null, // needs to be converted to number
-    user_assignee: string | null = null, // assuming this is their id
-    group_assignee: string | null = null // assuming this is their id
-) : Promise<Task[]> {
+    user_assignee: string[] | null = null // assuming this is their id
+) : /*Promise<Task[]>*/ Promise<any> {
     let search : Search = {};
 
     // add values if they exist
-    if (title) {search["title"] = ILike(`%${title}%`)}
-    if (description) {search["description"] = ILike(`%${description}%`)}
-    if (project) {search["project"] = project}
+    if (title) {search["title"] = ILike(`%${title}%`)};
+    if (description) {search["description"] = ILike(`%${description}%`)};
+    if (project) {search["project"] = project};
     if (creator) {
         let user = await getConnection()
         .getRepository(User)
         .find({ where: { id: creator } });
         search["creator"] = user;
-    }
+    };
     if (deadline) {
         let date = new Date(Number(deadline) * 1000);
         search["deadline"] = LessThan(date);
-    }
+    };
     if (status) {
         let state : Status | null = null;
         switch(status){
@@ -53,20 +54,50 @@ export async function taskSearch(
             default: throw new ApiError("task_search/not_valid_status", "Not a valid Status");
         }
         search["status"] = state
-    }
-    if (estimated_days){search["estimated_days"] = Number(estimated_days)}
+    };
+    if (estimated_days){search["estimated_days"] = Number(estimated_days)};
 
-    let tasks = await getConnection().getRepository(TaskAssignment).find({
-        where : {user_assignee : me},
+    let all_assignees = [me];
+    if(user_assignee) {all_assignees = all_assignees.concat(user_assignee)};
+
+    // gets all task assignments
+    let task_assignments = await getConnection().getRepository(TaskAssignment).find({
+        where : {user_assignee : In(all_assignees)},
         relations : ["task"]
     });
 
-    console.log(tasks)
+    // finds all the tasks that match 
+    let matching_tasks = task_assignments.map(task => {
+        return {
+            user: task.user_assignee,
+            user_id: Object(task.user_assignee).id,
+            task_id: Object(task.task).id,
+            task: Object(task.task)
+        }
+    })
+    
+    // group tasks by task id
+    let tasks_grouped = _.mapValues(_.groupBy(matching_tasks, 'task_id'),
+                          clist => clist.map(matching_tasks => _.omit(matching_tasks, 'task_id')));
 
-    // let tasks = await getConnection().getRepository(Task).find({
-    //     where : search,
-    //     relations
-    // })
+    // gets all users assigned to each task 
+    let user_list_by_task = Object.keys(tasks_grouped).map(key => {
+        return {
+            user_list: tasks_grouped[key].map(task_obj => task_obj.user_id),
+            task: tasks_grouped[key][0].task // same tasks are already grouped
+        }
+    });
+
+    // makes sure user has access to those tasks
+    let return_tasks = user_list_by_task.filter(task_obj => task_obj.user_list.includes(me));
+    return_tasks = return_tasks.map(obj => obj.task.id);
+    // @ts-ignore
+    search["id"] = In(return_tasks)
+
+    // find the tasks from the list of tasks me has access to that matches criteria
+    let tasks = await getConnection().getRepository(Task).find({
+        where: search
+    })
 
     return tasks
 }

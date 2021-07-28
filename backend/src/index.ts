@@ -182,8 +182,8 @@ createConnection({
             String(req.query.deadline),
             String(req.query.status),
             String(req.query.estimated_days),
-            String(req.query.user_assignee),
-            String(req.query.group_assignee)
+            // @ts-ignore string list
+            req.query.user_assignee
         )
         sendData(res, tasks)
     });
