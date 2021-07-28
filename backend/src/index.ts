@@ -64,7 +64,8 @@ createConnection({
       await saveOAuthToken(
         req.body.jwt, 
         req.body.refresh_token, 
-        req.body.access_token);
+        req.body.access_token
+      );
     });
 
     app.get("/authenticate/googlecal", async (req,res) => {
