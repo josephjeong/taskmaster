@@ -6,6 +6,7 @@ import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
 
 import { createConnection } from "typeorm";
+import { generateAuthUrl, saveOAuthToken } from "./googleOAuth/authenticate-oauth";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
 import { decodeJWTPayload } from "./users/users-helpers";
@@ -28,12 +29,14 @@ import {
   isConnected,
   getIncomingConnectionRequests,
   getOutgoingConnectionRequests,
+  getAcceptedConnections
 } from "./connection";
 import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
 import { sendData, sendError } from "./response-utils";
 import { taskSearch } from "./tasks/task-search";
 import { getUserByEmail } from "./users/users-search";
+import { CalendarCredential } from "./entity/CalendarCredential";
 
 
 const PORT = 8080;
@@ -41,10 +44,9 @@ const PORT = 8080;
 // start express server
 // initiated outside of connection to export it
 const app = express();
-
 // create typeorm connection
 createConnection({
-  entities: [User, Task, Connection, TaskAssignment],
+  entities: [User, Task, Connection, TaskAssignment, CalendarCredential],
   type: "postgres",
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
@@ -57,6 +59,19 @@ createConnection({
   .then(() => {
     app.use(cors());
     app.use(express.json());
+
+    app.post("/oauthtokens/save", async (req, res) => {
+      await saveOAuthToken(
+        req.body.jwt, 
+        req.body.refresh_token, 
+        req.body.access_token
+      );
+    });
+
+    app.get("/authenticate/googlecal", async (req,res) => {
+      const authUrl = generateAuthUrl();
+      sendData(res, authUrl);
+    });
 
     app.post("/users/signup", async (req, res) => {
       const token = await createUser(
@@ -225,6 +240,11 @@ createConnection({
 
     app.get("/connection/outgoingRequests/:userId", async (req, res) => {
       const s = await getOutgoingConnectionRequests(req.params.userId);
+      sendData(res, s);
+    });
+
+    app.get("/connection/acceptedConnections", async (req, res) => {
+      const s = await getAcceptedConnections(res.locals.session.id);
       sendData(res, s);
     });
 
