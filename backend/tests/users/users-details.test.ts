@@ -35,10 +35,10 @@ test("id does not exist for user", async () => {
   expect.assertions(nonexistent_ids.length);
   await expect(
     fetchUserDetails(nonexistent_ids[0])
-  ).rejects.toThrowErrorMatchingInlineSnapshot();
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"This user does not exist"`);
   await expect(
     fetchUserDetails(nonexistent_ids[1])
-  ).rejects.toThrowErrorMatchingInlineSnapshot();
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`"This user does not exist"`);
 });
 
 // test when avatar_url does not exist

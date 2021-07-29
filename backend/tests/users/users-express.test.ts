@@ -24,8 +24,8 @@ beforeEach(async () => {
 
 /** clear out database after all tests run */
 afterAll(async () => {
-  exp.server.close();
   await clearEntity(User);
+  exp.server.close();
   await getConnection().close();
 });
 

@@ -53,6 +53,7 @@ export function decodeJWTPayload(token: string): Promise<Session> {
   try {
     return decode(token, JWT_SECRET, true, JWT_ALG);
   } catch (err) {
+    console.log(err)
     throw new ApiError("auth/not_logged_in", "Please log in");
   }
 }
@@ -61,7 +62,7 @@ export function decodeJWTPayload(token: string): Promise<Session> {
 export function regexEmailCheck(email: string): boolean {
   const re =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return !!re.test(String(email).toLowerCase());
+  return re.test(String(email).toLowerCase());
 }
 
 /** checks if email already exists */

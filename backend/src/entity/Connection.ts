@@ -1,5 +1,4 @@
-import {Entity, PrimaryColumn, ManyToOne, Column} from "typeorm";
-import { User } from "./User";
+import {Entity, PrimaryColumn, Column} from "typeorm";
 
 @Entity('Connection')
 export class Connection {
