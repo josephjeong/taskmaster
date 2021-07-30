@@ -15,11 +15,10 @@ import PersonIcon from "@material-ui/icons/Person";
 import DoneAllIcon from "@material-ui/icons/DoneAll";
 import TasksIcon from "@material-ui/icons/EventNote";
 
-import { User } from "../../types";
 import { useAuthContext } from "../../context/AuthContext";
 import ConnectionRequestsModal from "../connections/ConnectionsRequestsModal";
 import { Button } from "@material-ui/core";
-import { useLogout } from "../../api";
+import { useLogout, useIncomingConnectionRequests } from "../../api";
 import UserSearch from "./UserSearch";
 
 const useStyles = makeStyles((theme) => ({
@@ -44,34 +43,18 @@ const useStyles = makeStyles((theme) => ({
 type NavProps = {};
 
 const Nav = ({}: NavProps) => {
-  const [incomingConnectionRequests, setIncomingConnectionRequests] =
-    React.useState<User[]>([
-      {
-        id: "b59aa143-5e1c-46af-b05c-85908324e097",
-        email: "soorria.ss@gmail.com",
-        first_name: "Soorria",
-        last_name: "Saruva",
-        avatar_url: "https://mooth.tech/logo.svg",
-      },
-    ]);
-  const [outgoingConnectionRequests, setOutgoingConnectionRequests] =
-    React.useState<User[]>([
-      {
-        id: "b59aa143-5e1c-46af-b05c-85908324e098",
-        email: "thesabinelim@gmail.com",
-        first_name: "Sabine",
-        last_name: "Lim",
-        avatar_url:
-          "https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png",
-      },
-    ]);
-
   const [showConnectionsModal, setShowConnectionsModal] = React.useState(false);
 
   const { user } = useAuthContext();
   const logout = useLogout();
 
+  const { data: incomingRequests } = useIncomingConnectionRequests();
+
   const classes = useStyles();
+
+  if (!incomingRequests) {
+    return null;
+  }
 
   return (
     <>
@@ -102,7 +85,7 @@ const Nav = ({}: NavProps) => {
                   onClick={() => setShowConnectionsModal(true)}
                 >
                   <Badge
-                    badgeContent={incomingConnectionRequests.length}
+                    badgeContent={incomingRequests.length}
                     color="secondary"
                   >
                     <LinkIcon />
@@ -160,10 +143,6 @@ const Nav = ({}: NavProps) => {
       {user && (
         <ConnectionRequestsModal
           open={showConnectionsModal}
-          incoming={incomingConnectionRequests}
-          setIncoming={(requests) => setIncomingConnectionRequests(requests)}
-          outgoing={outgoingConnectionRequests}
-          setOutgoing={(requests) => setOutgoingConnectionRequests(requests)}
           onClose={() => setShowConnectionsModal(false)}
         />
       )}

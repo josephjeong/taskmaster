@@ -25,6 +25,7 @@ import { Connection } from "./entity/Connection";
 import {
   acceptRequest,
   createUserConnection,
+  deleteUserConnection,
   declineRequest,
   isConnected,
   getIncomingConnectionRequests,
@@ -204,8 +205,13 @@ createConnection({
     });
 
     app.post("/connection/create", async (req, res) => {
-      await createUserConnection(res.locals.session.id, req.body.id);
+      await createUserConnection(req.body.id, res.locals.session.id);
       sendData(res, "updated succesfully!");
+    });
+
+    app.post("/connection/delete", async (req, res) => {
+      await deleteUserConnection(req.body.id, res.locals.session.id);
+      sendData(res, "updated successfully!");
     });
 
     app.post("/connection/accept", async (req, res) => {
@@ -233,7 +239,7 @@ createConnection({
       sendData(res, s);
     });
 
-    app.get("/connection/incomingRequests", async (req, res) => {
+    app.get("/connection/outgoingRequests", async (req, res) => {
       const s = await getOutgoingConnectionRequests(res.locals.session.id);
       sendData(res, s);
     });
