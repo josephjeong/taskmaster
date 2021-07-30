@@ -8,7 +8,7 @@ import { User } from "./entity/User";
 import { getConnection } from "typeorm";
 import { ApiError } from "./errors";
 
-/* function to create and store Connection in database*/
+/* function to create and store CalendarCredential in database*/
 export async function createCalendarCredential(
   user: User,
   refreshToken: string,
@@ -35,5 +35,16 @@ export async function createCalendarCredential(
   calendarCredential.access_token = accessToken;
   await getConnection().manager.save(calendarCredential);
   return;
+}
+
+
+/* function to get CalendarCredential in database*/
+
+export async function getCalendarCredential(
+  userId: string,
+): Promise<CalendarCredential> {
+  const calCredRepo = getConnection().getRepository(CalendarCredential);
+  const calCred = await calCredRepo.findOne({ where: { id: userId }});
+  return calCred;
 }
 
