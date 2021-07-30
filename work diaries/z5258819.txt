@@ -13,3 +13,21 @@ Through user interviews, we decided on google calendar integration, both as surv
 # Week 3
 
 This week was very productive. I helped with the user stories, framing everything in terms of helping the end user. I also specified them to their objectives, worked on reformatting and redoing the novel features, existing solutions, and background section, as well as doing the Google Calendar Integration Flowchat. Next week should start the first sprint
+
+# Week 4
+This week was quite productive for me. I start an internship next week so I wanted to get as much work done as possible to make up for a drop in productivity the following weeks. I set up typeorm, ts-jest and .env variables for the backend portion of the project.
+
+# Week 5
+This week I worked on implementing all the basic user functions. This was to get as much of the basic groundwork done before starting my full-time internship. 
+
+# Week 6
+This week, I added basic express tests and merged it into main. Due to my internship, I wasn't able to do too much more than that.
+
+# Week 7
+Didn't get too much done this week. I am honestly a bit burned out by my internship at this point.
+
+# Week 8
+This week, we had the demo which went quite well. I wasn't able to contribute as much code as I would've liked though. I also spent a lot of this week after my internship catching up on the work I needed to get done for the sprint, implementing the task search functionality.
+
+# Week 9
+This week, I implemented the task-search backend and am working on the project report for the final deliverable. Looking forward to getting the whole project finished.

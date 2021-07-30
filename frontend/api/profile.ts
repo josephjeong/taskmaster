@@ -6,7 +6,7 @@ import { api } from "./utils";
 
 export const fetchProfile = async (userId: string): Promise<User> => {
   const response = await api.get(`/users/details/${userId}`);
-  return response.data.data;
+  return response.data?.data;
 };
 
 export type UpdateProfileInput = Partial<Omit<User, "id">>;
@@ -42,6 +42,6 @@ export const useUserProfile = (userId: string, initialProfile?: User) => {
 
 export const useProfileStats = (userId: string) => {
   return useSWR<ProfileStats>(`/users/${userId}/stats`, {
-    refreshInterval: 10,
+    refreshInterval: 10_000,
   });
 };

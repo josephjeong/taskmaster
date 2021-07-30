@@ -227,6 +227,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
         onSave={handleProfileSave}
         onClose={() => setShowUpdateModal(false)}
       />
+      <Spacing y={30} />
     </Container>
   );
 };
@@ -238,6 +239,16 @@ export const getServerSideProps: GetServerSideProps<
   { userId: string }
 > = async ({ params }) => {
   const profile = await fetchProfile(params!.userId);
+  if (!profile) {
+    return {
+      redirect: {
+        destination: `/profile/not-found?id=${encodeURIComponent(
+          params!.userId
+        )}`,
+        permanent: false,
+      },
+    };
+  }
   return {
     props: { profile },
   };

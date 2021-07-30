@@ -1,4 +1,4 @@
-import {Entity, PrimaryColumn, Column, OneToMany} from "typeorm";
+import {Entity, PrimaryColumn, Column, OneToMany, OneToOne, JoinColumn} from "typeorm";
 import { Connection } from "./Connection";
 
 @Entity("User")
@@ -24,7 +24,7 @@ export class User {
     
     @Column()
     bio: string;
-    
+
     @OneToMany(() => Connection, connection => connection.requestee)    
     connectionRequests: Connection[];
     

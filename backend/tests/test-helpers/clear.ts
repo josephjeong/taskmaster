@@ -3,12 +3,13 @@
 */
 
 import { getConnection } from "typeorm";
-
+import { Connection } from "../../src/entity/Connection";
+import { CalendarCredential } from "../../src/entity/CalendarCredential";
 import { User } from "../../src/entity/User";
 import { Task } from "../../src/entity/Task";
 
 /** simple helper function to clear a table of entity table */
-export async function clearEntity(entity : typeof User | Task | any) {
+export async function clearEntity(entity : typeof User | Task | Connection | CalendarCredential | any) {
   return await getConnection()
     .createQueryBuilder()
     .delete()

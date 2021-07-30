@@ -83,6 +83,7 @@ const TaskModal = ({
     event.preventDefault();
     if (mode === "edit") onSubmit(taskUpdates);
     else onSubmit(task);
+    event.currentTarget.reset();
   };
 
   return (
