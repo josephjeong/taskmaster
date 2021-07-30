@@ -45,6 +45,7 @@ export async function getCalendarCredential(
 ): Promise<CalendarCredential> {
   const calCredRepo = getConnection().getRepository(CalendarCredential);
   const calCred = await calCredRepo.findOne({ where: { id: userId }});
+  
   return calCred;
 }
 
