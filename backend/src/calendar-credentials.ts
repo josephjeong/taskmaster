@@ -34,6 +34,6 @@ export async function createCalendarCredential(
   calendarCredential.refresh_token = refreshToken;
   calendarCredential.access_token = accessToken;
   await getConnection().manager.save(calendarCredential);
-  return true;
+  return;
 }
 
