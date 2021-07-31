@@ -2,7 +2,11 @@ import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
 import { Task } from "../types";
 import { useCallback } from "react";
-import { api } from "./utils";
+import { api, mkQueryString } from "./utils";
+
+export const useTasks = (filters: {[key: string]: any}) => {
+  return useSWR<Task[]>(`/tasks?${mkQueryString(filters)}`);
+};
 
 export const useUserTasks = (userId?: string) => {
   const { user } = useAuthContext();
@@ -17,10 +21,6 @@ export const useUserTasks = (userId?: string) => {
   }
 
   return useSWR<Task[]>(key);
-};
-
-export const useMyTasks = () => {
-  return useSWR<Task[]>("/tasks");
 };
 
 export const useCreateTask = () => {

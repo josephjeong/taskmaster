@@ -34,3 +34,7 @@ export const swrFetcher = async (url: string) => {
 
   throw response.data.error;
 };
+
+export const mkQueryString = (params: {[key: string]: string}) => {
+  return Object.keys(params).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&');
+};

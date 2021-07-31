@@ -40,7 +40,7 @@ import { getUserByEmail } from "./users/users-search";
 import { CalendarCredential } from "./entity/CalendarCredential";
 
 
-const PORT = 8080;
+const PORT = 9090;
 
 // start express server
 // initiated outside of connection to export it
@@ -129,11 +129,20 @@ createConnection({
     //                                          assignees: [ User{id: , email: , etc.}, ...],
     //                                          id: ,
     //                                          deadline: , etc.} ]
-    app.get("/tasks", async (req, res) => {
-      sendData(
-        res,
-        await getProfileTasks(res.locals.session.id, res.locals.session.id)
+    app.get("/tasks", async(req, res) => {
+      const tasks = await taskSearch(
+        res.locals.session.id,
+        req.query.title as string | undefined,
+        req.query.description as string | undefined,
+        req.query.project as string | undefined,
+        req.query.creator as string | undefined,
+        req.query.deadline as string | undefined,
+        req.query.status as string | undefined,
+        req.query.estimated_days as string | undefined,
+        // @ts-ignore string list
+        req.query.user_assignee as string | undefined
       );
+      sendData(res, tasks);
     });
 
     app.get("/users/tasks/:user_id", async (req, res) => {
@@ -186,22 +195,6 @@ createConnection({
     app.delete("/task/delete/:task_id", async (req, res) => {
       await deleteTask(res.locals.session.id, req.params.task_id);
       sendData(res, "delete task success");
-    });
-
-    app.get("/task/search", async(req, res) => {
-        const tasks = await taskSearch(
-            res.locals.session.id,
-            String(req.query.title),
-            String(req.query.description),
-            String(req.query.project),
-            String(req.query.creator),
-            String(req.query.deadline),
-            String(req.query.status),
-            String(req.query.estimated_days),
-            // @ts-ignore string list
-            req.query.user_assignee
-        )
-        sendData(res, tasks)
     });
 
     app.post("/connection/create", async (req, res) => {
