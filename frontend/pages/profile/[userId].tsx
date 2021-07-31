@@ -18,6 +18,7 @@ import {
   fetchProfile,
   UpdateProfileInput,
   useConnectionStatus,
+  useDeleteConnection,
   useRequestConnection,
   useUpdateProfile,
   useUserProfile,
@@ -96,6 +97,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   );
 
   const requestConnection = useRequestConnection();
+  const deleteConnection = useDeleteConnection();
 
   const updateProfile = useUpdateProfile();
 
@@ -106,6 +108,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
     }
     if (connectionStatus === ConnectionStatus.UNCONNECTED) {
       await requestConnection(profileId);
+    } else {
+      await deleteConnection(profileId);
     }
   };
 

@@ -28,3 +28,6 @@ Didn't get too much done this week. I am honestly a bit burned out by my interns
 
 # Week 8
 This week, we had the demo which went quite well. I wasn't able to contribute as much code as I would've liked though. I also spent a lot of this week after my internship catching up on the work I needed to get done for the sprint, implementing the task search functionality.
+
+# Week 9
+This week, I implemented the task-search backend and am working on the project report for the final deliverable. Looking forward to getting the whole project finished.
