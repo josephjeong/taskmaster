@@ -1,11 +1,12 @@
 import NextLink from "next/link";
 import { makeStyles, TextField, Link, Button } from "@material-ui/core";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useState } from "react";
 
 import AuthWrapper from "../components/auth/AuthWrapper";
 import { useAuthContext } from "../context/AuthContext";
 import { login } from "../api";
 import { useLoggedInRedirect } from "../hooks/useLoggedInRedirect";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -23,26 +24,31 @@ const useStyles = makeStyles((theme) => ({
 const LoginPage: React.FC = () => {
   const classes = useStyles();
   const { setToken } = useAuthContext();
+  const [error, setError] = useState<string | null>(null);
 
   useLoggedInRedirect();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    setError(null);
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
 
-    // do login stuff
-    const newToken = await login(
+    const { data, error } = await login(
       formData.get("email") as string,
       formData.get("password") as string
     );
-
-    setToken(newToken);
+    if (error) {
+      setError(error.message);
+    } else {
+      setToken(data!.token);
+    }
   };
 
   return (
     <AuthWrapper title="Login">
       <form className={classes.form} onSubmit={handleSubmit}>
+        {error && <Alert severity="error">{error}</Alert>}
         <TextField
           id="email"
           name="email"

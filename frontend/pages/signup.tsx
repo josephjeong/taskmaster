@@ -6,6 +6,8 @@ import AuthWrapper from "../components/auth/AuthWrapper";
 import { signup, SignupInput } from "../api";
 import { useAuthContext } from "../context/AuthContext";
 import { useLoggedInRedirect } from "../hooks/useLoggedInRedirect";
+import { useState } from "react";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -22,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SignUpPage: React.FC = () => {
   const classes = useStyles();
+  const [error, setError] = useState<string | null>(null);
 
   const { setToken } = useAuthContext();
 
@@ -35,14 +38,18 @@ const SignUpPage: React.FC = () => {
       new FormData(event.currentTarget)
     ) as SignupInput;
 
-    const newToken = await signup(signupArgs);
-
-    setToken(newToken);
+    const { data, error } = await signup(signupArgs);
+    if (error) {
+      setError(error.message);
+    } else {
+      setToken(data!.token);
+    }
   };
 
   return (
     <AuthWrapper title="Sign Up to Tasker">
       <form className={classes.form} onSubmit={handleSubmit}>
+        {error && <Alert severity="error">{error}</Alert>}
         <TextField
           id="first-name"
           name="first_name"
