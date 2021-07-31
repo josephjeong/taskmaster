@@ -60,7 +60,7 @@ export async function deleteUserConnection(
   const conn = await connRepo.findOne({
     where: [
       { requestee: requestee, requester: requester },
-      { requestee: requester, requester: requestee }
+      { requestee: requester, requester: requestee },
     ],
   });
 
@@ -151,9 +151,12 @@ export async function getIncomingConnectionRequests(
   requestee: string
 ): Promise<User[]> {
   const connRepo = getConnection().getRepository(Connection);
-  const conns = await connRepo.find({ where: { requestee: requestee, accepted: false } });
+  const conns = await connRepo.find({
+    where: { requestee: requestee, accepted: false },
+  });
   const userRepo = getConnection().getRepository(User);
-  return Promise.all(conns.map((conn) => userRepo.findOne({ where: { id: conn.requester } })));
+  const requesterIds = conns.map((c) => c.requester);
+  return userRepo.findByIds(requesterIds);
 }
 
 /* function to show all of user's connection requests in database*/
@@ -162,29 +165,42 @@ export async function getOutgoingConnectionRequests(
   requester: string
 ): Promise<User[]> {
   const connRepo = getConnection().getRepository(Connection);
-  const conns = await connRepo.find({ where: { requester: requester, accepted: false } });
+  const conns = await connRepo.find({
+    where: { requester: requester, accepted: false },
+  });
   const userRepo = getConnection().getRepository(User);
-  return Promise.all(conns.map((conn) => userRepo.findOne({ where: { id: conn.requestee } })));
+  const requesteeIds = conns.map((c) => c.requestee);
+  return userRepo.findByIds(requesteeIds);
 }
 
-export async function getAcceptedConnections(
-    user : String,
-): Promise<Connection[]> {
-    const connRepo = getConnection().getRepository(Connection);
-    const acceptedConnections = await connRepo.find({ where: [{requestee: user, accepted: true},{requester: user, accepted: true}] });
+export async function getAcceptedConnections(user: string): Promise<User[]> {
+  const connRepo = getConnection().getRepository(Connection);
+  const acceptedConnections = await connRepo.find({
+    where: [
+      { requestee: user, accepted: true },
+      { requester: user, accepted: true },
+    ],
+  });
   if (isValidAcceptedConnections(acceptedConnections)) {
-    throw new ApiError("connections/accepted_connections_fail", "Failed to find accepted connections :( ");
-  }
-  else {
-    return acceptedConnections;
+    throw new ApiError(
+      "connections/accepted_connections_fail",
+      "Failed to find accepted connections :( "
+    );
+  } else {
+    const userIds = acceptedConnections.map((c) =>
+      c.requestee === user ? c.requester : c.requestee
+    );
+    const userRepo = getConnection().getRepository(User);
+    return userRepo.findByIds(userIds);
   }
 }
 
-export function isValidAcceptedConnections(acceptedConnections: Connection[]): boolean {
-  if (acceptedConnections == null)  {
+export function isValidAcceptedConnections(
+  acceptedConnections: Connection[]
+): boolean {
+  if (acceptedConnections == null) {
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 }

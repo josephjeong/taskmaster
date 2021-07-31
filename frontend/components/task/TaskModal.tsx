@@ -10,6 +10,11 @@ import {
   MenuItem,
   Button,
   FormControl,
+  InputLabel,
+  Chip,
+  Avatar,
+  Typography,
+  FormHelperText,
 } from "@material-ui/core";
 import NumericInput from "material-ui-numeric-input";
 import MomentUtils from "@date-io/moment";
@@ -20,8 +25,11 @@ import {
 } from "@material-ui/pickers";
 import { Alert } from "@material-ui/lab";
 
-import { Task, TaskStatus } from "../../types";
+import { Task, TaskStatus, User } from "../../types";
 import { useEffect } from "react";
+import { useConnectedUsers } from "../../api";
+import { useMemo } from "react";
+import { useAuthContext } from "../../context/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -38,14 +46,20 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+    "& > *": {
+      flex: 1,
+    },
+    "& > * + *": {
+      marginLeft: theme.spacing(1),
+    },
   },
-  rowInputLeft: {
-    marginRight: "2.5px",
-    flex: 1,
-  },
-  rowInputRight: {
-    marginLeft: "2.5px",
-    flex: 1,
+  chips: {
+    marginTop: theme.spacing(-1),
+    marginLeft: theme.spacing(-1),
+    "& > *": {
+      marginLeft: theme.spacing(1),
+      marginTop: theme.spacing(1),
+    },
   },
 }));
 
@@ -70,9 +84,27 @@ const TaskModal = ({
 }: TaskModalProps) => {
   const [taskUpdates, setTaskUpdates] = React.useState<Partial<Task>>({});
   const task = React.useMemo(
-    () => Object.assign({} as Task, taskInit, taskUpdates),
+    () =>
+      Object.assign(
+        {} as Task,
+        taskInit,
+        { assignees: taskInit.assignees.map((u: any) => u.id) },
+        taskUpdates
+      ),
     [taskInit, taskUpdates]
   );
+
+  const { user } = useAuthContext();
+  const { data: connectedUsers } = useConnectedUsers();
+  const usersMap = useMemo(() => {
+    const result: Record<string, User> = {};
+    connectedUsers?.forEach((user) => (result[user.id] = user));
+    if (user) {
+      result[user.id] = user;
+    }
+    taskInit.assignees.forEach((user: any) => (result[user.id] = user));
+    return result;
+  }, [connectedUsers, user, taskInit.assignees]);
 
   useEffect(() => {
     if (mode == "create" && open) {
@@ -95,8 +127,26 @@ const TaskModal = ({
 
   const submit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    if (mode === "edit") onSubmit(taskUpdates);
-    else onSubmit(task);
+    if (mode === "edit") {
+      const { assignees, ...output } = taskUpdates as any;
+
+      const existingAssignees = new Set(taskInit.assignees);
+      const updatedAssignees = new Set(assignees);
+
+      const additions = assignees.filter(
+        (id: string) => !existingAssignees.has(id)
+      );
+      const removed = taskInit.assignees
+        .map((u: any) => u.id)
+        .filter((id) => !updatedAssignees.has(id));
+
+      output.add_assignees = additions;
+      output.remove_assignees = removed;
+
+      onSubmit(output);
+    } else {
+      onSubmit(task);
+    }
   };
 
   return (
@@ -134,7 +184,6 @@ const TaskModal = ({
           <div className={classes.row}>
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <KeyboardDatePicker
-                className={classes.rowInputLeft}
                 disabled={mode === "view"}
                 disableToolbar
                 variant="inline"
@@ -149,7 +198,6 @@ const TaskModal = ({
                 }}
               />
               <KeyboardTimePicker
-                className={classes.rowInputRight}
                 disabled={mode === "view"}
                 margin="normal"
                 label="Due time"
@@ -163,37 +211,102 @@ const TaskModal = ({
             </MuiPickersUtilsProvider>
           </div>
           <div className={classes.row}>
-            <FormControl variant="outlined" className={classes.rowInputLeft}>
-              <Select
-                disabled={mode === "view"}
-                value={task.status}
-                onChange={(event) => {
-                  const taskUpdates_ = { ...taskUpdates };
-                  taskUpdates_.status = event.target.value as any as TaskStatus;
-                  setTaskUpdates(taskUpdates_);
-                }}
-              >
-                <MenuItem value={TaskStatus.NOT_STARTED}>To Do</MenuItem>
-                <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
-                <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
-                <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
-              </Select>
-            </FormControl>
-            <div className={classes.rowInputRight}>
-              <NumericInput
-                disabled={mode === "view"}
-                variant="outlined"
-                precision="2"
-                decimalSeparator="."
-                thousandSeparator=""
-                label="Estimated Days"
-                value={task.estimated_days}
-                onChange={(value) => {
-                  const taskUpdates_ = { ...taskUpdates };
-                  taskUpdates_.estimated_days = value;
-                  setTaskUpdates(taskUpdates_);
-                }}
-              />
+            <Select
+              variant="outlined"
+              disabled={mode === "view"}
+              value={task.status}
+              onChange={(event) => {
+                const taskUpdates_ = { ...taskUpdates };
+                taskUpdates_.status = event.target.value as any as TaskStatus;
+                setTaskUpdates(taskUpdates_);
+              }}
+            >
+              <MenuItem value={TaskStatus.NOT_STARTED}>To Do</MenuItem>
+              <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
+              <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
+              <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
+            </Select>
+            <NumericInput
+              disabled={mode === "view"}
+              variant="outlined"
+              precision="2"
+              decimalSeparator="."
+              thousandSeparator=""
+              label="Estimated Days"
+              value={task.estimated_days}
+              onChange={(value) => {
+                const taskUpdates_ = { ...taskUpdates };
+                taskUpdates_.estimated_days = value;
+                setTaskUpdates(taskUpdates_);
+              }}
+            />
+          </div>
+          <div>
+            <div className={classes.row}>
+              <FormControl>
+                <Select
+                  multiple
+                  displayEmpty
+                  disabled={!connectedUsers?.length}
+                  value={task.assignees}
+                  renderValue={(value) => {
+                    const ids = value as string[];
+                    return (
+                      <div className={classes.chips}>
+                        {ids.length ? (
+                          ids.map((id) => {
+                            const user = usersMap[id];
+                            if (!user) return null;
+                            return (
+                              <Chip
+                                key={id}
+                                avatar={
+                                  <Avatar
+                                    src={user.avatar_url}
+                                    alt={user.first_name}
+                                  />
+                                }
+                                label={user.first_name}
+                              />
+                            );
+                          })
+                        ) : (
+                          <Typography variant="body1">Assignees</Typography>
+                        )}
+                      </div>
+                    );
+                  }}
+                  onChange={(event) => {
+                    const assignees = event.target.value as string[];
+                    setTaskUpdates({ ...taskUpdates, assignees });
+                  }}
+                  variant="outlined"
+                >
+                  {!connectedUsers && (
+                    <MenuItem disabled value="">
+                      Loading...
+                    </MenuItem>
+                  )}
+                  {connectedUsers?.length === 0 && (
+                    <MenuItem disabled value="">
+                      No Connections
+                    </MenuItem>
+                  )}
+                  {connectedUsers?.length !== 0 && user && (
+                    <MenuItem key={user.id} value={user.id}>
+                      You ({user.first_name} {user.last_name})
+                    </MenuItem>
+                  )}
+                  {connectedUsers?.map((user, i) => (
+                    <MenuItem key={user.id} value={user.id}>
+                      {user.first_name} {user.last_name} ({user.email})
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>
+                  If you leave this empty, you&apos;ll be assigned by default.
+                </FormHelperText>
+              </FormControl>
             </div>
           </div>
         </DialogContent>

@@ -34,6 +34,7 @@ const TasksPage = () => {
       deadline: moment().add(1, "h"),
       status: TaskStatus.NOT_STARTED,
       estimated_days: 1,
+      assignees: [],
     }),
     // eslint-disable-next-line
     [showCreateTaskModal]
@@ -52,6 +53,8 @@ const TasksPage = () => {
       setShowCreateTaskModal(false);
     }
   };
+
+  console.log(tasks);
 
   if (!tasks) {
     return null;

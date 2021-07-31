@@ -25,6 +25,7 @@ export const useDeleteConnection = () => {
     mutate(`/connection/status/${userId}`);
     mutate("/connection/incomingRequests");
     mutate("/connection/outgoingRequests");
+    mutateAccepted();
   }, []);
 };
 
@@ -35,6 +36,7 @@ export const useAcceptConnection = () => {
     await api.post("/connection/accept", { id: userId });
     mutate(`/connection/status/${userId}`);
     mutate("/connection/incomingRequests");
+    mutateAccepted();
   }, []);
 };
 
@@ -45,6 +47,7 @@ export const useDeclineConnection = () => {
     await api.post("/connection/decline", { id: userId });
     mutate(`/connection/status/${userId}`);
     mutate("/connection/incomingRequests");
+    mutateAccepted();
   }, []);
 };
 
@@ -59,4 +62,10 @@ export const useIncomingConnectionRequests = () => {
 
 export const useOutgoingConnectionRequests = () => {
   return useSWR<User[]>(`/connection/outgoingRequests`);
+};
+
+const mutateAccepted = () => mutate("/connection/acceptedConnections");
+
+export const useConnectedUsers = () => {
+  return useSWR<User[]>(`/connection/acceptedConnections`);
 };

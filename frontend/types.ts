@@ -30,6 +30,7 @@ export type Task = {
   deadline: moment.Moment;
   status: TaskStatus;
   estimated_days: number;
+  assignees: string[];
 };
 
 export enum TaskStatus {
