@@ -14,7 +14,7 @@ export class CalendarCredential {
     @Column('text')
     refresh_token: String;
 
-    @OneToOne (() => User)
-    @JoinColumn({ name: "user" })
-    user: string;
+    @OneToOne (() => User, user => user.id)
+    @JoinColumn({name: 'user'})
+    user: User;
 }
