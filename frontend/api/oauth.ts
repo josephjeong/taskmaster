@@ -1,4 +1,6 @@
 import { useCallback } from "react";
+import { useAuthContext } from "../context/AuthContext";
+import { ApiResponse } from "../types";
 import { api } from "./utils";
 
 export const useGetAuthUrl = () => {
@@ -8,17 +10,17 @@ export const useGetAuthUrl = () => {
   }, []);
 };
 
-export const useSaveTokens = () => {
+export const useSaveOAuthCode = () => {
+  const { token } = useAuthContext();
+
   return useCallback(
-    async (refreshToken: string, accessToken: string): Promise<void> => {
+    async (code: string): Promise<ApiResponse<{}>> => {
       const { data: response } = await api.post("/oauthtokens/save", {
-        refresh_token: refreshToken,
-        access_token: accessToken,
+        code,
+        jwt: token,
       });
-      if (response.error) {
-        throw response.error;
-      }
+      return response;
     },
-    []
+    [token]
   );
 };

@@ -6,7 +6,8 @@ import {
 } from "@material-ui/core";
 import { GetServerSideProps } from "next";
 import router, { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useSaveOAuthCode } from "../api/oauth";
 import Spacing from "../components/shared/Spacing";
 import Title from "../components/shared/Title";
 import { useAuthContext } from "../context/AuthContext";
@@ -26,23 +27,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const OAuthCallbackPage: React.FC<OAuthCallbackProps> = ({ code, error }) => {
+const OAuthCallbackPage: React.FC<OAuthCallbackProps> = ({
+  code,
+  error: _error,
+}) => {
   const classes = useStyles();
   const { push } = useRouter();
   const { user, token } = useAuthContext();
+  const saveOAuthCode = useSaveOAuthCode();
+  const [error, setError] = useState(_error);
+
+  useEffect(() => {
+    setError(_error);
+  }, [_error]);
 
   useEffect(() => {
     if (error) return;
 
-    if (user) {
-      console.log({ code });
-      // Send code to backend
-
-      // router.push(`/profile/${user.id}`);
+    if (user && code) {
+      saveOAuthCode(code).then((response) => {
+        if (response.error) {
+          setError(response.error.message);
+        } else {
+          router.push(`/profile/${user.id}`);
+        }
+      });
     } else if (!user && !token) {
       router.push("/login");
     }
-  }, [push, user, token, code, error]);
+  }, [push, user, token, code, error, saveOAuthCode]);
 
   return (
     <Container>

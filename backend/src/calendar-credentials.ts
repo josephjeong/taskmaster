@@ -14,13 +14,12 @@ export async function createCalendarCredential(
   refreshToken: string,
   accessToken: string
 ): Promise<any> {
-  const calendarCredentialRepo = getConnection().getRepository(CalendarCredential);
+  const calendarCredentialRepo =
+    getConnection().getRepository(CalendarCredential);
 
   if (
     await calendarCredentialRepo.findOne({
-      where: [
-        { user: user.id, token: refreshToken }
-      ]
+      where: { user: user.id },
     })
   ) {
     throw new ApiError(
@@ -37,15 +36,13 @@ export async function createCalendarCredential(
   return;
 }
 
-
 /* function to get CalendarCredential in database*/
 
 export async function getCalendarCredential(
-  userId: string,
+  userId: string
 ): Promise<CalendarCredential> {
   const calCredRepo = getConnection().getRepository(CalendarCredential);
-  const calCred = await calCredRepo.findOne({ where: { id: userId }});
-  
+  const calCred = await calCredRepo.findOne({ where: { id: userId } });
+
   return calCred;
 }
-
