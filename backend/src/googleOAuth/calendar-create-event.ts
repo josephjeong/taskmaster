@@ -19,10 +19,11 @@ export function getCalendarEventStartTime(task: Task) {
     return startDate;
 }
 
-export async function saveTaskToCalendar(task: Task) {
+export async function saveTaskToCalendar(task_id: String) {
     // find user's calendar's credentials
 
-
+    const taskRepo = getConnection().getRepository(Task);
+    const task = await taskRepo.findOne({ where: { id: task_id } });
     const oauth2Client = new google.auth.OAuth2(
         GCP_CLIENT_ID,
         GCP_CLIENT_SECRET,
@@ -72,9 +73,12 @@ export async function saveTaskToCalendar(task: Task) {
 export async function getUsersAllocatedToTask(task: Task): Promise<any> {
     const taskAssignmentRepo = getConnection().getRepository(TaskAssignment);
     const taskAssignments = await taskAssignmentRepo.find({ where: { id: task.id } });
+    console.log(taskAssignments.length);
+
     const firstTaskAssignment = taskAssignments[0];
     let userSet = new Set();
     userSet.add(firstTaskAssignment.user_assignee);
+
     for (const taskAssignment of taskAssignments) {
         if ((taskAssignment.group_assignee != null) && (!userSet.has(taskAssignment.group_assignee))) {
             userSet.add(taskAssignment.group_assignee);

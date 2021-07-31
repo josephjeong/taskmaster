@@ -12,10 +12,12 @@ import { CalendarCredential } from "../../src/entity/CalendarCredential";
 import { createTask } from "../../src/tasks/task-create";
 import { createUser } from "../../src/users/users-create";
 import {
-    getCalendarEventStartTime
+    getCalendarEventStartTime,
+    saveTaskToCalendar
 } from "../../src/googleOAuth/calendar-create-event";
 import {
-    createCalendarCredential
+    createCalendarCredential,
+    getCalendarCredential
 } from "../../src/calendar-credentials";
 import { clearEntity } from "../test-helpers/clear";
 
@@ -88,15 +90,22 @@ test("oauth test", async() => {
 
     const code = "4/0AX4XfWh7UB-H54iDCFTxS2pjscV8asBKKxa5IGUioawfhLs5WCg6zVLYuog0u0nTyZX1Qw";
     await createCalendarCredential(user, code);
+    const calCred = getCalendarCredential(user.id);
+    const task_deadline = new Date(2021, 8, 3);
+    const task_status = Status.NOT_STARTED;
+    const task_estimated_days = 10;
+    const task_id = await createTask(
+        user.id, "Test Task", task_deadline,
+         task_status, [user.id], null, "test description", task_estimated_days);
+         const taskAssignmentRepo = getConnection().getRepository(TaskAssignment);
+         const taskAssignments = await taskAssignmentRepo.find({ where: { id: task_id } });
+         console.log(taskAssignments);
 
-  const calCredRepo = getConnection().getRepository(CalendarCredential);
-  //for whatever reason the requestee and requester ids are switched here during lookup
-  
-  const calCred = await calCredRepo.findOne({
-    where: { user: user.id },
-  });
-  console.log(calCred);
+//    saveTaskToCalendar(task_id);
+
 });
+
+
 
 //  test getting users allocated to a task
 // test("get users allocated to task", async () => {

@@ -29,35 +29,40 @@ export async function createCalendarCredential(
   googleCode: string
 ): Promise<any> {
 
-  //decode the string
-  const {tokens} = await oauth2Client.getToken(googleCode);
-  oauth2Client.setCredentials(tokens);
+//   //decode the string
+//   const {tokens} = await oauth2Client.getToken(googleCode);
+//   oauth2Client.setCredentials(tokens);
 
-  const calendarCredentialRepo = getConnection().getRepository(CalendarCredential);
+//   const calendarCredentialRepo = getConnection().getRepository(CalendarCredential);
 
-//  console.log(tokens);
+// //  console.log(tokens);
 
-  if (
-    await calendarCredentialRepo.findOne({
-      where: [
-        { user: user.id, token: tokens.refresh_token }
-      ]
-    })
-  ) {
-    throw new ApiError(
-      "create_calendar_credential/calendar_credential_exists",
-      "Calendar credential already exists"
-    );
-  }
+//   if (
+//     await calendarCredentialRepo.findOne({
+//       where: [
+//         { user_id: user.id}
+//       ]
+//     })
+//   ) {
+//     throw new ApiError(
+//       "create_calendar_credential/calendar_credential_exists",
+//       "Calendar credential already exists"
+//     );
+//   }
+//   const calendarCredential = new CalendarCredential();
+//   calendarCredential.user_id = user.id;
+//   oauth2Client.on('tokens', (tokens) => {
+//     if (tokens.refresh_token) {
+//       // store the refresh_token in my database!
+//       calendarCredential.refresh_token = tokens.refresh_token;
+//     }
+//     calendarCredential.access_token = tokens.access_token;
+//   });
+
   const calendarCredential = new CalendarCredential();
-  calendarCredential.user = user;
-  oauth2Client.on('tokens', (tokens) => {
-    if (tokens.refresh_token) {
-      // store the refresh_token in my database!
-      calendarCredential.refresh_token = tokens.refresh_token;
-    }
-    calendarCredential.access_token = tokens.access_token;
-  });
+  calendarCredential.user_id = user.id;
+  calendarCredential.refresh_token = "1//04xzIPIgcDrrMCgYIARAAGAQSNwF-L9Ir3AqXzTUDq86a3BjDEBW4FMSAxO-Hn_nkw9tChnOLTfcMnjzdwiGzeR8YPYzVOb7R1y4";
+  calendarCredential.access_token = "ya29.a0ARrdaM-5qEeYnsArOnTIBHqeyLRmbtT4EBT5HcEk6OhQj6-xV8NsCk6fZSGB6tm4RNRc_iTEe7DvtQWlrmD-_LChsEcg_37geZ8KMkDjOV6SYnEk_U11OaMC8YwSV7PbygPWBMIskvQ1pv7VOrJlW3h-uhc1";
   await getConnection().manager.save(calendarCredential);
   return;
 }
