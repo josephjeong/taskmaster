@@ -16,7 +16,7 @@ export const useUserTasks = (userId?: string) => {
     }
   }
 
-  return useSWR<Task[]>('/tasks');
+  return useSWR<Task[]>(key);
 };
 
 export const useMyTasks = () => {
