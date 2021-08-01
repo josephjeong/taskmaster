@@ -56,16 +56,19 @@ export const useConnectionStatus = (userId: string) => {
   return useSWR<ConnectionStatus>(user ? `/connection/status/${userId}` : null);
 };
 
-export const useIncomingConnectionRequests = (enabled = true) => {
-  return useSWR<User[]>(enabled ? `/connection/incomingRequests` : null);
+export const useIncomingConnectionRequests = () => {
+  const { user } = useAuthContext();
+  return useSWR<User[]>(user ? `/connection/incomingRequests` : null);
 };
 
-export const useOutgoingConnectionRequests = (enabled = true) => {
-  return useSWR<User[]>(enabled ? `/connection/outgoingRequests` : null);
+export const useOutgoingConnectionRequests = () => {
+  const { user } = useAuthContext();
+  return useSWR<User[]>(user ? `/connection/outgoingRequests` : null);
 };
 
 const mutateAccepted = () => mutate("/connection/acceptedConnections");
 
 export const useConnectedUsers = () => {
-  return useSWR<User[]>(`/connection/acceptedConnections`);
+  const { user } = useAuthContext();
+  return useSWR<User[]>(user ? `/connection/acceptedConnections` : null);
 };

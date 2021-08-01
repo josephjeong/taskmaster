@@ -42,7 +42,8 @@ export const useUserProfile = (userId: string, initialProfile?: User) => {
 };
 
 export const useProfileStats = (userId: string) => {
-  return useSWR<ProfileStats>(`/users/${userId}/stats`, {
+  const { user } = useAuthContext();
+  return useSWR<ProfileStats>(user ? `/users/${userId}/stats` : null, {
     refreshInterval: 10_000,
   });
 };

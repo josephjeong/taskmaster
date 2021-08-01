@@ -4,9 +4,10 @@ import { ApiResponse, Task } from "../types";
 import { useCallback } from "react";
 import { api, mkQueryString } from "./utils";
 
-export const useTasks = (filters: {[key: string]: any}) => {
+export const useTasks = (filters: { [key: string]: any }) => {
   console.log(mkQueryString(filters));
-  return useSWR<Task[]>(`/tasks?${mkQueryString(filters)}`);
+  const { user } = useAuthContext();
+  return useSWR<Task[]>(user ? `/tasks?${mkQueryString(filters)}` : null);
 };
 
 export const useUserTasks = (userId?: string) => {

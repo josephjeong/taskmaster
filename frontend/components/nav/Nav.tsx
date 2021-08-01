@@ -48,7 +48,7 @@ const Nav = ({}: NavProps) => {
   const { user } = useAuthContext();
   const logout = useLogout();
 
-  const { data: incomingRequests } = useIncomingConnectionRequests(!!user);
+  const { data: incomingRequests } = useIncomingConnectionRequests();
 
   const classes = useStyles();
 
