@@ -88,7 +88,11 @@ const TaskModal = ({
       Object.assign(
         {} as Task,
         taskInit,
-        { assignees: taskInit.assignees.map((u: any) => u.id) },
+        {
+          assignees: taskInit.assignees
+            ? taskInit.assignees.map((u: any) => u.id)
+            : [],
+        },
         taskUpdates
       ),
     [taskInit, taskUpdates]
@@ -102,7 +106,7 @@ const TaskModal = ({
     if (user) {
       result[user.id] = user;
     }
-    taskInit.assignees.forEach((user: any) => (result[user.id] = user));
+    taskInit.assignees?.forEach((user: any) => (result[user.id] = user));
     return result;
   }, [connectedUsers, user, taskInit.assignees]);
 
@@ -130,15 +134,17 @@ const TaskModal = ({
     if (mode === "edit") {
       const { assignees, ...output } = taskUpdates as any;
 
-      const existingAssignees = new Set(taskInit.assignees);
-      const updatedAssignees = new Set(assignees);
+      const existingAssignees = new Set<string>(
+        taskInit.assignees.map((u) => u.id)
+      );
+      const updatedAssignees = new Set<string>(assignees);
 
       const additions = assignees.filter(
         (id: string) => !existingAssignees.has(id)
       );
-      const removed = taskInit.assignees
-        .map((u: any) => u.id)
-        .filter((id) => !updatedAssignees.has(id));
+      const removed = new Array(...existingAssignees).filter(
+        (id) => !updatedAssignees.has(id)
+      );
 
       output.add_assignees = additions;
       output.remove_assignees = removed;
@@ -277,7 +283,7 @@ const TaskModal = ({
                     );
                   }}
                   onChange={(event) => {
-                    const assignees = event.target.value as string[];
+                    const assignees = event.target.value as any;
                     setTaskUpdates({ ...taskUpdates, assignees });
                   }}
                   variant="outlined"
