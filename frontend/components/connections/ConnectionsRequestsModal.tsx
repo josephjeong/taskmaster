@@ -148,9 +148,10 @@ const ConnectionsModal = ({ open, onClose }: ConnectionsModalProps) => {
             </div>
           </div>
         ))}
+        <Spacing y={2} />
         <Typography className={classes.textCenter}>
           <NextLink href="/connections" passHref>
-            <Link onClick={() => onClose()}>See your connections</Link>
+            <Link onClick={() => onClose()}>See all your connections</Link>
           </NextLink>
         </Typography>
       </DialogContent>
