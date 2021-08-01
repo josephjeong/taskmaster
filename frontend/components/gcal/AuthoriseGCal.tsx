@@ -11,7 +11,11 @@ import {
 } from "@material-ui/core";
 import CalendarToday from "@material-ui/icons/CalendarToday";
 import { useState } from "react";
-import { useGetAuthUrl } from "../../api/oauth";
+import {
+  useDeleteCredential,
+  useGetAuthUrl,
+  useHadSavedCredentials,
+} from "../../api/oauth";
 
 const useStyles = makeStyles((theme) => ({
   spacing: {
@@ -27,8 +31,8 @@ const AuthoriseGCal: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const getAuthUrl = useGetAuthUrl();
-
-  const isEnabled = false;
+  const deleteCredential = useDeleteCredential();
+  const { data: hasSavedCredentials } = useHadSavedCredentials();
 
   const handleClose = () => {
     if (!loading) setShowModal(false);
@@ -40,10 +44,10 @@ const AuthoriseGCal: React.FC = () => {
     window.location.href = authUrl;
   };
 
-  const handleDisable = () => {
+  const handleDisable = async () => {
     setLoading(true);
-
-    setTimeout(() => setLoading(false), 10000);
+    await deleteCredential();
+    setLoading(false);
   };
 
   return (
@@ -63,7 +67,7 @@ const AuthoriseGCal: React.FC = () => {
           Manage Google Calendar Integration
         </DialogTitle>
         <DialogContent className={classes.spacing}>
-          {isEnabled ? (
+          {hasSavedCredentials ? (
             <>
               <Typography>
                 Disabling this integration means your Google Calendar won&apos;t

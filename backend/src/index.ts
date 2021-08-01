@@ -42,6 +42,10 @@ import { sendData, sendError } from "./response-utils";
 import { taskSearch } from "./tasks/task-search";
 import { getUserByEmail } from "./users/users-search";
 import { CalendarCredential } from "./entity/CalendarCredential";
+import {
+  deleteCalendarCredential,
+  hasCalendarCredential,
+} from "./calendar-credentials";
 
 const PORT = 8080;
 
@@ -64,9 +68,10 @@ createConnection({
     app.use(cors());
     app.use(express.json());
 
-    app.post("tasks/creategooglevent", async (req, res) => {
+    app.post("/tasks/creategooglevent", async (req, res) => {
       await saveTaskToCalendar(req.body.task_id);
-    })
+      sendData(res, "done");
+    });
 
     app.post("/oauthtokens/save", async (req, res) => {
       await saveOAuthToken(req.body.code, req.body.jwt);
@@ -108,6 +113,15 @@ createConnection({
       next();
     });
 
+    app.get("/oauthtokens/check", async (req, res) => {
+      sendData(res, await hasCalendarCredential(res.locals.session.id));
+    });
+
+    app.post("/oauthtokens/clear", async (req, res) => {
+      deleteCalendarCredential(res.locals.session.id);
+      sendData(res, "delete credentials");
+    });
+
     app.get("/users/me", async (req, res) => {
       const details = await fetchUserDetails(res.locals.session.id);
       sendData(res, details);
@@ -133,7 +147,7 @@ createConnection({
     //                                          assignees: [ User{id: , email: , etc.}, ...],
     //                                          id: ,
     //                                          deadline: , etc.} ]
-    app.get("/tasks", async(req, res) => {
+    app.get("/tasks", async (req, res) => {
       const tasks = await taskSearch(
         res.locals.session.id,
         req.query.title as string | undefined,
