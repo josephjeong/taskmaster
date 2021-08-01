@@ -1,14 +1,20 @@
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
 import { ApiResponse, Task } from "../types";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { api, mkQueryString, swrFetcher } from "./utils";
 
 export const useTasks = (filters: { [key: string]: any }) => {
-  console.log(mkQueryString(filters));
+  const queryString = mkQueryString(filters);
+  console.log(queryString);
   const { user } = useAuthContext();
+
+  useEffect(() => {
+    mutate("/tasks");
+  }, [queryString]);
+
   return useSWR<Task[]>(user ? `/tasks` : null, () =>
-    swrFetcher(`/tasks?${mkQueryString(filters)}`)
+    swrFetcher(`/tasks?${queryString}`)
   );
 };
 
