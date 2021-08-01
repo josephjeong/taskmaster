@@ -134,20 +134,22 @@ const TaskModal = ({
     if (mode === "edit") {
       const { assignees, ...output } = taskUpdates as any;
 
-      const existingAssignees = new Set<string>(
-        taskInit.assignees.map((u) => u.id)
-      );
-      const updatedAssignees = new Set<string>(assignees);
+      if (assignees) {
+        const existingAssignees = new Set<string>(
+          taskInit.assignees.map((u) => u.id)
+        );
+        const updatedAssignees = new Set<string>(assignees);
+  
+        const additions = assignees.filter(
+          (id: string) => !existingAssignees.has(id)
+        );
+        const removed = new Array(...existingAssignees).filter(
+          (id) => !updatedAssignees.has(id)
+        );
 
-      const additions = assignees.filter(
-        (id: string) => !existingAssignees.has(id)
-      );
-      const removed = new Array(...existingAssignees).filter(
-        (id) => !updatedAssignees.has(id)
-      );
-
-      output.add_assignees = additions;
-      output.remove_assignees = removed;
+        output.add_assignees = additions;
+        output.remove_assignees = removed;
+      }
 
       onSubmit(output);
     } else {
@@ -227,10 +229,10 @@ const TaskModal = ({
                 setTaskUpdates(taskUpdates_);
               }}
             >
-              <MenuItem value={TaskStatus.NOT_STARTED}>To Do</MenuItem>
+              <MenuItem value={TaskStatus.TO_DO}>To Do</MenuItem>
               <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
               <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
-              <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
+              <MenuItem value={TaskStatus.DONE}>Done</MenuItem>
             </Select>
             <NumericInput
               disabled={mode === "view"}

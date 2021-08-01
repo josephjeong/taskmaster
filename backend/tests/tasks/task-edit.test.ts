@@ -47,7 +47,7 @@ test('correct task edit', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(
@@ -86,7 +86,7 @@ test('invalid status test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(
@@ -118,7 +118,7 @@ test('correct task edit connected user assignee', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createUserConnection(user2_id, task_creator);
@@ -164,7 +164,7 @@ test('not connected assignee test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(
@@ -173,7 +173,7 @@ test('not connected assignee test', async () => {
     )
     try {await (editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [task_creator2], null,task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [task_creator2], null,task_description, task_estimated_days
     ))} catch (e) {
         expect(e.code).toBe("editTask/invalid_add_assignees");
         expect(e.message).toBe("add_assignees must be connected to editor or in same group");
@@ -181,7 +181,7 @@ test('not connected assignee test', async () => {
     await createUserConnection(task_creator2, task_creator);
     try {await (editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [task_creator2], null,task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [task_creator2], null,task_description, task_estimated_days
     ))} catch (e) {
         expect(e.code).toBe("editTask/invalid_add_assignees");
         expect(e.message).toBe("add_assignees must be connected to editor or in same group");
@@ -189,7 +189,7 @@ test('not connected assignee test', async () => {
     await acceptRequest(task_creator2, task_creator);
     await expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, null, [task_creator],task_description, task_estimated_days
+        task_deadline, Status.TO_DO, null, [task_creator],task_description, task_estimated_days
     )).resolves.not.toThrow();
     let assignments = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}}) as any;
     expect(assignments.length).toBe(1);
@@ -198,7 +198,7 @@ test('not connected assignee test', async () => {
     expect(tasks.length).toBe(1);
     await expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [task_creator2], [task_creator],task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [task_creator2], [task_creator],task_description, task_estimated_days
     )).resolves.not.toThrow();
     assignments = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}}) as any;
     expect(assignments.length).toBe(1);
@@ -207,7 +207,7 @@ test('not connected assignee test', async () => {
     expect(tasks.length).toBe(1);
     try {await (editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [task_creator2], ["asd"],task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [task_creator2], ["asd"],task_description, task_estimated_days
     ))} catch (e) {
         expect(e.code).toBe("editTask/invalid_remove_assignees");
         expect(e.message).toBe("remove_assignees contains id of a user that is not currently assigned to the task");
@@ -219,7 +219,7 @@ test('not connected assignee test', async () => {
     expect(tasks.length).toBe(1);
     await expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [task_creator2], [],task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [task_creator2], [],task_description, task_estimated_days
     )).resolves.not.toThrow(); 
     assignments = await getConnection().getRepository(TaskAssignment).find({where : {task : task_id}}) as any;
     expect(assignments.length).toBe(1);
@@ -237,7 +237,7 @@ test('invalid deadline test', async () => {
     const task_creator = user[0].id;
     const task_project: string = null;
     const task_title = "title";
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
     const task_description = "description\n";
@@ -267,7 +267,7 @@ test('invalid estimated_days test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(
@@ -294,7 +294,7 @@ test('editor is not creator test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     
@@ -401,7 +401,7 @@ test('implicit edit assignees test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createUserConnection(task_creator2, task_creator);
@@ -412,7 +412,7 @@ test('implicit edit assignees test', async () => {
     )
     await expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [task_creator2], [],task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [task_creator2], [],task_description, task_estimated_days
     )).resolves.not.toThrow();
     let assigns = await getConnection().getRepository(TaskAssignment).find({where : {task: task_id}}) as any;
     expect(assigns.length).toBe(1);
@@ -421,7 +421,7 @@ test('implicit edit assignees test', async () => {
     expect(tasks.length).toBe(1);
     await expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [], [task_creator2],task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [], [task_creator2],task_description, task_estimated_days
     )).resolves.not.toThrow();
     assigns = await getConnection().getRepository(TaskAssignment).find({where : {task: task_id}}) as any;
     expect(assigns.length).toBe(1);
@@ -430,7 +430,7 @@ test('implicit edit assignees test', async () => {
     expect(tasks.length).toBe(1);
     await expect(editTask(
         task_id, task_creator, task_title, 
-        task_deadline, Status.NOT_STARTED, [task_creator2], undefined, task_description, task_estimated_days
+        task_deadline, Status.TO_DO, [task_creator2], undefined, task_description, task_estimated_days
     )).resolves.not.toThrow();
     assigns = await getConnection().getRepository(TaskAssignment).find({where : {task: task_id}}) as any;
     expect(assigns.length).toBe(2);

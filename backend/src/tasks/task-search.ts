@@ -59,7 +59,7 @@ export async function taskSearch(
     let state: Status | null = null;
     switch (status) {
       case "TO_DO":
-        state = Status.NOT_STARTED;
+        state = Status.TO_DO;
         break;
       case "IN_PROGRESS":
         state = Status.IN_PROGRESS;
@@ -68,7 +68,7 @@ export async function taskSearch(
         state = Status.BLOCKED;
         break;
       case "DONE":
-        state = Status.COMPLETED;
+        state = Status.DONE;
         break;
       default:
         return [];

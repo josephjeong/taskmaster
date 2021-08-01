@@ -24,7 +24,7 @@ test('bad task deletion', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createUserConnection(user2_id, task_creator);
@@ -62,7 +62,7 @@ test('correct task deletion', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(

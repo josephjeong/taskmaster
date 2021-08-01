@@ -6,17 +6,17 @@ interface TaskStatusPillProps {
 }
 
 const statusToColor = {
-  [TaskStatus.NOT_STARTED]: "info",
+  [TaskStatus.TO_DO]: "info",
   [TaskStatus.IN_PROGRESS]: "info",
   [TaskStatus.BLOCKED]: "warning",
-  [TaskStatus.COMPLETED]: "success",
+  [TaskStatus.DONE]: "success",
 } as const;
 
 const pillText: Record<TaskStatus, string> = {
-  [TaskStatus.NOT_STARTED]: "To Do",
+  [TaskStatus.TO_DO]: "To Do",
   [TaskStatus.IN_PROGRESS]: "In Progress",
   [TaskStatus.BLOCKED]: "Blocked",
-  [TaskStatus.COMPLETED]: "Done",
+  [TaskStatus.DONE]: "Done",
 };
 
 const useStyles = makeStyles<Theme, TaskStatusPillProps>((theme) => ({

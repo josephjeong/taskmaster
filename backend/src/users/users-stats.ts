@@ -62,7 +62,7 @@ export const getStatsForUser = async (userId: string): Promise<Stats> => {
     userId,
     dateOneWeekAgo,
     today,
-    { status: Status.COMPLETED }
+    { status: Status.DONE }
   );
 
   const lastWeekDaysOfWork = getDaysOfWork(tasksCompletedLastWeek);

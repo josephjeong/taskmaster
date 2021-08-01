@@ -9,27 +9,27 @@ import { createUser } from "../../src/users/users-create";
 import { createUserConnection, declineRequest, acceptRequest } from "../../src/connection";
 
 test('bad string param of createTask test', async () => {
-    try {await (createTask("","title",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+    try {await (createTask("","title",new Date(),Status.TO_DO,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_creator");
         expect(e.message).toBe("creator is null/undefined or empty string");
     }
-    try {await (createTask(null,"title",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+    try {await (createTask(null,"title",new Date(),Status.TO_DO,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_creator");
         expect(e.message).toBe("creator is null/undefined or empty string");
     }
-    try {await (createTask(undefined,"title",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+    try {await (createTask(undefined,"title",new Date(),Status.TO_DO,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_creator");
         expect(e.message).toBe("creator is null/undefined or empty string");
     }
-    try {await (createTask("asd","",new Date(),Status.NOT_STARTED,[]))} catch (e) {
+    try {await (createTask("asd","",new Date(),Status.TO_DO,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_title");
         expect(e.message).toBe("title is null/undefined or empty string");
     }
-    try {await (createTask("asd",null,new Date(),Status.NOT_STARTED,[]))} catch (e) {
+    try {await (createTask("asd",null,new Date(),Status.TO_DO,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_title");
         expect(e.message).toBe("title is null/undefined or empty string");
     }
-    try {await (createTask("asd",undefined,new Date(),Status.NOT_STARTED,[]))} catch (e) {
+    try {await (createTask("asd",undefined,new Date(),Status.TO_DO,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_title");
         expect(e.message).toBe("title is null/undefined or empty string");
     }
@@ -47,19 +47,19 @@ test('bad string param of createTask test', async () => {
         expect(e.code).toBe("createTask/invalid_status");
         expect(e.message).toBe("status is null/undefined or empty string");
     }
-    try {await (createTask("asd","asd",null,Status.COMPLETED,[]))} catch (e) {
+    try {await (createTask("asd","asd",null,Status.DONE,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_deadline");
         expect(e.message).toBe("deadline is not a Date, or is null/undefined");
     }
-    try {await (createTask("asd","asd",undefined,Status.COMPLETED,[]))} catch (e) {
+    try {await (createTask("asd","asd",undefined,Status.DONE,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_deadline");
         expect(e.message).toBe("deadline is not a Date, or is null/undefined");
     }
-    try {await (createTask("asd","asd","asd" as any,Status.COMPLETED,[]))} catch (e) {
+    try {await (createTask("asd","asd","asd" as any,Status.DONE,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_deadline");
         expect(e.message).toBe("deadline is not a Date, or is null/undefined");
     }
-    try {await (createTask("asd","asd",1 as any,Status.COMPLETED,[]))} catch (e) {
+    try {await (createTask("asd","asd",1 as any,Status.DONE,[]))} catch (e) {
         expect(e.code).toBe("createTask/invalid_deadline");
         expect(e.message).toBe("deadline is not a Date, or is null/undefined");
     }
@@ -81,7 +81,7 @@ test('not connected assignees test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     try {await createTask(
@@ -148,7 +148,7 @@ test('correct task creation', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     
@@ -191,7 +191,7 @@ test('implicit creator task creation', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     const task_id = await createTask(
@@ -284,11 +284,11 @@ test('invalid estimated_days and invalid creator test', async () => {
     expect.assertions(4);
     const d = new Date();
     d.setMinutes(d.getMinutes() + 1);
-    try {await (createTask("asd","asd",d,Status.COMPLETED,null,null,null,-1))} catch (e) {
+    try {await (createTask("asd","asd",d,Status.DONE,null,null,null,-1))} catch (e) {
         expect(e.code).toBe("createTask/invalid_estimated_days");
         expect(e.message).toBe("estimated_days must be >= 0");
     }
-    try {await (createTask("asd","asd",d,Status.COMPLETED,null,null,null,0))} catch (e) {
+    try {await (createTask("asd","asd",d,Status.DONE,null,null,null,0))} catch (e) {
         expect(e.code).toBe("createTask/invalid_creator");
         expect(e.message).toBe("user/creator with this id does not exist");
     }
@@ -310,7 +310,7 @@ test('multiple assignee creation', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createUserConnection(task_creator2, task_creator);
