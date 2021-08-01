@@ -40,7 +40,11 @@ const AuthoriseGCal: React.FC = () => {
     window.location.href = authUrl;
   };
 
-  const handleDisable = () => {};
+  const handleDisable = () => {
+    setLoading(true);
+
+    setTimeout(() => setLoading(false), 10000);
+  };
 
   return (
     <>
@@ -60,15 +64,21 @@ const AuthoriseGCal: React.FC = () => {
         </DialogTitle>
         <DialogContent className={classes.spacing}>
           {isEnabled ? (
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              onClick={handleDisable}
-              disabled={loading}
-            >
-              Disable Integration
-            </Button>
+            <>
+              <Typography>
+                Disabling this integration means your Google Calendar won&apos;t
+                get updates when you or your team creates tasks.
+              </Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                disableElevation
+                onClick={handleDisable}
+                disabled={loading}
+              >
+                Disable Integration
+              </Button>
+            </>
           ) : (
             <>
               <Typography>
