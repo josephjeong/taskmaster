@@ -17,31 +17,27 @@ const GCP_CLIENT_SECRET = process.env.GCP_CLIENT_SECRET;
 const GCP_REDIRECT_URL = process.env.GCP_REDIRECT_URL;
 
 const oauth2Client = new google.auth.OAuth2(
-    GCP_CLIENT_ID,
-    GCP_CLIENT_SECRET,
-    GCP_REDIRECT_URL
+  GCP_CLIENT_ID,
+  GCP_CLIENT_SECRET,
+  GCP_REDIRECT_URL
 );
-
 
 /* function to create and store CalendarCredential in database*/
 export async function createCalendarCredential(
   user: User,
   googleCode: string
 ): Promise<any> {
-
   //decode the string
-  const {tokens} = await oauth2Client.getToken(googleCode);
+  const { tokens } = await oauth2Client.getToken(googleCode);
   oauth2Client.setCredentials(tokens);
   const calendarCredentialRepo =
     getConnection().getRepository(CalendarCredential);
 
-//  console.log(tokens);
+  //  console.log(tokens);
 
   if (
     await calendarCredentialRepo.findOne({
-      where: [
-        { user_id: user.id}
-      ]
+      where: [{ user_id: user.id }],
     })
   ) {
     throw new ApiError(
@@ -73,9 +69,23 @@ export async function createCalendarCredential(
 /* function to get CalendarCredential in database*/
 
 export async function getCalendarCredential(
-  userId: String,
+  userId: string
 ): Promise<CalendarCredential> {
   const calCredRepo = await getConnection().getRepository(CalendarCredential);
-  const calCred = await calCredRepo.findOne({ where: { user_id: userId }});
+  const calCred = await calCredRepo.findOne({ where: { user_id: userId } });
   return calCred;
 }
+
+export const hasCalendarCredential = async (
+  userId: string
+): Promise<boolean> => {
+  const cred = await getCalendarCredential(userId);
+  return !!cred;
+};
+
+export const deleteCalendarCredential = async (
+  userId: string
+): Promise<void> => {
+  const credRepo = getConnection().getRepository(CalendarCredential);
+  await credRepo.delete({ user_id: userId });
+};

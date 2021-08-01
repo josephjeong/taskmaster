@@ -1,16 +1,13 @@
-import {Entity, PrimaryColumn, Column, OneToOne, JoinColumn, PrimaryGeneratedColumn} from "typeorm";
-import { User } from "./User";
+import { Entity, PrimaryColumn, Column } from "typeorm";
 
-
-@Entity('CalendarCredential')
+@Entity("CalendarCredential")
 export class CalendarCredential {
+  @PrimaryColumn()
+  user_id: string;
 
-    @PrimaryColumn()
-    user_id: String;
+  @Column("text")
+  access_token: string;
 
-    @Column('text')
-    access_token: String;
-
-    @Column('text')
-    refresh_token: String;
+  @Column("text")
+  refresh_token: string;
 }
