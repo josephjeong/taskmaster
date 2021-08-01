@@ -70,10 +70,10 @@ export async function createCalendarCredential(
 /* function to get CalendarCredential in database*/
 
 export async function getCalendarCredential(
-  userId: string,
+  user: User,
 ): Promise<CalendarCredential> {
   const calCredRepo = getConnection().getRepository(CalendarCredential);
-  const calCred = await calCredRepo.findOne({ where: { id: userId }});
+  const calCred = await calCredRepo.findOne({ where: { user_id: user.id }});
   return calCred;
 }
 

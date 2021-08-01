@@ -13,7 +13,6 @@ const GCP_REDIRECT_URL = process.env.GCP_REDIRECT_URL;
 export function getCalendarEventStartTime(task: Task) {
     const endDate = task.deadline;
     const estimatedDays = task.estimated_days;
-    console.log(estimatedDays);
     const startDate = new Date(endDate);
     startDate.setDate(startDate.getDate() - estimatedDays);
     return startDate;
@@ -21,16 +20,15 @@ export function getCalendarEventStartTime(task: Task) {
 
 export async function saveTaskToCalendar(task_id: String) {
     // find user's calendar's credentials
-
     const taskRepo = getConnection().getRepository(Task);
     const task = await taskRepo.findOne({ where: { id: task_id } });
-    const oauth2Client = new google.auth.OAuth2(
-        GCP_CLIENT_ID,
-        GCP_CLIENT_SECRET,
-        GCP_REDIRECT_URL
-    );
+    // const oauth2Client = new google.auth.OAuth2(
+    //     GCP_CLIENT_ID,
+    //     GCP_CLIENT_SECRET,
+    //     GCP_REDIRECT_URL
+    // );
 
-    var event = {
+    const event = {
         'summary': task.title,
         'location': '',
         'description': task.description,
@@ -52,51 +50,53 @@ export async function saveTaskToCalendar(task_id: String) {
     };
 
     const listOfTaskAssigneeAccessTokens = await getCalendarCredentialsList(task);
-    for (let accessToken in listOfTaskAssigneeAccessTokens) {
-        // save 
-        oauth2Client.credentials.access_token = accessToken;
-        var calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    // for (let accessToken in listOfTaskAssigneeAccessTokens) {
+    //     // save 
+    //     oauth2Client.credentials.access_token = accessToken;
+    //     var calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-        calendar.events.insert({
-            auth: oauth2Client,
-            calendarId: 'primary',
-            requestBody: event
-        }, function (err: any, res: any) {
-            if (err) {
-                console.log('There was an error contacting the Calendar service: ' + err);
-                return;
-            }
-            });
-        }
+    //     calendar.events.insert({
+    //         auth: oauth2Client,
+    //         calendarId: 'primary',
+    //         requestBody: event
+    //     }, function (err: any, res: any) {
+    //         if (err) {
+    //             console.log('There was an error contacting the Calendar service: ' + err);
+    //             return;
+    //         }
+    //         });
+    //    }
     }
 
 export async function getUsersAllocatedToTask(task: Task): Promise<any> {
     const taskAssignmentRepo = getConnection().getRepository(TaskAssignment);
-    const taskAssignments = await taskAssignmentRepo.find({ where: { id: task.id } });
-    console.log(taskAssignments.length);
+    const taskAssignments = await taskAssignmentRepo.find({ where: { task: task.id } });
+    console.log(taskAssignments);
 
-    const firstTaskAssignment = taskAssignments[0];
-    let userSet = new Set();
-    userSet.add(firstTaskAssignment.user_assignee);
-
-    for (const taskAssignment of taskAssignments) {
-        if ((taskAssignment.group_assignee != null) && (!userSet.has(taskAssignment.group_assignee))) {
-            userSet.add(taskAssignment.group_assignee);
-        }
-    }
+    // const firstTaskAssignment = taskAssignments[0];
+    // const user = firstTaskAssignment.user_assignee as any;
+    // const userId = user.id;
+     let userSet = new Set();
+    //userSet.add(userId);
+    // for (const taskAssignment of taskAssignments) {
+    //     if ((taskAssignment.group_assignee != null) && (!userSet.has(taskAssignment.group_assignee))) {
+    //         userSet.add(taskAssignment.group_assignee);
+    //     }
+    // }
     return userSet;
 }
 /*A function that retutns an array of calendar credentials of the assignees of the given task*/
 export async function getCalendarCredentialsList(task: Task): Promise<String[]> {
     let userSet = await getUsersAllocatedToTask(task);
-    let calCreds = new Array() as Array<String>;;
-    for (let userId of userSet) {
-        if (getCalendarCredential(userId) != null) {
-            calCreds.push((await getCalendarCredential(userId)).access_token);
-        }
-    }
+    // console.log(userSet);
+    let calCreds = new Array() as Array<String>;
+    // for (let userId of userSet) {
+    //     if (getCalendarCredential(userId) != null) {
+    //         calCreds.push((await getCalendarCredential(userId)).access_token);
+    //     }
+    // }
 
-    //force a promise return
+    // //force a promise return
     return new Promise((resolve, reject) => {
         resolve(calCreds);
     });
