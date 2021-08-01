@@ -3,13 +3,12 @@ import { useAuthContext } from "../context/AuthContext";
 import { ApiResponse, Task } from "../types";
 import { useCallback } from "react";
 import { api, mkQueryString, swrFetcher } from "./utils";
-import { TaskFilters } from "../components/task/TaskFilterBar";
 
 export const useTasks = (filters: { [key: string]: any }) => {
   console.log(mkQueryString(filters));
   const { user } = useAuthContext();
   return useSWR<Task[]>(user ? `/tasks` : null, () =>
-    swrFetcher(`/task?${mkQueryString(filters)}`)
+    swrFetcher(`/tasks?${mkQueryString(filters)}`)
   );
 };
 
