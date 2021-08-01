@@ -51,13 +51,16 @@ export async function createCalendarCredential(
   }
   const calendarCredential = new CalendarCredential();
   calendarCredential.user_id = user.id;
-  oauth2Client.on('tokens', (tokens) => {
-    if (tokens.refresh_token) {
-      // store the refresh_token in my database!
-      calendarCredential.refresh_token = tokens.refresh_token;
-    }
-    calendarCredential.access_token = tokens.access_token;
-  });
+  calendarCredential.refresh_token = tokens.refresh_token;
+  calendarCredential.access_token = tokens.access_token;
+
+  // oauth2Client.on('tokens', (tokens) => {
+  //   if (tokens.refresh_token) {
+  //     // store the refresh_token in my database!
+  //     calendarCredential.refresh_token = tokens.refresh_token;
+  //   }
+  //   calendarCredential.access_token = tokens.access_token;
+  // });
 
   // const calendarCredential = new CalendarCredential();
   // calendarCredential.user_id = user.id;
