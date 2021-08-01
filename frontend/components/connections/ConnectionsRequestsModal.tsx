@@ -1,4 +1,5 @@
 import React from "react";
+import NextLink from "next/link";
 import {
   makeStyles,
   Dialog,
@@ -8,6 +9,7 @@ import {
   Button,
   Avatar,
   Typography,
+  Link,
 } from "@material-ui/core";
 
 import {
@@ -146,6 +148,11 @@ const ConnectionsModal = ({ open, onClose }: ConnectionsModalProps) => {
             </div>
           </div>
         ))}
+        <Typography className={classes.textCenter}>
+          <NextLink href="/connections" passHref>
+            <Link onClick={() => onClose()}>See your connections</Link>
+          </NextLink>
+        </Typography>
       </DialogContent>
       <DialogActions>
         <Button
