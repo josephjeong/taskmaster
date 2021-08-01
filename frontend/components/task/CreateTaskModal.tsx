@@ -136,10 +136,10 @@ const CreateTaskModal = ({
                   setTask(task_);
                 }}
               >
-                <MenuItem value={TaskStatus.NOT_STARTED}>To Do</MenuItem>
+                <MenuItem value={TaskStatus.TO_DO}>To Do</MenuItem>
                 <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
                 <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
-                <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
+                <MenuItem value={TaskStatus.DONE}>Done</MenuItem>
               </Select>
             </FormControl>
             <div className={classes.rowInputRight}>

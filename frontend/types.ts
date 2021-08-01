@@ -34,10 +34,10 @@ export type Task = {
 };
 
 export enum TaskStatus {
-  NOT_STARTED = "TO_DO",
+  TO_DO = "TO_DO",
   IN_PROGRESS = "IN_PROGRESS",
   BLOCKED = "BLOCKED",
-  COMPLETED = "DONE",
+  DONE = "DONE",
 }
 
 export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0];

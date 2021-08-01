@@ -9,6 +9,7 @@ import { useDeleteTask, useEditTask } from "../../api/tasks";
 interface TaskListItemProps {
   task: Task;
   isEditable?: boolean;
+  showPill?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
+const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable, showPill = true }) => {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const classes = useStyles();
@@ -57,7 +58,7 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
 
   const isOverdue =
     (task.deadline as any) < new Date().toISOString() &&
-    task.status !== TaskStatus.COMPLETED;
+    task.status !== TaskStatus.DONE;
 
   return (
     <>
@@ -88,7 +89,9 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
           </div>
         </div>
         <div className={classes.filler} />
-        <TaskStatusPill status={task.status} />
+        {showPill ? (
+          <TaskStatusPill status={task.status} />
+        ) : null}
       </Paper>
       <TaskModal
         mode={isEditable ? "edit" : "view"}

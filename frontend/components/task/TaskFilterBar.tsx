@@ -34,15 +34,25 @@ export type TaskFilters = {
 };
 
 type TaskFilterBarProps = {
+  view: "List" | "Kanban",
   filters: TaskFilters,
   onChange: (filters: TaskFilters) => void
 };
 
 const TaskFilterBar = ({
+  view,
   filters,
   onChange
 }: TaskFilterBarProps) => {
   const classes = useStyles();
+
+  React.useEffect(() => {
+    if (view === "Kanban") {
+      const filters_ = { ...filters };
+      delete filters_.status;
+      onChange(filters_);
+    }
+  }, [view]);
 
   return (
     <Container className={classes.root}>
@@ -56,26 +66,28 @@ const TaskFilterBar = ({
           onChange(filters_);
         }}
       />
-      <Spacing x={1} />
-      <FormControl className={classes.input} variant="outlined">
-        <Select
-          value={filters.status}
-          onChange={(event) => {
-            const filters_ = { ...filters };
-            filters_.status = event.target.value as any as TaskStatus;
-            if (filters_.status == undefined) {
-              delete filters_.status;
-            }
-            onChange(filters_);
-          }}
-        >
-          <MenuItem value={undefined}>Status</MenuItem>
-          <MenuItem value={TaskStatus.NOT_STARTED}>To Do</MenuItem>
-          <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
-          <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
-          <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
-        </Select>
-      </FormControl>
+      {view !== "Kanban" ? <>
+        <Spacing x={1} />
+        <FormControl className={classes.input} variant="outlined">
+          <Select
+            value={filters.status}
+            onChange={(event) => {
+              const filters_ = { ...filters };
+              filters_.status = event.target.value as any as TaskStatus;
+              if (filters_.status == undefined) {
+                delete filters_.status;
+              }
+              onChange(filters_);
+            }}
+          >
+            <MenuItem value={undefined}>Status</MenuItem>
+            <MenuItem value={TaskStatus.TO_DO}>To Do</MenuItem>
+            <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
+            <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
+            <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
+          </Select>
+        </FormControl>
+      </> : null}
       <Spacing x={1} />
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <KeyboardDatePicker

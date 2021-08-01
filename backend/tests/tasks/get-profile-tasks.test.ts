@@ -49,7 +49,7 @@ test('connected test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createTask(
@@ -120,7 +120,7 @@ test('not accepted connection test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createTask(
@@ -165,7 +165,7 @@ test('declined connection test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createTask(
@@ -208,7 +208,7 @@ test('get own tasks test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createTask(
@@ -255,7 +255,7 @@ test('not connected test', async () => {
     const task_title = "title";
     const task_deadline = new Date();
     task_deadline.setMinutes(task_deadline.getMinutes() + 1);
-    const task_status = Status.NOT_STARTED;
+    const task_status = Status.TO_DO;
     const task_description = "description\n";
     const task_estimated_days = 2.5;
     await createTask(

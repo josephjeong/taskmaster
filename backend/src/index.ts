@@ -47,7 +47,7 @@ import {
   hasCalendarCredential,
 } from "./calendar-credentials";
 
-const PORT = 8080;
+const PORT = 9090;
 
 // start express server
 // initiated outside of connection to export it

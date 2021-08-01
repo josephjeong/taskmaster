@@ -2,10 +2,10 @@ import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany } from 
 import { User } from "./User";
 
 export enum Status {
-  NOT_STARTED = "TO_DO",
+  TO_DO = "TO_DO",
   IN_PROGRESS = "IN_PROGRESS",
   BLOCKED = "BLOCKED",
-  COMPLETED = "DONE"
+  DONE = "DONE"
 }
 
 @Entity("Task")
@@ -33,7 +33,7 @@ export class Task {
   @Column({
     type: "enum",
     enum: Status,
-    default: Status.NOT_STARTED,
+    default: Status.TO_DO,
   })
   status: Status;
 
