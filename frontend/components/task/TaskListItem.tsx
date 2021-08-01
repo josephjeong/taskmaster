@@ -63,7 +63,7 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable, showPill 
   return (
     <>
       <Paper
-        component="button"
+        component="div"
         className={classes.wrapper}
         onClick={() => setShowModal(true)}
       >

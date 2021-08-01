@@ -44,10 +44,16 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#ddd",
     borderRadius: 5
   },
+  kanbanListDraggingOver: {
+    backgroundColor: "#eee"
+  },
   kanbanListTitle: {
     fontSize: 18,
     padding: 5,
     paddingLeft: 20
+  },
+  kanbanItem: {
+    marginBottom: 5
   }
 }));
 
@@ -149,7 +155,7 @@ const TasksPage = () => {
                 >
                   {(provided, snapshot) => (
                     <div
-                      className={classes.kanbanList}
+                      className={`${classes.kanbanList} ${snapshot.isDraggingOver ? classes.kanbanListDraggingOver : ""}`}
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
@@ -175,6 +181,7 @@ const TasksPage = () => {
                         >
                           {(provided, snapshot) => (
                             <div
+                              className={classes.kanbanItem}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
