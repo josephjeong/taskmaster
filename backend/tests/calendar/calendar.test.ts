@@ -85,12 +85,12 @@ test("oauth test", async() => {
       user_last_name,
       user_bio
     );
-    const userRepo = getConnection().getRepository(User);
+    const userRepo = await getConnection().getRepository(User);
     const user = await userRepo.findOne({ where: { email: user_email } });
 
-    const code = "4/0AX4XfWh7UB-H54iDCFTxS2pjscV8asBKKxa5IGUioawfhLs5WCg6zVLYuog0u0nTyZX1Qw";
+    const code = "4/0AX4XfWjDeTWw_ACQ64cKwzRIHicU2KM3DMd4h9jYZZEgARWhmlYwVWJAlfjKcRWlW2UYhw";
     await createCalendarCredential(user, code);
-    const calCred = getCalendarCredential(user);
+    const calCred = await getCalendarCredential(user.id);
     const task_deadline = new Date(2021, 8, 3);
     const task_status = Status.NOT_STARTED;
     const task_estimated_days = 10;
@@ -101,7 +101,7 @@ test("oauth test", async() => {
     // const taskAssignments = await taskAssignmentRepo.find({ where: { task: task_id } });
     //      console.log(taskAssignments);
 
-    saveTaskToCalendar(task_id);
+    await saveTaskToCalendar(task_id);
 
 });
 
