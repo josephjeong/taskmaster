@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   makeStyles,
   Container,
@@ -7,6 +7,7 @@ import {
   MenuItem,
   Select,
   Typography,
+  CircularProgress,
 } from "@material-ui/core";
 import moment from "moment";
 
@@ -69,13 +70,30 @@ const useStyles = makeStyles((theme) => ({
   kanbanItem: {
     marginBottom: 5,
   },
+  textCenter: {
+    textAlign: "center",
+  },
 }));
 
 const TasksPage = () => {
   const [view, setView] = React.useState<"List" | "Kanban">("List");
   const [filters, setFilters] = React.useState({});
 
-  const { data: tasks } = useTasks(filters);
+  const { data: tasks, isValidating: _tasksLoading } = useTasks(filters);
+
+  const [tasksLoading, setTasksLoading] = React.useState(false);
+  const loadingTimeout = React.useRef<any>();
+
+  React.useEffect(() => {
+    if (_tasksLoading) {
+      loadingTimeout.current = setTimeout(() => {
+        setTasksLoading(true);
+      }, 500);
+    } else {
+      clearTimeout(loadingTimeout.current);
+      setTasksLoading(false);
+    }
+  }, [_tasksLoading]);
 
   const editTaskCallback = useEditTask();
 
@@ -124,17 +142,15 @@ const TasksPage = () => {
     }
 
     const task = tasks?.find((task) => task.id === result.draggableId)!;
-    editTaskCallback(
-      task.id,
-      { status: destination.droppableId as TaskStatus },
-      filters
-    );
+    editTaskCallback(task.id, {
+      status: destination.droppableId as TaskStatus,
+    });
   };
 
   return (
     <Container className={classes.root}>
       <Title>Your Tasks</Title>
-      <Container className={classes.row}>
+      <div className={classes.row}>
         <FormControl className={classes.viewSelect} variant="outlined">
           <Select
             value={view}
@@ -159,12 +175,18 @@ const TasksPage = () => {
         >
           Create Task
         </Button>
-      </Container>
+      </div>
       <TaskFilterBar
         view={view}
         filters={filters}
         onChange={(filters) => setFilters(filters)}
       />
+      <Spacing y={3} />
+      {tasksLoading && (
+        <Typography>
+          <CircularProgress size="1em" /> Loading
+        </Typography>
+      )}
       <Spacing y={3} />
       <TaskModal
         mode="create"
@@ -178,14 +200,22 @@ const TasksPage = () => {
       />
       {tasks ? (
         <>
-          {view === "List" ? (
+          {view === "List" && (
             <Stack spacing={2}>
               {tasks.map((task) => (
                 <TaskListItem key={task.id} task={task} isEditable />
               ))}
+              {tasks.length === 0 && (
+                <Typography>
+                  {Object.keys(filters).length
+                    ? "Not tasks match that filter"
+                    : "Create a Task to see it here!"}
+                </Typography>
+              )}
             </Stack>
-          ) : (
-            <Container className={classes.kanbanRoot}>
+          )}
+          {view === "Kanban" && (
+            <div className={classes.kanbanRoot}>
               <DragDropContext
                 onDragEnd={(result, provided) => handleKanbanDragEnd(result)}
               >
@@ -244,7 +274,7 @@ const TasksPage = () => {
                   </Droppable>
                 ))}
               </DragDropContext>
-            </Container>
+            </div>
           )}
         </>
       ) : null}

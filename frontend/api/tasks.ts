@@ -1,21 +1,26 @@
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
 import { ApiResponse, Task } from "../types";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { api, mkQueryString, swrFetcher } from "./utils";
+import { debounce } from "../utils";
+
+const debouncedMutate = debounce(mutate, 100);
 
 export const useTasks = (filters: { [key: string]: any }) => {
   const queryString = mkQueryString(filters);
   console.log(queryString);
   const { user } = useAuthContext();
-
-  useEffect(() => {
-    mutate("/tasks");
-  }, [queryString]);
-
-  return useSWR<Task[]>(user ? `/tasks` : null, () =>
+  const fetcherRef = useRef<() => Promise<Task[]>>(() =>
     swrFetcher(`/tasks?${queryString}`)
   );
+
+  useEffect(() => {
+    debouncedMutate("/tasks");
+    fetcherRef.current = () => swrFetcher(`/tasks?${queryString}`);
+  }, [queryString]);
+
+  return useSWR<Task[]>(user ? `/tasks` : null, () => fetcherRef.current());
 };
 
 export const useUserTasks = (userId?: string) => {

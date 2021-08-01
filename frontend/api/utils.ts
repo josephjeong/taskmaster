@@ -23,6 +23,7 @@ api.interceptors.request.use((request) => {
 });
 
 export const swrFetcher = async (url: string) => {
+  console.log({ url });
   const response = await api.get(url);
   if (response.data.data) {
     return response.data.data;
@@ -36,6 +37,10 @@ export const swrFetcher = async (url: string) => {
   throw response.data.error;
 };
 
-export const mkQueryString = (params: {[key: string]: any}) => {
-  return Object.keys(params).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&');
+export const mkQueryString = (params: { [key: string]: any }) => {
+  return Object.keys(params)
+    .map(
+      (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+    )
+    .join("&");
 };

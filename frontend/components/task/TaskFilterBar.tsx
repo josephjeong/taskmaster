@@ -1,8 +1,20 @@
 import React from "react";
-import { makeStyles, Container, TextField, FormControl, Select, MenuItem, Button } from "@material-ui/core";
+import {
+  makeStyles,
+  Container,
+  TextField,
+  FormControl,
+  Select,
+  MenuItem,
+  Button,
+} from "@material-ui/core";
 import NumericInput from "material-ui-numeric-input";
 import moment from "moment";
-import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {
+  KeyboardDatePicker,
+  KeyboardTimePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
 
 import { TaskStatus } from "../../types";
@@ -14,36 +26,32 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: theme.spacing(2.5),
   },
   input: {
-    width: 140,
-    marginTop: 7
+    width: theme.spacing(18),
+    marginTop: theme.spacing(1),
   },
   inputDate: {
-    width: 180
-  }
+    width: theme.spacing(22),
+  },
 }));
 
 export type TaskFilters = {
-  title?: string,
-  user_assignee?: string,
-  status?: TaskStatus,
-  deadline?: moment.Moment,
-  estimated_days?: number
+  title?: string;
+  user_assignee?: string;
+  status?: TaskStatus;
+  deadline?: moment.Moment;
+  estimated_days?: number;
 };
 
 type TaskFilterBarProps = {
-  view: "List" | "Kanban",
-  filters: TaskFilters,
-  onChange: (filters: TaskFilters) => void
+  view: "List" | "Kanban";
+  filters: TaskFilters;
+  onChange: (filters: TaskFilters) => void;
 };
 
-const TaskFilterBar = ({
-  view,
-  filters,
-  onChange
-}: TaskFilterBarProps) => {
+const TaskFilterBar = ({ view, filters, onChange }: TaskFilterBarProps) => {
   const classes = useStyles();
 
   React.useEffect(() => {
@@ -55,39 +63,48 @@ const TaskFilterBar = ({
   }, [view]);
 
   return (
-    <Container className={classes.root}>
+    <div className={classes.root}>
       <TextField
         className={classes.input}
         label="Title"
-        value={filters.title}
+        value={filters.title ?? ""}
         onChange={(event) => {
           const filters_ = { ...filters };
-          filters_.title = event.target.value;
+          const value = event.target.value;
+          if (value) {
+            filters_.title = value;
+          } else {
+            delete filters_.title;
+          }
           onChange(filters_);
         }}
       />
-      {view !== "Kanban" ? <>
-        <Spacing x={1} />
-        <FormControl className={classes.input} variant="outlined">
-          <Select
-            value={filters.status}
-            onChange={(event) => {
-              const filters_ = { ...filters };
-              filters_.status = event.target.value as any as TaskStatus;
-              if (filters_.status == undefined) {
-                delete filters_.status;
-              }
-              onChange(filters_);
-            }}
-          >
-            <MenuItem value={undefined}>Status</MenuItem>
-            <MenuItem value={TaskStatus.TO_DO}>To Do</MenuItem>
-            <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
-            <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
-            <MenuItem value={TaskStatus.COMPLETED}>Done</MenuItem>
-          </Select>
-        </FormControl>
-      </> : null}
+      {view !== "Kanban" ? (
+        <>
+          <Spacing x={1} />
+          <FormControl className={classes.input} variant="outlined">
+            <Select
+              value={filters.status ?? "All"}
+              onChange={(event) => {
+                const filters_ = { ...filters };
+                const value = event.target.value as any;
+                if (value === "All") {
+                  delete filters_.status;
+                } else {
+                  filters_.status = value;
+                }
+                onChange(filters_);
+              }}
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value={TaskStatus.TO_DO}>To Do</MenuItem>
+              <MenuItem value={TaskStatus.IN_PROGRESS}>In Progress</MenuItem>
+              <MenuItem value={TaskStatus.BLOCKED}>Blocked</MenuItem>
+              <MenuItem value={TaskStatus.DONE}>Done</MenuItem>
+            </Select>
+          </FormControl>
+        </>
+      ) : null}
       <Spacing x={1} />
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <KeyboardDatePicker
@@ -128,7 +145,11 @@ const TaskFilterBar = ({
           value={filters.estimated_days}
           onChange={(value) => {
             const filters_ = { ...filters };
-            filters_.estimated_days = value;
+            if (value) {
+              filters_.estimated_days = value;
+            } else {
+              delete filters_.estimated_days;
+            }
             onChange(filters_);
           }}
         />
@@ -136,10 +157,12 @@ const TaskFilterBar = ({
       <Spacing x={1} />
       <Button
         size="large"
-        disabled={filters === {}}
+        disabled={Object.keys(filters).length === 0}
         onClick={() => onChange({})}
-      >Clear Filters</Button>
-    </Container>
+      >
+        Clear Filters
+      </Button>
+    </div>
   );
 };
 
