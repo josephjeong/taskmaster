@@ -7,6 +7,7 @@ Written by Jocelyn Hing 27 June
 import { getConnection } from "typeorm";
 
 import { Connection } from "./entity/Connection";
+import { User } from "./entity/User";
 import { ApiError } from "./errors";
 
 /* function to create and store Connection in database*/
@@ -41,6 +42,36 @@ export async function createUserConnection(
   conn.accepted = false;
 
   await getConnection().manager.save(conn);
+}
+
+/* function to cancel and/or delete Connection in database*/
+export async function deleteUserConnection(
+  requestee: string,
+  requester: string
+): Promise<void> {
+  const connRepo = getConnection().getRepository(Connection);
+  if (requestee == requester) {
+    throw new ApiError(
+      "delete_connection/connect_to_self",
+      "Cannot cancel connection with the same user."
+    );
+  }
+
+  const conn = await connRepo.findOne({
+    where: [
+      { requestee: requestee, requester: requester },
+      { requestee: requester, requester: requestee },
+    ],
+  });
+
+  if (!conn) {
+    throw new ApiError(
+      "delete_connection/connection_not_exists",
+      "Connection has not been requested or does not exist"
+    );
+  }
+
+  await connRepo.delete(conn);
 }
 
 /* function to accept and save changes in database*/
@@ -117,41 +148,59 @@ export async function deleteRequest(
 /* function to show all of user's incoming connection requests in database*/
 
 export async function getIncomingConnectionRequests(
-  requester: string
-): Promise<Connection[]> {
+  requestee: string
+): Promise<User[]> {
   const connRepo = getConnection().getRepository(Connection);
-  const conn = await connRepo.find({ where: { requester: requester } });
-  return conn;
+  const conns = await connRepo.find({
+    where: { requestee: requestee, accepted: false },
+  });
+  const userRepo = getConnection().getRepository(User);
+  const requesterIds = conns.map((c) => c.requester);
+  return userRepo.findByIds(requesterIds);
 }
 
 /* function to show all of user's connection requests in database*/
 
 export async function getOutgoingConnectionRequests(
-  requestee: string
-): Promise<Connection[]> {
+  requester: string
+): Promise<User[]> {
   const connRepo = getConnection().getRepository(Connection);
-  const conn = await connRepo.find({ where: { requestee: requestee } });
-  return conn;
+  const conns = await connRepo.find({
+    where: { requester: requester, accepted: false },
+  });
+  const userRepo = getConnection().getRepository(User);
+  const requesteeIds = conns.map((c) => c.requestee);
+  return userRepo.findByIds(requesteeIds);
 }
 
-export async function getAcceptedConnections(
-    user : String,
-): Promise<Connection[]> {
-    const connRepo = getConnection().getRepository(Connection);
-    const acceptedConnections = await connRepo.find({ where: [{requestee: user, accepted: true},{requester: user, accepted: true}] });
+export async function getAcceptedConnections(user: string): Promise<User[]> {
+  const connRepo = getConnection().getRepository(Connection);
+  const acceptedConnections = await connRepo.find({
+    where: [
+      { requestee: user, accepted: true },
+      { requester: user, accepted: true },
+    ],
+  });
   if (isValidAcceptedConnections(acceptedConnections)) {
-    throw new ApiError("connections/accepted_connections_fail", "Failed to find accepted connections :( ");
-  }
-  else {
-    return acceptedConnections;
+    throw new ApiError(
+      "connections/accepted_connections_fail",
+      "Failed to find accepted connections :( "
+    );
+  } else {
+    const userIds = acceptedConnections.map((c) =>
+      c.requestee === user ? c.requester : c.requestee
+    );
+    const userRepo = getConnection().getRepository(User);
+    return userRepo.findByIds(userIds);
   }
 }
 
-export function isValidAcceptedConnections(acceptedConnections: Connection[]): boolean {
-  if (acceptedConnections == null)  {
+export function isValidAcceptedConnections(
+  acceptedConnections: Connection[]
+): boolean {
+  if (acceptedConnections == null) {
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 }

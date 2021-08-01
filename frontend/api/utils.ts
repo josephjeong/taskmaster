@@ -1,4 +1,5 @@
 import axios from "axios";
+import moment from "moment";
 import Router from "next/router";
 import { mutate } from "swr";
 import { LOCALSTORAGE_TOKEN_KEY } from "../context/AuthContext";
@@ -33,4 +34,8 @@ export const swrFetcher = async (url: string) => {
   }
 
   throw response.data.error;
+};
+
+export const mkQueryString = (params: {[key: string]: any}) => {
+  return Object.keys(params).map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`).join('&');
 };

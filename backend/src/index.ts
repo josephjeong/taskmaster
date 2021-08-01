@@ -6,7 +6,10 @@ import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
 
 import { createConnection } from "typeorm";
-import { generateAuthUrl, saveOAuthToken } from "./googleOAuth/authenticate-oauth";
+import {
+  generateAuthUrl,
+  saveOAuthToken,
+} from "./googleOAuth/authenticate-oauth";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
 import { decodeJWTPayload } from "./users/users-helpers";
@@ -25,11 +28,12 @@ import { Connection } from "./entity/Connection";
 import {
   acceptRequest,
   createUserConnection,
+  deleteUserConnection,
   declineRequest,
   isConnected,
   getIncomingConnectionRequests,
   getOutgoingConnectionRequests,
-  getAcceptedConnections
+  getAcceptedConnections,
 } from "./connection";
 import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
@@ -37,7 +41,6 @@ import { sendData, sendError } from "./response-utils";
 import { taskSearch } from "./tasks/task-search";
 import { getUserByEmail } from "./users/users-search";
 import { CalendarCredential } from "./entity/CalendarCredential";
-
 
 const PORT = 8080;
 
@@ -61,13 +64,11 @@ createConnection({
     app.use(express.json());
 
     app.post("/oauthtokens/save", async (req, res) => {
-      await saveOAuthToken(
-        req.body.code,
-        req.body.jwt
-        );
+      await saveOAuthToken(req.body.code, req.body.jwt);
+      sendData(res, "Save your tokens");
     });
 
-    app.get("/authenticate/googlecal", async (req,res) => {
+    app.get("/authenticate/googlecal", async (req, res) => {
       const authUrl = generateAuthUrl();
       sendData(res, authUrl);
     });
@@ -127,11 +128,20 @@ createConnection({
     //                                          assignees: [ User{id: , email: , etc.}, ...],
     //                                          id: ,
     //                                          deadline: , etc.} ]
-    app.get("/tasks", async (req, res) => {
-      sendData(
-        res,
-        await getProfileTasks(res.locals.session.id, res.locals.session.id)
+    app.get("/tasks", async(req, res) => {
+      const tasks = await taskSearch(
+        res.locals.session.id,
+        req.query.title as string | undefined,
+        req.query.description as string | undefined,
+        req.query.project as string | undefined,
+        req.query.creator as string | undefined,
+        req.query.deadline as string | undefined,
+        req.query.status as string | undefined,
+        req.query.estimated_days as string | undefined,
+        // @ts-ignore string list
+        req.query.user_assignee as string | undefined
       );
+      sendData(res, tasks);
     });
 
     app.get("/users/tasks/:user_id", async (req, res) => {
@@ -186,25 +196,14 @@ createConnection({
       sendData(res, "delete task success");
     });
 
-    app.get("/task/search", async(req, res) => {
-        const tasks = await taskSearch(
-            res.locals.session.id,
-            String(req.query.title),
-            String(req.query.description),
-            String(req.query.project),
-            String(req.query.creator),
-            String(req.query.deadline),
-            String(req.query.status),
-            String(req.query.estimated_days),
-            // @ts-ignore string list
-            req.query.user_assignee
-        )
-        sendData(res, tasks)
+    app.post("/connection/create", async (req, res) => {
+      await createUserConnection(req.body.id, res.locals.session.id);
+      sendData(res, "updated succesfully!");
     });
 
-    app.post("/connection/create", async (req, res) => {
-      await createUserConnection(res.locals.session.id, req.body.id);
-      sendData(res, "updated succesfully!");
+    app.post("/connection/delete", async (req, res) => {
+      await deleteUserConnection(req.body.id, res.locals.session.id);
+      sendData(res, "updated successfully!");
     });
 
     app.post("/connection/accept", async (req, res) => {
@@ -232,7 +231,7 @@ createConnection({
       sendData(res, s);
     });
 
-    app.get("/connection/incomingRequests", async (req, res) => {
+    app.get("/connection/outgoingRequests", async (req, res) => {
       const s = await getOutgoingConnectionRequests(res.locals.session.id);
       sendData(res, s);
     });

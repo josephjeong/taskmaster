@@ -8,7 +8,10 @@ import {
   Typography,
   Button,
   Paper,
+  Tooltip,
+  IconButton,
 } from "@material-ui/core";
+import CalendarToday from "@material-ui/icons/CalendarToday";
 
 import { ConnectionStatus, User } from "../../types";
 import ConnectionButton from "../../components/profile/ConnectionButton";
@@ -18,6 +21,7 @@ import {
   fetchProfile,
   UpdateProfileInput,
   useConnectionStatus,
+  useDeleteConnection,
   useRequestConnection,
   useUpdateProfile,
   useUserProfile,
@@ -29,6 +33,7 @@ import Stack from "../../components/shared/Stack";
 import Spacing from "../../components/shared/Spacing";
 import { useRouter } from "next/router";
 import ProfileStatsSection from "../../components/profile/ProfileStatsSection";
+import AuthoriseGCal from "../../components/gcal/AuthoriseGCal";
 
 // const EXAMPLE_USER: User = {
 //   id: "b59aa143-5e1c-46af-b05c-85908324e097",
@@ -73,6 +78,13 @@ const useStyles = makeStyles((theme) => ({
   bioWrapper: {
     padding: theme.spacing(3),
   },
+  profileActions: {
+    display: "flex",
+    alignItems: "center",
+    "& > * + *": {
+      marginLeft: theme.spacing(1),
+    },
+  },
 }));
 
 const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -96,6 +108,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   );
 
   const requestConnection = useRequestConnection();
+  const deleteConnection = useDeleteConnection();
 
   const updateProfile = useUpdateProfile();
 
@@ -106,11 +119,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
     }
     if (connectionStatus === ConnectionStatus.UNCONNECTED) {
       await requestConnection(profileId);
+    } else {
+      await deleteConnection(profileId);
     }
   };
 
   const handleProfileSave = async (changes: UpdateProfileInput) => {
-    updateProfile(changes);
+    const { error } = await updateProfile(changes);
+    if (error) {
+      throw new Error(error.message);
+    }
   };
 
   // TODO: Figure out a better way to handle this
@@ -137,15 +155,18 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           </Typography>
           <Typography>{profile.email}</Typography>
         </div>
-        <div>
+        <div className={classes.profileActions}>
           {isProfileOfLoggedInUser && (
-            <Button
-              onClick={() => setShowUpdateModal((p) => !p)}
-              color="primary"
-              variant="contained"
-            >
-              Edit Profile
-            </Button>
+            <>
+              <AuthoriseGCal />
+              <Button
+                onClick={() => setShowUpdateModal((p) => !p)}
+                color="primary"
+                variant="contained"
+              >
+                Edit Profile
+              </Button>
+            </>
           )}
           {user && !isProfileOfLoggedInUser && (
             <ConnectionButton

@@ -1,16 +1,19 @@
 import { useCallback } from "react";
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
-import { User } from "../types";
+import { ApiResponse, User } from "../types";
 import { api } from "./utils";
 
 export const login = async (
   email: string,
   password: string
-): Promise<string> => {
-  const response = await api.post("/users/login", { email, password });
+): Promise<ApiResponse<{ token: string }>> => {
+  const { data: response } = await api.post("/users/login", {
+    email,
+    password,
+  });
   mutate("/users/me");
-  return response.data.data.token;
+  return response;
 };
 
 export type SignupInput = {
@@ -21,14 +24,16 @@ export type SignupInput = {
   bio?: string;
 };
 
-export const signup = async (args: SignupInput) => {
+export const signup = async (
+  args: SignupInput
+): Promise<ApiResponse<{ token: string }>> => {
   if (!args.bio) {
     args.bio = "";
   }
 
-  const response = await api.post("/users/signup", args);
+  const { data: response } = await api.post("/users/signup", args);
 
-  return response.data.data.token;
+  return response;
 };
 
 export const useMe = (runQuery: boolean) => {

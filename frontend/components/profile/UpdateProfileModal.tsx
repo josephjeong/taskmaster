@@ -7,7 +7,8 @@ import {
   TextField,
   makeStyles,
 } from "@material-ui/core";
-import { FormEventHandler } from "react";
+import { Alert } from "@material-ui/lab";
+import { FormEventHandler, useState } from "react";
 import { UpdateProfileInput } from "../../api";
 
 import { User } from "../../types";
@@ -34,8 +35,10 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
   onSave,
 }) => {
   const classes = useStyles();
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    setError(null);
     event.preventDefault();
 
     const possiblyUpdatedProfile = Object.fromEntries(
@@ -53,8 +56,17 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
       }
     });
 
-    await onSave?.(changes);
-    onClose();
+    if (Object.keys(changes).length === 0) {
+      onClose();
+      return;
+    }
+
+    try {
+      await onSave?.(changes);
+      onClose();
+    } catch (err) {
+      setError(err?.message || "An Error Occurred �");
+    }
   };
 
   return (
@@ -66,6 +78,7 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
       <DialogTitle id="update-profile-modal-title">Update Profile</DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent className={classes.spacing}>
+          {error && <Alert severity="error">{error}</Alert>}
           <TextField
             id="first-name"
             name="first_name"

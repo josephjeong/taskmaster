@@ -32,8 +32,8 @@ export async function createCalendarCredential(
   //decode the string
   const {tokens} = await oauth2Client.getToken(googleCode);
   oauth2Client.setCredentials(tokens);
-
-  const calendarCredentialRepo = getConnection().getRepository(CalendarCredential);
+  const calendarCredentialRepo =
+    getConnection().getRepository(CalendarCredential);
 
 //  console.log(tokens);
 
@@ -76,4 +76,3 @@ export async function getCalendarCredential(
   const calCred = await calCredRepo.findOne({ where: { user_id: userId }});
   return calCred;
 }
-
