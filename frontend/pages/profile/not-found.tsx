@@ -1,12 +1,12 @@
 import { Container, makeStyles, Typography, fade } from "@material-ui/core";
 
-import { User } from "../../types";
 import Title from "../../components/shared/Title";
 import Spacing from "../../components/shared/Spacing";
-import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
 
 interface ProfilePageProps {
-  profile: User;
+  email?: string | null;
+  id?: string | null;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -25,15 +25,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProfilePage: React.FC<ProfilePageProps> = () => {
-  const router = useRouter();
+const ProfilePage: React.FC<ProfilePageProps> = ({ email, id }) => {
   const classes = useStyles();
-
-  const { email, id } = router.query;
 
   return (
     <Container>
-      <Title>{`Profile Not Found`}</Title>
+      <Title>Profile Not Found</Title>
       <Spacing y={4} />
       <Typography variant="h4" component="h1" className={classes.heading}>
         Profile Not Found
@@ -56,3 +53,21 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
 };
 
 export default ProfilePage;
+
+export const getServerSideProps: GetServerSideProps<ProfilePageProps> = async ({
+  query,
+  res,
+}) => {
+  const email = typeof query.email === "string" ? query.email : null;
+  const id = typeof query.id === "string" ? query.id : null;
+
+  res.statusCode = 404;
+  res.statusMessage = "Profile Not Found";
+
+  return {
+    props: {
+      email,
+      id,
+    },
+  };
+};

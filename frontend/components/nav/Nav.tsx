@@ -48,13 +48,9 @@ const Nav = ({}: NavProps) => {
   const { user } = useAuthContext();
   const logout = useLogout();
 
-  const { data: incomingRequests } = useIncomingConnectionRequests();
+  const { data: incomingRequests } = useIncomingConnectionRequests(!!user);
 
   const classes = useStyles();
-
-  if (!incomingRequests) {
-    return null;
-  }
 
   return (
     <>
@@ -85,7 +81,7 @@ const Nav = ({}: NavProps) => {
                   onClick={() => setShowConnectionsModal(true)}
                 >
                   <Badge
-                    badgeContent={incomingRequests.length}
+                    badgeContent={incomingRequests?.length || 0}
                     color="secondary"
                   >
                     <LinkIcon />

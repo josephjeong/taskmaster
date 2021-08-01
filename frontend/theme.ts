@@ -6,6 +6,9 @@ const theme = createMuiTheme({
       variant: "outlined",
       fullWidth: true,
     },
+    MuiDialog: {
+      fullWidth: true,
+    },
   },
   overrides: {
     MuiDialogActions: {
