@@ -83,30 +83,36 @@ const ConnectionsPage: React.FC = () => {
             <Link className={classes.icon} /> button in the header.
           </Typography>
           <Spacing y={4} />
-          <div className={classes.connectionList}>
-            {connectedUsers.map((request) => (
-              <div key={request.id} className={classes.user}>
-                <Avatar
-                  alt={request.email}
-                  src={request.avatar_url}
-                  className={classes.avatar}
-                />
-                <div>
-                  <Typography>{`${request.first_name} ${request.last_name}`}</Typography>
-                  <Typography variant="caption">{request.email}</Typography>
+          {connectedUsers.length ? (
+            <div className={classes.connectionList}>
+              {connectedUsers.map((request) => (
+                <div key={request.id} className={classes.user}>
+                  <Avatar
+                    alt={request.email}
+                    src={request.avatar_url}
+                    className={classes.avatar}
+                  />
+                  <div>
+                    <Typography>{`${request.first_name} ${request.last_name}`}</Typography>
+                    <Typography variant="caption">{request.email}</Typography>
+                  </div>
+                  <div className={classes.grow} />
+                  <div className={classes.userActions}>
+                    <Button
+                      size="medium"
+                      onClick={() => deleteConnection(request.id)}
+                    >
+                      Delete Connection
+                    </Button>
+                  </div>
                 </div>
-                <div className={classes.grow} />
-                <div className={classes.userActions}>
-                  <Button
-                    size="medium"
-                    onClick={() => deleteConnection(request.id)}
-                  >
-                    Cancel Request
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <Typography className={classes.textCenter} variant="body2">
+              You haven&apos;t connected with anyone yet!
+            </Typography>
+          )}
         </>
       )}
     </Container>
