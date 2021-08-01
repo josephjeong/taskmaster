@@ -90,7 +90,7 @@ const TasksPage = () => {
 
   const createTask = async (task: Task) => {
     setError(null);
-    const { error } = await createTaskCallback(task);
+    const { error } = await createTaskCallback(task, filters);
     if (error) {
       setError(error.message);
     } else {
@@ -112,7 +112,7 @@ const TasksPage = () => {
     }
 
     const task = tasks?.find((task) => task.id === result.draggableId)!;
-    editTaskCallback(task.id, { status: destination.droppableId as TaskStatus });
+    editTaskCallback(task.id, { status: destination.droppableId as TaskStatus }, filters);
   };
 
   return (
