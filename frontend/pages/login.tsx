@@ -25,11 +25,14 @@ const LoginPage: React.FC = () => {
   const classes = useStyles();
   const { setToken } = useAuthContext();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useLoggedInRedirect();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    if (loading) return;
     setError(null);
+    setLoading(true);
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
@@ -43,6 +46,7 @@ const LoginPage: React.FC = () => {
     } else {
       setToken(data!.token);
     }
+    setLoading(false);
   };
 
   return (
@@ -74,6 +78,7 @@ const LoginPage: React.FC = () => {
             type="submit"
             color="primary"
             variant="contained"
+            disabled={loading}
           >
             Login
           </Button>

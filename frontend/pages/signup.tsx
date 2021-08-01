@@ -25,12 +25,16 @@ const useStyles = makeStyles((theme) => ({
 const SignUpPage: React.FC = () => {
   const classes = useStyles();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const { setToken } = useAuthContext();
 
   useLoggedInRedirect();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
+    if (loading) return;
+    setError(null);
+    setLoading(true);
     event.preventDefault();
 
     // do signup stuff
@@ -44,6 +48,7 @@ const SignUpPage: React.FC = () => {
     } else {
       setToken(data!.token);
     }
+    setLoading(false);
   };
 
   return (
@@ -99,6 +104,7 @@ const SignUpPage: React.FC = () => {
             type="submit"
             color="primary"
             variant="contained"
+            disabled={loading}
           >
             Sign Up
           </Button>
