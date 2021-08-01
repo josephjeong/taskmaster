@@ -24,6 +24,7 @@ const TasksPage = () => {
   const { data: tasks } = useMyTasks();
 
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const defaultTask = React.useMemo(
     () => ({
@@ -33,6 +34,7 @@ const TasksPage = () => {
       deadline: moment().add(1, "h"),
       status: TaskStatus.NOT_STARTED,
       estimated_days: 1,
+      assignees: [],
     }),
     // eslint-disable-next-line
     [showCreateTaskModal]
@@ -43,9 +45,16 @@ const TasksPage = () => {
   const createTaskCallback = useCreateTask();
 
   const createTask = async (task: Task) => {
-    await createTaskCallback(task);
-    setShowCreateTaskModal(false);
+    setError(null);
+    const { error } = await createTaskCallback(task);
+    if (error) {
+      setError(error.message);
+    } else {
+      setShowCreateTaskModal(false);
+    }
   };
+
+  console.log(tasks);
 
   if (!tasks) {
     return null;
@@ -67,6 +76,7 @@ const TasksPage = () => {
       <Spacing y={3} />
       <TaskModal
         mode="create"
+        error={error}
         open={showCreateTaskModal}
         taskInit={defaultTask}
         onClose={() => setShowCreateTaskModal(false)}

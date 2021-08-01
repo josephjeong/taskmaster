@@ -48,7 +48,7 @@ const UserSearch: React.FC = () => {
         await router.push(`/profile/${user.id}`);
         form.reset();
       } else {
-        router.push(`/profile/not-found?${encodeURIComponent(email)}`);
+        router.push(`/profile/not-found?email=${encodeURIComponent(email)}`);
       }
     } finally {
       setIsSearching(false);

@@ -30,6 +30,7 @@ export type Task = {
   deadline: moment.Moment;
   status: TaskStatus;
   estimated_days: number;
+  assignees: string[];
 };
 
 export enum TaskStatus {
@@ -37,7 +38,7 @@ export enum TaskStatus {
   IN_PROGRESS = "IN_PROGRESS",
   BLOCKED = "BLOCKED",
   COMPLETED = "DONE",
-};
+}
 
 export type PropsOf<TComponent extends FC> = Parameters<TComponent>[0];
 
@@ -46,8 +47,6 @@ export type ApiError = {
   message: string;
 };
 
-export type ApiErrors = ApiError[];
-
 export type ApiResponse<TData = any> =
-  | { data: null; errors: ApiErrors }
-  | { data: TData; errors: null };
+  | { data: null; error: ApiError }
+  | { data: TData; error: null };

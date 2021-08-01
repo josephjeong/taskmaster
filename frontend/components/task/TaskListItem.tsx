@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const classes = useStyles();
 
   const deleteTaskCallback = useDeleteTask();
@@ -91,22 +92,34 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable }) => {
       </Paper>
       <TaskModal
         mode={isEditable ? "edit" : "view"}
+        error={error}
         open={showModal}
         onClose={() => setShowModal(false)}
         taskInit={task}
         onDelete={async () => {
+          setError(null);
           if (!isEditable) {
             return;
           }
-          await deleteTaskCallback(task.id);
-          setShowModal(false);
+          const { error } = await deleteTaskCallback(task.id);
+          if (error) {
+            console.log(error);
+            setError(error.message);
+          } else {
+            setShowModal(false);
+          }
         }}
         onSubmit={async (taskUpdates) => {
+          setError(null);
           if (!isEditable) {
             return;
           }
-          await editTaskCallback(task.id, taskUpdates);
-          setShowModal(false);
+          const { error } = await editTaskCallback(task.id, taskUpdates);
+          if (error) {
+            setError(error.message);
+          } else {
+            setShowModal(false);
+          }
         }}
       />
     </>

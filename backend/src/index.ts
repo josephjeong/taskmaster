@@ -6,7 +6,10 @@ import express, { NextFunction, Request, Response } from "express";
 import "express-async-errors";
 
 import { createConnection } from "typeorm";
-import { generateAuthUrl, saveOAuthToken } from "./googleOAuth/authenticate-oauth";
+import {
+  generateAuthUrl,
+  saveOAuthToken,
+} from "./googleOAuth/authenticate-oauth";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
 import { decodeJWTPayload } from "./users/users-helpers";
@@ -30,7 +33,7 @@ import {
   isConnected,
   getIncomingConnectionRequests,
   getOutgoingConnectionRequests,
-  getAcceptedConnections
+  getAcceptedConnections,
 } from "./connection";
 import { ApiError } from "./errors";
 import { getStatsForUser } from "./users/users-stats";
@@ -38,7 +41,6 @@ import { sendData, sendError } from "./response-utils";
 import { taskSearch } from "./tasks/task-search";
 import { getUserByEmail } from "./users/users-search";
 import { CalendarCredential } from "./entity/CalendarCredential";
-
 
 const PORT = 8080;
 
@@ -62,14 +64,11 @@ createConnection({
     app.use(express.json());
 
     app.post("/oauthtokens/save", async (req, res) => {
-      await saveOAuthToken(
-        req.body.jwt, 
-        req.body.refresh_token, 
-        req.body.access_token
-      );
+      await saveOAuthToken(req.body.code, req.body.jwt);
+      sendData(res, "Save your tokens");
     });
 
-    app.get("/authenticate/googlecal", async (req,res) => {
+    app.get("/authenticate/googlecal", async (req, res) => {
       const authUrl = generateAuthUrl();
       sendData(res, authUrl);
     });
@@ -188,20 +187,20 @@ createConnection({
       sendData(res, "delete task success");
     });
 
-    app.get("/task/search", async(req, res) => {
-        const tasks = await taskSearch(
-            res.locals.session.id,
-            String(req.query.title),
-            String(req.query.description),
-            String(req.query.project),
-            String(req.query.creator),
-            String(req.query.deadline),
-            String(req.query.status),
-            String(req.query.estimated_days),
-            // @ts-ignore string list
-            req.query.user_assignee
-        )
-        sendData(res, tasks)
+    app.get("/task/search", async (req, res) => {
+      const tasks = await taskSearch(
+        res.locals.session.id,
+        String(req.query.title),
+        String(req.query.description),
+        String(req.query.project),
+        String(req.query.creator),
+        String(req.query.deadline),
+        String(req.query.status),
+        String(req.query.estimated_days),
+        // @ts-ignore string list
+        req.query.user_assignee
+      );
+      sendData(res, tasks);
     });
 
     app.post("/connection/create", async (req, res) => {

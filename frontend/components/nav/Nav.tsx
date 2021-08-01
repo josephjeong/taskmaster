@@ -52,10 +52,6 @@ const Nav = ({}: NavProps) => {
 
   const classes = useStyles();
 
-  if (!incomingRequests) {
-    return null;
-  }
-
   return (
     <>
       <AppBar position="sticky">
@@ -85,7 +81,7 @@ const Nav = ({}: NavProps) => {
                   onClick={() => setShowConnectionsModal(true)}
                 >
                   <Badge
-                    badgeContent={incomingRequests.length}
+                    badgeContent={incomingRequests?.length || 0}
                     color="secondary"
                   >
                     <LinkIcon />

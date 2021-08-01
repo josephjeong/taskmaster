@@ -26,8 +26,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   );
   const { data: user } = useMe(!!token);
 
-  console.log({ me: user, token });
-
   return (
     <AuthContext.Provider value={{ token, setToken, user }}>
       {children}

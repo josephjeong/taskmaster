@@ -32,16 +32,20 @@ export function generateAuthUrl() {
 }
 
 //Handler for the /oauth2callback endpoint defined in index.ts
-export async function saveOAuthToken(jwt: string, refreshToken: string, accessToken: string ){
+export async function saveOAuthToken(googleCode: string, jwt: string){
 
-        // store the token 
-        const userRepo = getConnection().getRepository(User);
+    //decode the string
+    const {tokens} = await oauth2Client.getToken(googleCode);
+    oauth2Client.setCredentials(tokens);
 
-        const decodedJWT = await decodeJWTPayload(jwt);
+    // store the token 
+    const userRepo = getConnection().getRepository(User);
 
-        const user = await userRepo.findOne({ where: { id: decodedJWT.id } });
-        
-        const calendarCredential = await createCalendarCredential(user, refreshToken, accessToken);
+    const decodedJWT = await decodeJWTPayload(jwt);
 
-        return;
-  }
+    const user = await userRepo.findOne({ where: { id: decodedJWT.id } });
+    
+    await createCalendarCredential(user, tokens.refresh_token, tokens.access_token);
+
+    return;
+}

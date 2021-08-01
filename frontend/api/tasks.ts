@@ -1,6 +1,6 @@
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
-import { Task } from "../types";
+import { ApiResponse, Task } from "../types";
 import { useCallback } from "react";
 import { api } from "./utils";
 
@@ -16,7 +16,7 @@ export const useUserTasks = (userId?: string) => {
     }
   }
 
-  return useSWR<Task[]>(key);
+  return useSWR<Task[]>('/tasks');
 };
 
 export const useMyTasks = () => {
@@ -24,45 +24,54 @@ export const useMyTasks = () => {
 };
 
 export const useCreateTask = () => {
-  return useCallback(async (task: Task) => {
+  return useCallback(async (task: Task): Promise<ApiResponse> => {
     mutate(
       "/tasks",
       (existingTasks: Task[] | null) =>
         existingTasks ? [...existingTasks, task] : [task],
       false
     );
-    await api.post("/task/create", task);
+    const { data } = await api.post("/task/create", task);
     mutate("/tasks");
+    return data;
   }, []);
 };
 
 export const useEditTask = () => {
-  return useCallback(async (taskId: string, taskUpdates: Partial<Task>) => {
-    mutate(
-      "/tasks",
-      (existingTasks: Task[]) =>
-        existingTasks.map((task) => {
-          if (task.id === taskId) {
-            return { ...task, taskUpdates };
-          }
-          return task;
-        }),
-      false
-    );
-    await api.post(`/task/edit/${taskId}`, taskUpdates);
-    mutate("/tasks");
-  }, []);
+  return useCallback(
+    async (
+      taskId: string,
+      taskUpdates: Partial<Task>
+    ): Promise<ApiResponse> => {
+      mutate(
+        "/tasks",
+        (existingTasks: Task[]) =>
+          existingTasks.map((task) => {
+            if (task.id === taskId) {
+              return { ...task, taskUpdates };
+            }
+            return task;
+          }),
+        false
+      );
+      const { data } = await api.post(`/task/edit/${taskId}`, taskUpdates);
+      mutate("/tasks");
+      return data;
+    },
+    []
+  );
 };
 
 export const useDeleteTask = () => {
-  return useCallback(async (taskId: string) => {
+  return useCallback(async (taskId: string): Promise<ApiResponse> => {
     mutate(
       "/tasks",
       (existingTasks: Task[]) =>
         existingTasks.filter((task) => task.id !== taskId),
       false
     );
-    await api.delete(`/task/delete/${taskId}`);
+    const { data } = await api.delete(`/task/delete/${taskId}`);
     mutate("/tasks");
+    return data;
   }, []);
 };
