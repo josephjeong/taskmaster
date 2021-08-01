@@ -10,6 +10,7 @@ import {
   generateAuthUrl,
   saveOAuthToken,
 } from "./googleOAuth/authenticate-oauth";
+import { saveTaskToCalendar } from "./googleOAuth/calendar-create-event";
 import { createUser } from "./users/users-create";
 import { loginUser } from "./users/users-login";
 import { decodeJWTPayload } from "./users/users-helpers";
@@ -62,6 +63,10 @@ createConnection({
   .then(() => {
     app.use(cors());
     app.use(express.json());
+
+    app.post("tasks/creategooglevent", async (req, res) => {
+      await saveTaskToCalendar(req.body.task_id);
+    })
 
     app.post("/oauthtokens/save", async (req, res) => {
       await saveOAuthToken(req.body.code, req.body.jwt);
