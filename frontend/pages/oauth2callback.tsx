@@ -45,7 +45,8 @@ const OAuthCallbackPage: React.FC<OAuthCallbackProps> = ({
     if (error) return;
 
     if (user && code) {
-      saveOAuthCode(code).then((response) => {
+      saveOAuthCode(code).then(async (response) => {
+        await new Promise((res) => setTimeout(res, 10000));
         if (response.error) {
           setError(response.error.message);
         } else {
@@ -85,18 +86,17 @@ export default OAuthCallbackPage;
 export const getServerSideProps: GetServerSideProps<OAuthCallbackProps> =
   async ({ query }) => {
     const code = typeof query.code === "string" ? query.code : null;
-
-    if (!code) {
-      return {
-        props: { code: null, error: "Invalid Code" },
-      };
-    }
-
     const error = typeof query.error === "string" ? query.error : null;
 
     if (error) {
       return {
         props: { code: null, error },
+      };
+    }
+
+    if (!code) {
+      return {
+        props: { code: null, error: "Invalid Code" },
       };
     }
 
