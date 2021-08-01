@@ -2,13 +2,15 @@ import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
 import { ApiResponse, Task } from "../types";
 import { useCallback } from "react";
-import { api, mkQueryString } from "./utils";
+import { api, mkQueryString, swrFetcher } from "./utils";
 import { TaskFilters } from "../components/task/TaskFilterBar";
 
 export const useTasks = (filters: { [key: string]: any }) => {
   console.log(mkQueryString(filters));
   const { user } = useAuthContext();
-  return useSWR<Task[]>(user ? `/tasks?${mkQueryString(filters)}` : null);
+  return useSWR<Task[]>(user ? `/tasks` : null, () =>
+    swrFetcher(`/task?${mkQueryString(filters)}`)
+  );
 };
 
 export const useUserTasks = (userId?: string) => {
@@ -27,15 +29,15 @@ export const useUserTasks = (userId?: string) => {
 };
 
 export const useCreateTask = () => {
-  return useCallback(async (task: Task, filters?: TaskFilters): Promise<ApiResponse> => {
+  return useCallback(async (task: Task): Promise<ApiResponse> => {
     mutate(
-      `/tasks${filters ? `?${mkQueryString(filters)}` : ''}`,
+      `/tasks`,
       (existingTasks: Task[] | null) =>
         existingTasks ? [...existingTasks, task] : [task],
       false
     );
     const { data } = await api.post("/task/create", task);
-    mutate(`/tasks${filters ? `?${mkQueryString(filters)}` : ''}`);
+    mutate(`/tasks`);
     return data;
   }, []);
 };
@@ -44,11 +46,10 @@ export const useEditTask = () => {
   return useCallback(
     async (
       taskId: string,
-      taskUpdates: Partial<Task>,
-      filters?: TaskFilters
+      taskUpdates: Partial<Task>
     ): Promise<ApiResponse> => {
       mutate(
-        `/tasks${filters ? `?${mkQueryString(filters)}` : ''}`,
+        `/tasks`,
         (existingTasks: Task[]) =>
           existingTasks?.map((task) => {
             if (task.id === taskId) {
@@ -59,7 +60,7 @@ export const useEditTask = () => {
         false
       );
       const { data } = await api.post(`/task/edit/${taskId}`, taskUpdates);
-      mutate(`/tasks${filters ? `?${mkQueryString(filters)}` : ''}`);
+      mutate(`/tasks`);
       return data;
     },
     []
@@ -67,15 +68,15 @@ export const useEditTask = () => {
 };
 
 export const useDeleteTask = () => {
-  return useCallback(async (taskId: string, filters?: TaskFilters): Promise<ApiResponse> => {
+  return useCallback(async (taskId: string): Promise<ApiResponse> => {
     mutate(
-      `/tasks${filters ? `?${mkQueryString(filters)}` : ''}`,
+      `/tasks`,
       (existingTasks: Task[]) =>
         existingTasks.filter((task) => task.id !== taskId),
       false
     );
     const { data } = await api.delete(`/task/delete/${taskId}`);
-    mutate(`/tasks${filters ? `?${mkQueryString(filters)}` : ''}`);
+    mutate(`/tasks`);
     return data;
   }, []);
 };

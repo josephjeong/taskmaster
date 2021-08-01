@@ -1,5 +1,13 @@
 import React from "react";
-import { makeStyles, Container, Button, FormControl, MenuItem, Select, Typography } from "@material-ui/core";
+import {
+  makeStyles,
+  Container,
+  Button,
+  FormControl,
+  MenuItem,
+  Select,
+  Typography,
+} from "@material-ui/core";
 import moment from "moment";
 
 import { useTasks, useCreateTask, useEditTask } from "../api/tasks";
@@ -10,7 +18,12 @@ import TaskFilterBar from "../components/task/TaskFilterBar";
 import TaskListItem from "../components/task/TaskListItem";
 import TaskModal from "../components/task/TaskModal";
 import Title from "../components/shared/Title";
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,16 +37,16 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   viewSelect: {
-    width: 150
+    width: 150,
   },
   kanbanRoot: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   kanbanList: {
     width: 600,
@@ -42,20 +55,20 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 2.5,
     padding: 5,
     backgroundColor: "#ddd",
-    borderRadius: 5
+    borderRadius: 5,
   },
   kanbanListDraggingOver: {
-    backgroundColor: "#eee"
+    backgroundColor: "#eee",
   },
   kanbanListTitle: {
     fontSize: 18,
     textTransform: "uppercase",
     padding: 5,
-    paddingLeft: 20
+    paddingLeft: 20,
   },
   kanbanItem: {
-    marginBottom: 5
-  }
+    marginBottom: 5,
+  },
 }));
 
 const TasksPage = () => {
@@ -78,7 +91,6 @@ const TasksPage = () => {
       status: TaskStatus.TO_DO,
       estimated_days: 1,
       assignees: [],
-      "@@@@@": "hello",
     }),
     // eslint-disable-next-line
     [showCreateTaskModal]
@@ -90,7 +102,7 @@ const TasksPage = () => {
 
   const createTask = async (task: Task) => {
     setError(null);
-    const { error } = await createTaskCallback(task, filters);
+    const { error } = await createTaskCallback(task);
     if (error) {
       setError(error.message);
     } else {
@@ -112,7 +124,11 @@ const TasksPage = () => {
     }
 
     const task = tasks?.find((task) => task.id === result.draggableId)!;
-    editTaskCallback(task.id, { status: destination.droppableId as TaskStatus }, filters);
+    editTaskCallback(
+      task.id,
+      { status: destination.droppableId as TaskStatus },
+      filters
+    );
   };
 
   return (
@@ -122,7 +138,9 @@ const TasksPage = () => {
         <FormControl className={classes.viewSelect} variant="outlined">
           <Select
             value={view}
-            onChange={(event) => setView(event.target.value as "List" | "Kanban")}
+            onChange={(event) =>
+              setView(event.target.value as "List" | "Kanban")
+            }
           >
             <MenuItem value={"List"}>List View</MenuItem>
             <MenuItem value={"Kanban"}>Kanban View</MenuItem>
@@ -134,7 +152,9 @@ const TasksPage = () => {
           size="large"
           color="primary"
           onClick={() =>
-            setShowCreateTaskModal((showCreateTaskModal) => !showCreateTaskModal)
+            setShowCreateTaskModal(
+              (showCreateTaskModal) => !showCreateTaskModal
+            )
           }
         >
           Create Task
@@ -156,69 +176,78 @@ const TasksPage = () => {
           createTask(Object.assign({} as Task, defaultTask, taskUpdates))
         }
       />
-      {tasks ? <>
-        {view === "List" ? (
-          <Stack spacing={2}>
-            {tasks.map((task) => (
-              <TaskListItem key={task.id} task={task} isEditable />
-            ))}
-          </Stack>
-        ) : (
-          <Container className={classes.kanbanRoot}>
-            <DragDropContext
-              onDragEnd={(result, provided) => handleKanbanDragEnd(result)}
-            >
-              {Object.keys(TaskStatus).map((status) => (
-                <Droppable
-                  key={status}
-                  droppableId={status}
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      className={`${classes.kanbanList} ${snapshot.isDraggingOver ? classes.kanbanListDraggingOver : ""}`}
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      <Typography className={classes.kanbanListTitle}>
-                        {(() => {
-                          switch (status) {
-                            case TaskStatus.TO_DO:
-                              return "To Do";
-                            case TaskStatus.IN_PROGRESS:
-                              return "In Progress";
-                            case TaskStatus.BLOCKED:
-                              return "Blocked";
-                            case TaskStatus.DONE:
-                              return "Done";
-                          }
-                        })()}
-                      </Typography>
-                      {tasks.filter((task) => task.status === status).map((task, index) => (
-                        <Draggable
-                          key={task.id}
-                          draggableId={task.id}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              className={classes.kanbanItem}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <TaskListItem task={task} isEditable showPill={false} />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                    </div>
-                  )}
-                </Droppable>
+      {tasks ? (
+        <>
+          {view === "List" ? (
+            <Stack spacing={2}>
+              {tasks.map((task) => (
+                <TaskListItem key={task.id} task={task} isEditable />
               ))}
-            </DragDropContext>
-          </Container>
-        )}
-      </> : null}
+            </Stack>
+          ) : (
+            <Container className={classes.kanbanRoot}>
+              <DragDropContext
+                onDragEnd={(result, provided) => handleKanbanDragEnd(result)}
+              >
+                {Object.keys(TaskStatus).map((status) => (
+                  <Droppable key={status} droppableId={status}>
+                    {(provided, snapshot) => (
+                      <div
+                        className={`${classes.kanbanList} ${
+                          snapshot.isDraggingOver
+                            ? classes.kanbanListDraggingOver
+                            : ""
+                        }`}
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                      >
+                        <Typography className={classes.kanbanListTitle}>
+                          {(() => {
+                            switch (status) {
+                              case TaskStatus.TO_DO:
+                                return "To Do";
+                              case TaskStatus.IN_PROGRESS:
+                                return "In Progress";
+                              case TaskStatus.BLOCKED:
+                                return "Blocked";
+                              case TaskStatus.DONE:
+                                return "Done";
+                            }
+                          })()}
+                        </Typography>
+                        {tasks
+                          .filter((task) => task.status === status)
+                          .map((task, index) => (
+                            <Draggable
+                              key={task.id}
+                              draggableId={task.id}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  className={classes.kanbanItem}
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                >
+                                  <TaskListItem
+                                    task={task}
+                                    isEditable
+                                    showPill={false}
+                                  />
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                      </div>
+                    )}
+                  </Droppable>
+                ))}
+              </DragDropContext>
+            </Container>
+          )}
+        </>
+      ) : null}
     </Container>
   );
 };
