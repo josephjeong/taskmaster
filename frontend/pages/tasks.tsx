@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles, Container, Button, FormControl, MenuItem, Select, Typography } from "@material-ui/core";
 import moment from "moment";
 
-import { useTasks, useCreateTask } from "../api/tasks";
+import { useTasks, useCreateTask, useEditTask } from "../api/tasks";
 import { Task, TaskStatus } from "../types";
 import Spacing from "../components/shared/Spacing";
 import Stack from "../components/shared/Stack";
@@ -10,7 +10,7 @@ import TaskFilterBar from "../components/task/TaskFilterBar";
 import TaskListItem from "../components/task/TaskListItem";
 import TaskModal from "../components/task/TaskModal";
 import Title from "../components/shared/Title";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
   kanbanListTitle: {
     fontSize: 18,
+    textTransform: "uppercase",
     padding: 5,
     paddingLeft: 20
   },
@@ -62,6 +63,8 @@ const TasksPage = () => {
   const [filters, setFilters] = React.useState({});
 
   const { data: tasks } = useTasks(filters);
+
+  const editTaskCallback = useEditTask();
 
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -93,6 +96,23 @@ const TasksPage = () => {
     } else {
       setShowCreateTaskModal(false);
     }
+  };
+
+  const handleKanbanDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+
+    // dropped outside the list
+    if (!destination) {
+      return;
+    }
+
+    // dropped in same list
+    if (source.droppableId === destination.droppableId) {
+      return;
+    }
+
+    const task = tasks?.find((task) => task.id === result.draggableId)!;
+    editTaskCallback(task.id, { status: destination.droppableId as TaskStatus });
   };
 
   return (
@@ -146,7 +166,7 @@ const TasksPage = () => {
         ) : (
           <Container className={classes.kanbanRoot}>
             <DragDropContext
-              onDragEnd={() => {}}
+              onDragEnd={(result, provided) => handleKanbanDragEnd(result)}
             >
               {Object.keys(TaskStatus).map((status) => (
                 <Droppable
