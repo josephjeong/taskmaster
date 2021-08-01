@@ -40,7 +40,7 @@ import { getUserByEmail } from "./users/users-search";
 import { CalendarCredential } from "./entity/CalendarCredential";
 
 
-const PORT = 9090;
+const PORT = 8080;
 
 // start express server
 // initiated outside of connection to export it

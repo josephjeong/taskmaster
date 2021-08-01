@@ -77,14 +77,14 @@ const TaskFilterBar = ({
         </Select>
       </FormControl>
       <Spacing x={1} />
-      {/* <MuiPickersUtilsProvider utils={MomentUtils}>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
         <KeyboardDatePicker
           className={classes.inputDate}
           disableToolbar
           variant="inline"
           format="DD/MM/yyyy"
           margin="normal"
-          label="Due date"
+          label="Due before date"
           value={filters.deadline}
           onChange={(date) => {
             const filters_ = { ...filters };
@@ -96,7 +96,7 @@ const TaskFilterBar = ({
         <KeyboardTimePicker
           className={classes.inputDate}
           margin="normal"
-          label="Due time"
+          label="Due before time"
           value={filters.deadline}
           onChange={(date) => {
             const filters_ = { ...filters };
@@ -105,7 +105,7 @@ const TaskFilterBar = ({
           }}
         />
       </MuiPickersUtilsProvider>
-      <Spacing x={1} /> */}
+      <Spacing x={1} />
       <div className={classes.input}>
         <NumericInput
           variant="outlined"

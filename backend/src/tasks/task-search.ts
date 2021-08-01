@@ -1,4 +1,4 @@
-import { FindOperator, getConnection, ILike, LessThan, In } from "typeorm";
+import { FindOperator, getConnection, ILike, LessThanOrEqual, In } from "typeorm";
 import _ from 'lodash';
 import {Task, Status} from "../entity/Task";
 import { User } from "../entity/User";
@@ -41,8 +41,8 @@ export async function taskSearch(
     search["creator"] = user;
   };
   if (deadline) {
-    let date = new Date(Number(deadline) * 1000);
-    search["deadline"] = LessThan(date);
+    let date = new Date(deadline);
+    search["deadline"] = LessThanOrEqual(date);
   };
   if (status) {
     let state : Status | null = null;
