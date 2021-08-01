@@ -56,6 +56,11 @@ const UpdateProfileModal: React.FC<UpdateProfileModalProps> = ({
       }
     });
 
+    if (Object.keys(changes).length === 0) {
+      onClose();
+      return;
+    }
+
     try {
       await onSave?.(changes);
       onClose();
