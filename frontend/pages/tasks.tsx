@@ -2,10 +2,11 @@ import React from "react";
 import { makeStyles, Container, Button } from "@material-ui/core";
 import moment from "moment";
 
-import { useMyTasks, useCreateTask } from "../api/tasks";
+import { useTasks, useCreateTask } from "../api/tasks";
 import { Task, TaskStatus } from "../types";
 import Spacing from "../components/shared/Spacing";
 import Stack from "../components/shared/Stack";
+import TaskFilterBar, { TaskFilters } from "../components/task/TaskFilterBar";
 import TaskListItem from "../components/task/TaskListItem";
 import TaskModal from "../components/task/TaskModal";
 import Title from "../components/shared/Title";
@@ -21,7 +22,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TasksPage = () => {
-  const { data: tasks } = useMyTasks();
+  const [filters, setFilters] = React.useState({});
+
+  const { data: tasks } = useTasks(filters);
 
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -54,12 +57,6 @@ const TasksPage = () => {
     }
   };
 
-  console.log(tasks);
-
-  if (!tasks) {
-    return null;
-  }
-
   return (
     <Container className={classes.root}>
       <Title>Your Tasks</Title>
@@ -73,6 +70,11 @@ const TasksPage = () => {
       >
         Create Task
       </Button>
+      <Spacing y={1} />
+      <TaskFilterBar
+        filters={filters}
+        onChange={(filters) => setFilters(filters)}
+      />
       <Spacing y={3} />
       <TaskModal
         mode="create"
@@ -84,11 +86,13 @@ const TasksPage = () => {
           createTask(Object.assign({} as Task, defaultTask, taskUpdates))
         }
       />
-      <Stack spacing={2}>
-        {tasks.map((task) => (
-          <TaskListItem key={task.id} task={task} isEditable />
-        ))}
-      </Stack>
+      {tasks ? (
+        <Stack spacing={2}>
+          {tasks.map((task) => (
+            <TaskListItem key={task.id} task={task} isEditable />
+          ))}
+        </Stack>
+      ) : null}
     </Container>
   );
 };
