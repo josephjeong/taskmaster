@@ -71,16 +71,13 @@ export async function saveTaskToCalendar(task_id: String) {
 export async function getUsersAllocatedToTask(task: Task): Promise<any> {
     const taskAssignmentRepo = getConnection().getRepository(TaskAssignment);
     const taskAssignments = await taskAssignmentRepo.find({ where: { task: task.id } });
-    const firstTaskAssignment = taskAssignments[0];
-    const user = firstTaskAssignment.user_assignee as any;
-    const userId = user.id;
      let userSet = new Set();
-    userSet.add(userId);
-    // for (const taskAssignment of taskAssignments) {
-    //     if ((taskAssignment.group_assignee != null) && (!userSet.has(taskAssignment.group_assignee))) {
-    //         userSet.add(taskAssignment.group_assignee);
-    //     }
-    // }
+    for (const taskAssignment of taskAssignments) {
+        if (!userSet.has(taskAssignment.group_assignee)) {
+            const user = taskAssignment.user_assignee as any;
+            userSet.add(user.id);
+        }
+    }
     return userSet;
 }
 /*A function that retutns an array of calendar credentials of the assignees of the given task*/
