@@ -1,5 +1,4 @@
 import axios from "axios";
-import moment from "moment";
 import Router from "next/router";
 import { mutate } from "swr";
 import { LOCALSTORAGE_TOKEN_KEY } from "../context/AuthContext";
@@ -23,7 +22,6 @@ api.interceptors.request.use((request) => {
 });
 
 export const swrFetcher = async (url: string) => {
-  console.log({ url });
   const response = await api.get(url);
   if (response.data.data) {
     return response.data.data;

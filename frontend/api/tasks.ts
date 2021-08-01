@@ -9,7 +9,6 @@ const debouncedMutate = debounce(mutate, 100);
 
 export const useTasks = (filters: { [key: string]: any }) => {
   const queryString = mkQueryString(filters);
-  console.log(queryString);
   const { user } = useAuthContext();
   const fetcherRef = useRef<() => Promise<Task[]>>(() =>
     swrFetcher(`/tasks?${queryString}`)

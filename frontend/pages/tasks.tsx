@@ -46,17 +46,21 @@ const useStyles = makeStyles((theme) => ({
   kanbanRoot: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
+    width: "100%",
+    "& > * + *": {
+      marginLeft: theme.spacing(1),
+    },
   },
   kanbanList: {
-    width: 600,
+    flex: "1 0 25%",
     minHeight: 1000,
-    marginLeft: 2.5,
-    marginRight: 2.5,
-    padding: 5,
+    padding: theme.spacing(1),
     backgroundColor: "#ddd",
-    borderRadius: 5,
+    borderRadius: theme.shape.borderRadius,
+    "& > * + *": {
+      marginTop: theme.spacing(1),
+    },
   },
   kanbanListDraggingOver: {
     backgroundColor: "#eee",
@@ -64,16 +68,25 @@ const useStyles = makeStyles((theme) => ({
   kanbanListTitle: {
     fontSize: 18,
     textTransform: "uppercase",
-    padding: 5,
-    paddingLeft: 20,
-  },
-  kanbanItem: {
-    marginBottom: 5,
+    padding: theme.spacing(1, 2.5),
   },
   textCenter: {
     textAlign: "center",
   },
 }));
+
+const statusToListLabel = (status: any) => {
+  switch (status) {
+    case TaskStatus.TO_DO:
+      return "To Do";
+    case TaskStatus.IN_PROGRESS:
+      return "In Progress";
+    case TaskStatus.BLOCKED:
+      return "Blocked";
+    case TaskStatus.DONE:
+      return "Done";
+  }
+};
 
 const TasksPage = () => {
   const [view, setView] = React.useState<"List" | "Kanban">("List");
@@ -232,18 +245,7 @@ const TasksPage = () => {
                         {...provided.droppableProps}
                       >
                         <Typography className={classes.kanbanListTitle}>
-                          {(() => {
-                            switch (status) {
-                              case TaskStatus.TO_DO:
-                                return "To Do";
-                              case TaskStatus.IN_PROGRESS:
-                                return "In Progress";
-                              case TaskStatus.BLOCKED:
-                                return "Blocked";
-                              case TaskStatus.DONE:
-                                return "Done";
-                            }
-                          })()}
+                          {statusToListLabel(status)}
                         </Typography>
                         {tasks
                           .filter((task) => task.status === status)
@@ -255,7 +257,6 @@ const TasksPage = () => {
                             >
                               {(provided, snapshot) => (
                                 <div
-                                  className={classes.kanbanItem}
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
