@@ -73,6 +73,10 @@ Week 08
 
 Week 09
 
+- Add UI for google calendar integration on frontend
+- Add error handling for updating profiles
+- Get started on User Manual section of report & Third Party Software for frontend
+- Miscellaneous UI improvements in frontend (loading states, UI for no tasks, etc.)
 
 
 ---
