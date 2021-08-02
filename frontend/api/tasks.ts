@@ -92,6 +92,6 @@ export const useDeleteTask = () => {
 
 export const useSaveToCalendar = () => {
   return useCallback(async (taskId: string): Promise<void> => {
-    await api.post('/tasks/creategooglevent', { task_id: taskId })
-  }, [])
-}
+    await api.post("/tasks/creategooglevent", { task_id: taskId });
+  }, []);
+};

@@ -54,7 +54,7 @@ export function decodeJWTPayload(token: string): Promise<Session> {
     console.log(token);
     return decode(token, JWT_SECRET, true, JWT_ALG);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw new ApiError("auth/not_logged_in", "Please log in");
   }
 }

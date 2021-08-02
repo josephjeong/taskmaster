@@ -1,14 +1,13 @@
-import {Entity, PrimaryColumn, Column} from "typeorm";
+import { Entity, PrimaryColumn, Column } from "typeorm";
 
-@Entity('Connection')
+@Entity("Connection")
 export class Connection {
+  @PrimaryColumn("text")
+  requester: string;
 
-    @PrimaryColumn('text')
-    requester: String;
+  @PrimaryColumn("text")
+  requestee: string;
 
-    @PrimaryColumn('text')
-    requestee: String;
-
-    @Column()
-    accepted: boolean;
+  @Column()
+  accepted: boolean;
 }

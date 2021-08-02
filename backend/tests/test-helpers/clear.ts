@@ -9,10 +9,8 @@ import { User } from "../../src/entity/User";
 import { Task } from "../../src/entity/Task";
 
 /** simple helper function to clear a table of entity table */
-export async function clearEntity(entity : typeof User | Task | Connection | CalendarCredential | any) {
-  return await getConnection()
-    .createQueryBuilder()
-    .delete()
-    .from(entity)
-    .execute();
+export async function clearEntity(
+  entity: typeof User | Task | Connection | CalendarCredential | any
+): Promise<void> {
+  await getConnection().createQueryBuilder().delete().from(entity).execute();
 }

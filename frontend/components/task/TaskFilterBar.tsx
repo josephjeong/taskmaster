@@ -60,6 +60,7 @@ const TaskFilterBar = ({ view, filters, onChange }: TaskFilterBarProps) => {
       delete filters_.status;
       onChange(filters_);
     }
+    // eslint-disable-next-line
   }, [view]);
 
   return (

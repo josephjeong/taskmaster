@@ -251,9 +251,6 @@ test("correct task creation", async () => {
   const task_estimated_days = 2.5;
 
   await createUser("bas@gmail.com", "badpassword", "bob", "dob", "asd");
-  const user2 = await getConnection()
-    .getRepository(User)
-    .find({ where: { email: "bas@gmail.com" } });
 
   const task_creator2 = user[0].id;
   const task_id = await createTask(
@@ -480,7 +477,7 @@ test("multiple assignee creation", async () => {
     task_description,
     task_estimated_days
   );
-  let assigns = (await getConnection()
+  const assigns = (await getConnection()
     .getRepository(TaskAssignment)
     .find({ where: { task: task_id } })) as any;
   expect(assigns.length).toBe(2);

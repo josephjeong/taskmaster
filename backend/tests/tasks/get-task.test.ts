@@ -85,7 +85,7 @@ test("unconnected test", async () => {
   const task_status = Status.TO_DO;
   const task_description = "description\n";
   const task_estimated_days = 2.5;
-  let task_id = await createTask(
+  const task_id = await createTask(
     task_creator,
     task_title,
     task_deadline,

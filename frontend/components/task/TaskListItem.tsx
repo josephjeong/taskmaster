@@ -48,7 +48,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable, showPill = true }) => {
+const TaskListItem: React.FC<TaskListItemProps> = ({
+  task,
+  isEditable,
+  showPill = true,
+}) => {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const classes = useStyles();
@@ -89,9 +93,7 @@ const TaskListItem: React.FC<TaskListItemProps> = ({ task, isEditable, showPill 
           </div>
         </div>
         <div className={classes.filler} />
-        {showPill ? (
-          <TaskStatusPill status={task.status} />
-        ) : null}
+        {showPill ? <TaskStatusPill status={task.status} /> : null}
       </Paper>
       <TaskModal
         mode={isEditable ? "edit" : "view"}

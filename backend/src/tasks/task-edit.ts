@@ -3,7 +3,6 @@ import { TaskAssignment } from "../entity/TaskAssignment";
 import { v4 as uuidv4 } from "uuid";
 import {
   validAssignees,
-  deleteAssignment,
   deleteAssignmentByTaskAndUserId,
 } from "./task-helpers";
 import { Task, Status } from "../entity/Task";
@@ -87,7 +86,7 @@ export async function editTask(
   }
 
   // get task
-  let tasks = await getConnection()
+  const tasks = await getConnection()
     .getRepository(Task)
     .find({
       where: { id: task_id },
@@ -160,7 +159,7 @@ export async function editTask(
   );
 
   // if no assignee assign to creator
-  let assignees = getNewAssignees(
+  const assignees = getNewAssignees(
     current_assignees,
     add_assignees,
     remove_assignees

@@ -39,11 +39,11 @@ test("bad task deletion", async () => {
     task_description,
     task_estimated_days
   );
-  let tasks = await getConnection()
+  const tasks = await getConnection()
     .getRepository(Task)
     .find({ where: { id: task_id } });
   expect(tasks.length).toBe(1);
-  let assigns = await getConnection().getRepository(TaskAssignment).find();
+  const assigns = await getConnection().getRepository(TaskAssignment).find();
   expect(assigns.length).toBe(2);
   try {
     await deleteTask(user2_id, task_id);
