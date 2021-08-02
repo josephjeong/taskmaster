@@ -136,8 +136,6 @@ export async function taskSearch(
     .getRepository(Task)
     .find({ where: searchForTasksCreated });
 
-  console.log(tasksCreated, searchForTasksCreated);
-
   tasks = _.unionBy(tasks, tasksCreated, "id");
 
   const taskIds = tasks.map((t) => t.id);

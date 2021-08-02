@@ -5,6 +5,7 @@ import { Task, Status } from "../entity/Task";
 import { TaskAssignment } from "../entity/TaskAssignment";
 import { validAssignees, userIdExists } from "./task-helpers";
 import { ApiError } from "../errors";
+import { saveTaskToCalendar } from "../googleOAuth/calendar-create-event";
 
 /** function to create and store task in database */
 export async function createTask(
@@ -150,6 +151,9 @@ export async function createTask(
     assignment.user_assignee = creator;
     await getConnection().manager.save(task);
     await getConnection().manager.save(assignment);
+
+    saveTaskToCalendar(task.id);
+
     return task.id;
   }
 
@@ -174,6 +178,8 @@ export async function createTask(
       "invalid assignees, they must be connected or in same group"
     );
   }
+
+  saveTaskToCalendar(creator);
 
   // return task id
   return task.id;

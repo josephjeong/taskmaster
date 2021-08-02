@@ -7,6 +7,7 @@ import {
 } from "./task-helpers";
 import { Task, Status } from "../entity/Task";
 import { ApiError } from "../errors";
+import { saveTaskToCalendar } from "../googleOAuth/calendar-create-event";
 
 /** function to edit task in database, only creator of the task can edit */
 export async function editTask(
@@ -126,6 +127,7 @@ export async function editTask(
       remove_assignees.length === 0)
   ) {
     await getConnection().manager.save(tasks[0]);
+    await saveTaskToCalendar(task_id);
     return;
   }
 
@@ -172,6 +174,7 @@ export async function editTask(
     new_assignment.user_assignee = editor;
     await getConnection().getRepository(TaskAssignment).save(new_assignment);
   }
+  await saveTaskToCalendar(task_id);
 
   return;
 }

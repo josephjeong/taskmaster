@@ -3,6 +3,7 @@ import { TaskAssignment } from "../entity/TaskAssignment";
 import { Task } from "../entity/Task";
 import { deleteAssignment } from "./task-helpers";
 import { ApiError } from "../errors";
+import { deleteTaskFromCalendar } from "../googleOAuth/delete-event";
 
 export async function deleteTask(
   deletor_id: string,
@@ -23,6 +24,9 @@ export async function deleteTask(
       "deletor_id must match task creator's id to delete"
     );
   }
+
+  await deleteTaskFromCalendar(task_id);
+
   // delete TaskAssignments
   for (const assign of to_remove_assigns) {
     await deleteAssignment(assign.id);
