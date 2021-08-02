@@ -30,6 +30,7 @@ import { useEffect } from "react";
 import { useConnectedUsers } from "../../api";
 import { useMemo } from "react";
 import { useAuthContext } from "../../context/AuthContext";
+import UserChip from "./UserChip";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -139,7 +140,7 @@ const TaskModal = ({
           taskInit.assignees.map((u) => u.id)
         );
         const updatedAssignees = new Set<string>(assignees);
-  
+
         const additions = assignees.filter(
           (id: string) => !existingAssignees.has(id)
         );
@@ -163,6 +164,11 @@ const TaskModal = ({
       <form onSubmit={(event) => submit(event)}>
         <DialogContent className={classes.content}>
           {error && <Alert severity="error">{error}</Alert>}
+          {mode !== "create" && (
+            <Typography>
+              Creator: <UserChip link user={task.creator} />
+            </Typography>
+          )}
           <TextField
             className={classes.fullWidthInput}
             required
@@ -255,7 +261,7 @@ const TaskModal = ({
                 <Select
                   multiple
                   displayEmpty
-                  disabled={!connectedUsers?.length}
+                  disabled={mode === "view"}
                   value={task.assignees}
                   renderValue={(value) => {
                     const ids = value as string[];
@@ -265,18 +271,7 @@ const TaskModal = ({
                           ids.map((id) => {
                             const user = usersMap[id];
                             if (!user) return null;
-                            return (
-                              <Chip
-                                key={id}
-                                avatar={
-                                  <Avatar
-                                    src={user.avatar_url}
-                                    alt={user.first_name}
-                                  />
-                                }
-                                label={user.first_name}
-                              />
-                            );
+                            return <UserChip key={id} user={user} />;
                           })
                         ) : (
                           <Typography variant="body1">Assignees</Typography>

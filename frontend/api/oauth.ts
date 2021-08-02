@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import useSWR, { mutate } from "swr";
 import { useAuthContext } from "../context/AuthContext";
 import { ApiResponse } from "../types";
@@ -13,6 +13,12 @@ export const useGetAuthUrl = () => {
 
 export const useHadSavedCredentials = () => {
   const { user } = useAuthContext();
+
+  useEffect(() => {
+    if (!user) {
+      mutate("/oauthtokens/check", false, false);
+    }
+  }, [user]);
 
   return useSWR<boolean>(user ? "/oauthtokens/check" : null);
 };

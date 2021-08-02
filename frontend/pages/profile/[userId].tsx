@@ -211,7 +211,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
               <TaskListItem
                 task={task}
                 key={task.id}
-                isEditable={isProfileOfLoggedInUser}
+                isEditable={task.creator.id === user?.id}
               />
             ))}
             {tasks?.length === 0 && (

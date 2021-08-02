@@ -31,6 +31,7 @@ export type Task = {
   status: TaskStatus;
   estimated_days: number;
   assignees: User[];
+  creator: User;
 };
 
 export enum TaskStatus {

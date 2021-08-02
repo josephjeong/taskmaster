@@ -25,6 +25,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import { useAuthContext } from "../context/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -92,6 +93,8 @@ const TasksPage = () => {
   const [view, setView] = React.useState<"List" | "Kanban">("List");
   const [filters, setFilters] = React.useState({});
 
+  const { user } = useAuthContext();
+
   const { data: tasks, isValidating: _tasksLoading } = useTasks(filters);
 
   const [tasksLoading, setTasksLoading] = React.useState(false);
@@ -113,16 +116,18 @@ const TasksPage = () => {
   const [showCreateTaskModal, setShowCreateTaskModal] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  const defaultTask = React.useMemo(
-    () => ({
-      id: "0",
-      title: "",
-      description: "",
-      deadline: moment().add(1, "h"),
-      status: TaskStatus.TO_DO,
-      estimated_days: 1,
-      assignees: [],
-    }),
+  const defaultTask: Task = React.useMemo(
+    () =>
+      ({
+        id: "0",
+        title: "",
+        description: "",
+        deadline: moment().add(1, "h"),
+        status: TaskStatus.TO_DO,
+        estimated_days: 1,
+        creator: user,
+        assignees: [],
+      } as any),
     // eslint-disable-next-line
     [showCreateTaskModal]
   );
@@ -196,7 +201,7 @@ const TasksPage = () => {
       />
       <Spacing y={3} />
       {tasksLoading && (
-        <Typography>
+        <Typography component="div">
           <CircularProgress size="1em" /> Loading
         </Typography>
       )}
@@ -216,7 +221,11 @@ const TasksPage = () => {
           {view === "List" && (
             <Stack spacing={2}>
               {tasks.map((task) => (
-                <TaskListItem key={task.id} task={task} isEditable />
+                <TaskListItem
+                  key={task.id}
+                  task={task}
+                  isEditable={task.creator.id === user?.id}
+                />
               ))}
               {tasks.length === 0 && (
                 <Typography>
