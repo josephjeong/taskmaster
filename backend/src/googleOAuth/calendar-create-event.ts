@@ -16,17 +16,10 @@ export function getCalendarEventStartTime(task: Task): Date {
   return startDate;
 }
 
-export async function saveTaskToCalendar(
-  userId: string,
-  task_id: string
-): Promise<void> {
+export async function saveTaskToCalendar(task_id: string): Promise<void> {
   // find user's calendar's credentials
   const taskRepo = getConnection().getRepository(Task);
   const task = await taskRepo.findOne({ where: { id: task_id } });
-
-  if ((task as any).creator.id !== userId) {
-    return;
-  }
 
   const event = {
     summary: task.title,
@@ -51,6 +44,11 @@ export async function saveTaskToCalendar(
 
   const assigneeRefreshTokens = await getCalendarCredentialsList(task);
 
+  const safeId = task.id
+    .split("")
+    .filter((c) => c !== "-")
+    .join("");
+
   const promises = assigneeRefreshTokens.map(async (refreshTokens: string) => {
     const oauth2Client = new google.auth.OAuth2(
       GCP_CLIENT_ID,
@@ -60,11 +58,24 @@ export async function saveTaskToCalendar(
     oauth2Client.setCredentials({ refresh_token: refreshTokens });
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
-    await calendar.events.insert({
-      auth: oauth2Client,
-      calendarId: "primary",
-      requestBody: event,
-    });
+    try {
+      await calendar.events.insert({
+        auth: oauth2Client,
+        calendarId: "primary",
+        requestBody: { ...event, id: safeId },
+      });
+    } catch (err) {
+      try {
+        await calendar.events.update({
+          auth: oauth2Client,
+          calendarId: "primary",
+          eventId: safeId,
+          requestBody: event,
+        });
+      } catch (err2) {
+        // Do nothing
+      }
+    }
   });
 
   await Promise.all(promises);

@@ -51,10 +51,8 @@ export function createSession(id: string): EncodeResult {
 /** simple helper function to access id from token */
 export function decodeJWTPayload(token: string): Promise<Session> {
   try {
-    console.log(token);
     return decode(token, JWT_SECRET, true, JWT_ALG);
   } catch (err) {
-    console.log(err);
     throw new ApiError("auth/not_logged_in", "Please log in");
   }
 }

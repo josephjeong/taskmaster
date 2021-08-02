@@ -109,7 +109,7 @@ createConnection({
     });
 
     app.post("/tasks/creategooglevent", async (req, res) => {
-      await saveTaskToCalendar(res.locals.session.id, req.body.task_id);
+      await saveTaskToCalendar(req.body.task_id);
       sendData(res, "done");
     });
 
