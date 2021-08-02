@@ -83,5 +83,10 @@ Week 09
 
 Week 10
 
+- Finish off User Manual for Frontend
+- Add mapping for functionality to project objectives
+- Complete Google Calendar Sync
+- Update Task search to return tasks that you've created but assigned to someone else
+- Add frontend & backend to check & remove Google Calendar Integration
 
 
