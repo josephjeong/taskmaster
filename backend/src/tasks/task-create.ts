@@ -152,7 +152,7 @@ export async function createTask(
     await getConnection().manager.save(task);
     await getConnection().manager.save(assignment);
 
-    saveTaskToCalendar(task.id);
+    await saveTaskToCalendar(task.id);
 
     return task.id;
   }
@@ -179,7 +179,7 @@ export async function createTask(
     );
   }
 
-  saveTaskToCalendar(creator);
+  await saveTaskToCalendar(task.id);
 
   // return task id
   return task.id;
