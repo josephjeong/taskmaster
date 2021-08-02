@@ -33,3 +33,11 @@ Updated error throwing for tasks functions
 # Week 8
 Discovered minor bugs through manual testing of the app
 Added tasks anchor to nav bar
+
+# Week 9
+Completed backend for groups functionality, including unit tests on groups branch
+Due to time constraints syncing frontend and backend for groups functionality and because user stories for groups functionality was not in the Proposal, it wasn't added to final submission
+
+# Week 10
+I linted and cleaned up task backend
+I worked on Installation Manual and Description of Functionalities sections of the report

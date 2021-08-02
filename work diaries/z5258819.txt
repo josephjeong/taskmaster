@@ -31,3 +31,6 @@ This week, we had the demo which went quite well. I wasn't able to contribute as
 
 # Week 9
 This week, I implemented the task-search backend and am working on the project report for the final deliverable. Looking forward to getting the whole project finished.
+
+# Week 10
+Worked on the report and made some finishing touches to task-search's backend. Looking forward to finishing it off.
