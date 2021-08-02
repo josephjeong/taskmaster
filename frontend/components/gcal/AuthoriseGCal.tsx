@@ -71,7 +71,8 @@ const AuthoriseGCal: React.FC = () => {
             <>
               <Typography>
                 Disabling this integration means your Google Calendar won&apos;t
-                get updates when you or your team creates tasks.
+                get updates when you or your team creates tasks. <b>Note:</b>{" "}
+                disabling this won&apos;t delete any existing calendar events.
               </Typography>
               <Button
                 variant="contained"

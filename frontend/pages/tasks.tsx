@@ -212,8 +212,8 @@ const TasksPage = () => {
         open={showCreateTaskModal}
         taskInit={defaultTask}
         onClose={() => setShowCreateTaskModal(false)}
-        onSubmit={(taskUpdates) =>
-          createTask(Object.assign({} as Task, defaultTask, taskUpdates))
+        onSubmit={async (taskUpdates) =>
+          await createTask(Object.assign({} as Task, defaultTask, taskUpdates))
         }
       />
       {tasks ? (

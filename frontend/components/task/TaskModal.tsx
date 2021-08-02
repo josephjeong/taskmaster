@@ -27,11 +27,10 @@ import { Alert } from "@material-ui/lab";
 
 import { Task, TaskStatus, User } from "../../types";
 import { useEffect } from "react";
-import { useConnectedUsers, useSaveToCalendar } from "../../api";
+import { useConnectedUsers } from "../../api";
 import { useMemo } from "react";
 import { useAuthContext } from "../../context/AuthContext";
 import UserChip from "./UserChip";
-import { useHasSavedCredentials } from "../../api/oauth";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -77,7 +76,7 @@ type TaskModalProps = {
   taskInit: Task;
   onClose?: () => void;
   onDelete?: () => void;
-  onSubmit?: (task: Partial<Task>) => void;
+  onSubmit?: (task: Partial<Task>) => Promise<void>;
 };
 
 const TaskModal = ({
@@ -87,7 +86,7 @@ const TaskModal = ({
   error,
   onClose = () => {},
   onDelete = () => {},
-  onSubmit = () => {},
+  onSubmit = async () => {},
 }: TaskModalProps) => {
   const [taskUpdates, setTaskUpdates] = React.useState<Partial<Task>>({});
   const task = React.useMemo(
@@ -125,22 +124,6 @@ const TaskModal = ({
 
   const classes = useStyles();
 
-  const { data: hasSavedCredentials } = useHasSavedCredentials();
-
-  const [calendarEventStatus, setCalendarEventStatus] = React.useState<
-    "none" | "loading" | "done"
-  >("none");
-  const saveToCalendar = useSaveToCalendar();
-
-  const handleCreateCalendarEvent = async () => {
-    setCalendarEventStatus("loading");
-    try {
-      await saveToCalendar(task.id);
-    } finally {
-      setCalendarEventStatus("done");
-    }
-  };
-
   const getTitle = () => {
     switch (mode) {
       case "view":
@@ -152,7 +135,10 @@ const TaskModal = ({
     }
   };
 
-  const submit: React.FormEventHandler<HTMLFormElement> = (event) => {
+  const [loading, setLoading] = React.useState(false);
+
+  const submit: React.FormEventHandler<HTMLFormElement> = async (event) => {
+    setLoading(true);
     event.preventDefault();
     if (mode === "edit") {
       const { assignees, ...output } = taskUpdates as any;
@@ -174,10 +160,11 @@ const TaskModal = ({
         output.remove_assignees = removed;
       }
 
-      onSubmit(output);
+      await onSubmit(output);
     } else {
-      onSubmit(task);
+      await onSubmit(task);
     }
+    setLoading(false);
   };
 
   return (
@@ -186,29 +173,15 @@ const TaskModal = ({
       <form onSubmit={(event) => submit(event)}>
         <DialogContent className={classes.content}>
           {error && <Alert severity="error">{error}</Alert>}
-          <div className={classes.unevenRow}>
-            {mode !== "create" && (
-              <Typography>
-                Creator: <UserChip link user={task.creator} />
-              </Typography>
-            )}
-            {mode === "edit" && hasSavedCredentials && (
-              <Button
-                color="primary"
-                variant="outlined"
-                onClick={handleCreateCalendarEvent}
-                disabled={calendarEventStatus !== "none"}
-              >
-                {calendarEventStatus === "none" && "Create Calendar Event"}
-                {calendarEventStatus === "loading" && "Loading"}
-                {calendarEventStatus === "done" && "Event Created!"}
-              </Button>
-            )}
-          </div>
+          {mode !== "create" && (
+            <Typography>
+              Creator: <UserChip link user={task.creator} />
+            </Typography>
+          )}
           <TextField
             className={classes.fullWidthInput}
             required
-            disabled={mode === "view"}
+            disabled={mode === "view" || loading}
             label="Title"
             value={task.title}
             onChange={(event) => {
@@ -220,7 +193,7 @@ const TaskModal = ({
           <TextField
             className={classes.fullWidthInput}
             required
-            disabled={mode === "view"}
+            disabled={mode === "view" || loading}
             multiline
             rows={10}
             label="Description"
@@ -234,7 +207,7 @@ const TaskModal = ({
           <div className={classes.row}>
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <KeyboardDatePicker
-                disabled={mode === "view"}
+                disabled={mode === "view" || loading}
                 disableToolbar
                 variant="inline"
                 format="DD/MM/yyyy"
@@ -248,7 +221,7 @@ const TaskModal = ({
                 }}
               />
               <KeyboardTimePicker
-                disabled={mode === "view"}
+                disabled={mode === "view" || loading}
                 margin="normal"
                 label="Due time"
                 value={task.deadline}
@@ -263,7 +236,7 @@ const TaskModal = ({
           <div className={classes.row}>
             <Select
               variant="outlined"
-              disabled={mode === "view"}
+              disabled={mode === "view" || loading}
               value={task.status}
               onChange={(event) => {
                 const taskUpdates_ = { ...taskUpdates };
@@ -277,7 +250,7 @@ const TaskModal = ({
               <MenuItem value={TaskStatus.DONE}>Done</MenuItem>
             </Select>
             <NumericInput
-              disabled={mode === "view"}
+              disabled={mode === "view" || loading}
               variant="outlined"
               precision="2"
               decimalSeparator="."
@@ -297,7 +270,7 @@ const TaskModal = ({
                 <Select
                   multiple
                   displayEmpty
-                  disabled={mode === "view"}
+                  disabled={mode === "view" || loading}
                   value={task.assignees}
                   renderValue={(value) => {
                     const ids = value as string[];
@@ -350,11 +323,11 @@ const TaskModal = ({
           </div>
         </DialogContent>
         <DialogActions>
-          <Button size="large" onClick={() => onClose()}>
+          <Button size="large" disabled={loading} onClick={() => onClose()}>
             Cancel
           </Button>
           {mode === "edit" ? (
-            <Button size="large" onClick={() => onDelete()}>
+            <Button size="large" onClick={() => onDelete()} disabled={loading}>
               Delete
             </Button>
           ) : null}
@@ -363,6 +336,7 @@ const TaskModal = ({
             color="primary"
             variant="contained"
             type="submit"
+            disabled={loading}
           >
             Save
           </Button>
