@@ -36,7 +36,6 @@ export async function deleteTaskFromCalendar(task_id: string): Promise<void> {
       });
     } catch (err) {
       // Do nothing
-      console.log(err);
     }
   });
 
