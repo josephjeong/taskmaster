@@ -24,33 +24,61 @@ export async function createTask(
       "creator is null/undefined or empty string"
     );
 
-    // check values are not empty strings, null/undefined etc.
-    if (!creator)
-        throw new ApiError("createTask/invalid_creator", "creator is null/undefined or empty string");
-    
-    if (!(title && title.trim().length > 0))
-        throw new ApiError("createTask/invalid_title", "title is null/undefined or empty string");
-    
-    if (!deadline || !(deadline instanceof Date))
-        throw new ApiError("createTask/invalid_deadline", "deadline is not a Date, or is null/undefined");
-    
-    // ensure deadline in the future
-    if (deadline.getTime() <= Date.now())
-        throw new ApiError("createTask/invalid_deadline", "deadline must be in the future");
-    
-    if (!status)
-        throw new ApiError("createTask/invalid_status", "status is null/undefined or empty string");
-    
-    // check valid status
-    if (!Object.values(Status).includes(status))
-        throw new ApiError("createTask/invalid_status", 'Status enum is {NOT_STARTED = "TO_DO", IN_PROGRESS = "IN_PROGRESS", BLOCKED = "BLOCKED", COMPLETED = "DONE"}');
-    
-    // ensure estimated_days is positive
-    if (estimated_days !== null && estimated_days !== undefined && estimated_days < 0)
-        throw new ApiError("createTask/invalid_estimated_days", "estimated_days must be >= 0");
-    
-    if (!(await userIdExists(creator)))
-        throw new ApiError("createTask/invalid_creator", "user/creator with this id does not exist");
+  // check values are not empty strings, null/undefined etc.
+  if (!creator)
+    throw new ApiError(
+      "createTask/invalid_creator",
+      "creator is null/undefined or empty string"
+    );
+
+  if (!(title && title.trim().length > 0))
+    throw new ApiError(
+      "createTask/invalid_title",
+      "title is null/undefined or empty string"
+    );
+
+  if (!deadline || !(deadline instanceof Date))
+    throw new ApiError(
+      "createTask/invalid_deadline",
+      "deadline is not a Date, or is null/undefined"
+    );
+
+  // ensure deadline in the future
+  if (deadline.getTime() <= Date.now())
+    throw new ApiError(
+      "createTask/invalid_deadline",
+      "deadline must be in the future"
+    );
+
+  if (!status)
+    throw new ApiError(
+      "createTask/invalid_status",
+      "status is null/undefined or empty string"
+    );
+
+  // check valid status
+  if (!Object.values(Status).includes(status))
+    throw new ApiError(
+      "createTask/invalid_status",
+      'Status enum is {NOT_STARTED = "TO_DO", IN_PROGRESS = "IN_PROGRESS", BLOCKED = "BLOCKED", COMPLETED = "DONE"}'
+    );
+
+  // ensure estimated_days is positive
+  if (
+    estimated_days !== null &&
+    estimated_days !== undefined &&
+    estimated_days < 0
+  )
+    throw new ApiError(
+      "createTask/invalid_estimated_days",
+      "estimated_days must be >= 0"
+    );
+
+  if (!(await userIdExists(creator)))
+    throw new ApiError(
+      "createTask/invalid_creator",
+      "user/creator with this id does not exist"
+    );
 
   if (!(title && title.trim().length > 0))
     throw new ApiError(
@@ -113,26 +141,19 @@ export async function createTask(
   // task id as uuid
   task.id = uuidv4();
 
-  // neither assignees or group_assignee
+  // no assignees specified
   if (!assignees || assignees.length == 0) {
-    // && !group_assignee
     // implicitly assign to creator
     const assignment = new TaskAssignment();
     assignment.id = uuidv4();
     assignment.task = task.id;
     assignment.user_assignee = creator;
-    // set assignment.group_assignee if specified after checking in group
     await getConnection().manager.save(task);
     await getConnection().manager.save(assignment);
     return task.id;
   }
 
-  // if (!assignees && group_assignee && check creator and assignees in group/project) {
-  //     set group assignee
-  // }
-
-  // save assignment in database if specified,
-  // change validAssignees to check same group/project as well
+  // save assignment in database if specified
   if (
     assignees &&
     assignees.length > 0 &&

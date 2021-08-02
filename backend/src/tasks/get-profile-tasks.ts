@@ -1,4 +1,4 @@
-import { getConnection } from "typeorm";
+import { getConnection, In } from "typeorm";
 import { TaskAssignment } from "../entity/TaskAssignment";
 import { isConnected } from "../connection";
 import { Task } from "../entity/Task";
@@ -21,8 +21,6 @@ export async function getProfileTasks(
       "profile id provided is null/undefined or empty string"
     );
 
-  // for later: show common group/project tasks even if not connected?
-
   // if users are not connected, throw error
   if (
     user_id !== profile_user_id &&
@@ -34,24 +32,30 @@ export async function getProfileTasks(
     );
   }
 
-  // get task assignments
-  const all_assignments = await getConnection()
+  const assignments_obj = (await getConnection()
     .getRepository(TaskAssignment)
-    .find();
+    .find({ where: { user_assignee: profile_user_id } })) as any;
 
-  const task_assignments = all_assignments.filter(
-    (a: any) => a.user_assignee.id === profile_user_id
-  );
+  if (assignments_obj.length === 0) return [];
 
-  const tasks = task_assignments.map((a) => a.task) as any;
+  const task_ids = assignments_obj.map(
+    (a: { task: { id: any } }) => a.task.id
+  ) as string[];
 
-  all_assignments.forEach((asst) => {
+  // get task assignments
+  const task_assignments = await getConnection()
+    .getRepository(TaskAssignment)
+    .find({ task: In(task_ids) });
+
+  task_assignments.forEach((asst) => {
     delete (asst as any).user_assignee.password_hash;
   });
 
+  const tasks = assignments_obj.map((a: { task: any }) => a.task) as any;
+
   for (const task of tasks) {
     task.assignees = [];
-    for (const assignment of all_assignments as any) {
+    for (const assignment of task_assignments as any) {
       if (task.id === assignment.task.id) {
         task.assignees.push(assignment.user_assignee);
       }
@@ -64,7 +68,9 @@ export async function getProfileTasks(
 
   // sort by deadline, closer deadlines first
   tasks.sort(function compare(a: Task, b: Task) {
-    return a.deadline.getTime() - b.deadline.getTime();
+    if (a.deadline.getTime() === b.deadline.getTime())
+      return a.title.localeCompare(b.title);
+    else return a.deadline.getTime() - b.deadline.getTime();
   });
 
   return tasks;
