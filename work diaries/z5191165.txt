@@ -51,4 +51,6 @@ I fixed some bugs in testing and allowed for CalendarCredentials to be saved wit
 I completed Google authentication. 
 Next week I will finish the calendar event creation and syncing as well as write about challenges in the report. 
 
+Week 10.
+This week I wrote the implementation challenges part of the report and finished calendar event creation. I could have done better by completing syncin, but I was running out of time and had to ask the team for help. The Google Cal stuff didn't go to plan as we had problems with OAuth as the team pushed for it to be implemented on the server side which took a long time and didn't work. 
 
