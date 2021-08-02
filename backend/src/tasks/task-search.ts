@@ -125,9 +125,20 @@ export async function taskSearch(
   search["id"] = In(return_tasks);
 
   // find the tasks from the list of tasks me has access to that matches criteria
-  const tasks = await getConnection().getRepository(Task).find({
+  let tasks = await getConnection().getRepository(Task).find({
     where: search,
   });
+
+  const searchForTasksCreated = { ...search, creator: me };
+  delete searchForTasksCreated.id;
+
+  const tasksCreated = await getConnection()
+    .getRepository(Task)
+    .find({ where: searchForTasksCreated });
+
+  console.log(tasksCreated, searchForTasksCreated);
+
+  tasks = _.unionBy(tasks, tasksCreated, "id");
 
   const taskIds = tasks.map((t) => t.id);
   const assignments = await getConnection()
