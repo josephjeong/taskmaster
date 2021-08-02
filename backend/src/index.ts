@@ -68,11 +68,6 @@ createConnection({
     app.use(cors());
     app.use(express.json());
 
-    app.post("/tasks/creategooglevent", async (req, res) => {
-      await saveTaskToCalendar(req.body.task_id);
-      sendData(res, "done");
-    });
-
     app.post("/oauthtokens/save", async (req, res) => {
       await saveOAuthToken(req.body.code, req.body.jwt);
       sendData(res, "Save your tokens");
@@ -111,6 +106,11 @@ createConnection({
     app.use(async (req, res, next) => {
       res.locals.session = await decodeJWTPayload(req.header("jwt"));
       next();
+    });
+
+    app.post("/tasks/creategooglevent", async (req, res) => {
+      await saveTaskToCalendar(res.locals.session.id, req.body.task_id);
+      sendData(res, "done");
     });
 
     app.get("/oauthtokens/check", async (req, res) => {

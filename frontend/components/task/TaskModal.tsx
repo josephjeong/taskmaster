@@ -27,10 +27,11 @@ import { Alert } from "@material-ui/lab";
 
 import { Task, TaskStatus, User } from "../../types";
 import { useEffect } from "react";
-import { useConnectedUsers } from "../../api";
+import { useConnectedUsers, useSaveToCalendar } from "../../api";
 import { useMemo } from "react";
 import { useAuthContext } from "../../context/AuthContext";
 import UserChip from "./UserChip";
+import { useHasSavedCredentials } from "../../api/oauth";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -61,6 +62,11 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: theme.spacing(1),
       marginTop: theme.spacing(1),
     },
+  },
+  unevenRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 }));
 
@@ -119,6 +125,22 @@ const TaskModal = ({
 
   const classes = useStyles();
 
+  const { data: hasSavedCredentials } = useHasSavedCredentials();
+
+  const [calendarEventStatus, setCalendarEventStatus] = React.useState<
+    "none" | "loading" | "done"
+  >("none");
+  const saveToCalendar = useSaveToCalendar();
+
+  const handleCreateCalendarEvent = async () => {
+    setCalendarEventStatus("loading");
+    try {
+      await saveToCalendar(task.id);
+    } finally {
+      setCalendarEventStatus("done");
+    }
+  };
+
   const getTitle = () => {
     switch (mode) {
       case "view":
@@ -164,11 +186,25 @@ const TaskModal = ({
       <form onSubmit={(event) => submit(event)}>
         <DialogContent className={classes.content}>
           {error && <Alert severity="error">{error}</Alert>}
-          {mode !== "create" && (
-            <Typography>
-              Creator: <UserChip link user={task.creator} />
-            </Typography>
-          )}
+          <div className={classes.unevenRow}>
+            {mode !== "create" && (
+              <Typography>
+                Creator: <UserChip link user={task.creator} />
+              </Typography>
+            )}
+            {mode === "edit" && hasSavedCredentials && (
+              <Button
+                color="primary"
+                variant="outlined"
+                onClick={handleCreateCalendarEvent}
+                disabled={calendarEventStatus !== "none"}
+              >
+                {calendarEventStatus === "none" && "Create Calendar Event"}
+                {calendarEventStatus === "loading" && "Loading"}
+                {calendarEventStatus === "done" && "Event Created!"}
+              </Button>
+            )}
+          </div>
           <TextField
             className={classes.fullWidthInput}
             required

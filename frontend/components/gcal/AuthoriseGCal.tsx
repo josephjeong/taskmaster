@@ -14,7 +14,7 @@ import { useState } from "react";
 import {
   useDeleteCredential,
   useGetAuthUrl,
-  useHadSavedCredentials,
+  useHasSavedCredentials,
 } from "../../api/oauth";
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +32,7 @@ const AuthoriseGCal: React.FC = () => {
 
   const getAuthUrl = useGetAuthUrl();
   const deleteCredential = useDeleteCredential();
-  const { data: hasSavedCredentials } = useHadSavedCredentials();
+  const { data: hasSavedCredentials } = useHasSavedCredentials();
 
   const handleClose = () => {
     if (!loading) setShowModal(false);

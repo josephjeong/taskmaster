@@ -11,7 +11,7 @@ export const useGetAuthUrl = () => {
   }, []);
 };
 
-export const useHadSavedCredentials = () => {
+export const useHasSavedCredentials = () => {
   const { user } = useAuthContext();
 
   useEffect(() => {

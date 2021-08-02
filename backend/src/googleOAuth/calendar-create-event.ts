@@ -16,10 +16,17 @@ export function getCalendarEventStartTime(task: Task): Date {
   return startDate;
 }
 
-export async function saveTaskToCalendar(task_id: string): Promise<void> {
+export async function saveTaskToCalendar(
+  userId: string,
+  task_id: string
+): Promise<void> {
   // find user's calendar's credentials
   const taskRepo = getConnection().getRepository(Task);
   const task = await taskRepo.findOne({ where: { id: task_id } });
+
+  if ((task as any).creator.id !== userId) {
+    return;
+  }
 
   const event = {
     summary: task.title,
