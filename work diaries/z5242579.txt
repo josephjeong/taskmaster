@@ -34,3 +34,7 @@ I connected the create/edit task frontend to the backend.
 Week 8.
 I implemented the tasks list view page.
 I connected the connections frontend to the backend.
+
+Week 9.
+I implemented the tasks Kanban view page.
+I implemented the tasks search/filter bar.
