@@ -38,3 +38,7 @@ I connected the connections frontend to the backend.
 Week 9.
 I implemented the tasks Kanban view page.
 I implemented the tasks search/filter bar.
+
+Week 10.
+I wrote the software architecture portion of the overview in our report.
+I wrote the description of functionalities section of our report.
